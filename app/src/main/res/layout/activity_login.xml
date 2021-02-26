@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.LoginActivity">
+    <ImageView
+        android:layout_width="match_parent"
+        android:src="@drawable/login_img"
+        android:scaleType="centerCrop"
+        android:layout_height="match_parent"/>
+    <ImageView
+        android:layout_width="match_parent"
+        android:src="@drawable/bg"
+        android:scaleType="centerCrop"
+        android:layout_height="match_parent"/>
+    <ImageView
+        android:layout_width="211dp"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/imgHeading"
+        android:layout_marginTop="30dp"
+        android:src="@drawable/login_img_header"
+        android:layout_height="138dp"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
+        android:layout_height="wrap_content">
+        <EditText
+            android:hint="Enter Username"
+            android:textColorHint="@color/white"
+            android:background="@drawable/edt_bg"
+            android:id="@+id/edtUserName"
+            android:layout_width="match_parent"
+            android:textStyle="bold"
+            android:singleLine="true"
+            android:textSize="16sp"
+            android:paddingLeft="20dp"
+            android:textColor="@color/white"
+            android:layout_height="59dp"/>
+        <EditText
+            android:textSize="16sp"
+            android:hint="Enter Password"
+            android:paddingLeft="20dp"
+            android:textColorHint="@color/white"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/edt_bg"
+            android:id="@+id/edtPassword"
+            android:layout_width="match_parent"
+            android:textStyle="bold"
+            android:inputType="textPassword"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:layout_height="59dp"/>
+
+        <LinearLayout
+            android:weightSum="2"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+            <CheckBox
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:buttonTint="@color/colorPrimary"
+                android:text="Remember Me"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:id="@+id/txtForgotPassword"
+                android:text="@string/forget_password"
+                android:textColor="@color/white"
+                android:layout_gravity="right"
+                android:gravity="right"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+        <Button
+            android:layout_width="match_parent"
+            android:background="@drawable/button_bg"
+            android:text="Sign in"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:id="@+id/btnSingnin"
+            android:layout_marginTop="50dp"
+            android:layout_height="64dp"/>
+    </LinearLayout>
+</RelativeLayout>
+</layout>

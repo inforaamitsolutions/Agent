@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:layout_gravity="center">
+
+    <!-- <com.agrawalsuneet.dotsloader.loaders.LazyLoader
+         android:id="@+id/loader"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_margin="20dp"
+         android:layout_marginTop="30dp"
+         app:lazyloader_animDur="800"
+         app:lazyloader_dotsDist="10dp"
+         app:lazyloader_dotsRadius="16dp"
+         app:lazyloader_firstDelayDur="150"
+         app:lazyloader_firstDotColor="@color/red"
+         app:lazyloader_interpolator="@android:anim/decelerate_interpolator"
+         app:lazyloader_secondDelayDur="300"
+         app:lazyloader_secondDotColor="@color/green"
+         app:lazyloader_thirdDotColor="@color/yellow" />-->
+    <com.github.ybq.android.spinkit.SpinKitView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/spin_kit"
+        style="@style/SpinKitView.Large.WanderingCubes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:SpinKit_Color="@color/white" />
+    <!--@style/SpinKitView
+    @style/SpinKitView.Circle
+    @style/SpinKitView.Large
+    @style/SpinKitView.Small
+    @style/SpinKitView.Small.DoubleBounce  -->
+</RelativeLayout>

@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">MyMobi</string>
+    <string name="forget_password"><u>Forgot Password?</u></string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <array name="type_array">
+        <item>Promise to Pay</item>
+        <item>Visit</item>
+        <item>Call</item>
+        <item>SMS</item>
+
+    </array>
+    <array name="channel_array">
+
+        <item>USD</item>
+
+    </array>
+</resources>
