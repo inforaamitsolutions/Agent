@@ -59,7 +59,10 @@ CustomerFragment customerFragment;
         );
 
 
-        binding.drawerLayout.setScrimColor(Color.parseColor("#414141"));
+        //binding.drawerLayout.setScrimColor(Color.parseColor("#414141"));
+        binding.drawerLayout.setBackgroundColor(Color.parseColor("#414141"));
+
+
 
         binding.drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
                                      @Override

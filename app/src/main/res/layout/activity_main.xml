@@ -10,6 +10,7 @@
     android:id="@+id/drawerLayout"
     tools:context=".activity.MainActivity">
     <RelativeLayout
+        android:background="@color/white"
         android:id="@+id/rvHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -54,6 +55,11 @@
         android:layout_height="match_parent"
         android:background="#414141"
         android:layout_gravity="start"
-        app:menu="@menu/bottom_menu" />
+       >
+
+<include
+    android:id="@+id/navigationLayout"
+    layout="@layout/navigation_layout"/>
+    </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

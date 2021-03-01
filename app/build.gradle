@@ -56,6 +56,7 @@ dependencies {
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
     implementation 'id.zelory:compressor:2.1.0'
     implementation 'com.github.rey5137:material:1.2.1'
+    implementation 'com.github.joielechong:countrycodepicker:2.1.5'
     implementation 'com.sasank.roundedhorizontalprogress:roundedhorizontalprogress:1.0.1'
 
     //rxJava

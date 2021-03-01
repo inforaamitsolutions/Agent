@@ -1,6 +1,7 @@
 package com.codeclinic.agent.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codeclinic.agent.R;
+import com.codeclinic.agent.activity.CustomerInfoActivity;
 import com.codeclinic.agent.databinding.CustomLoanListViewBinding;
 
 public class LoanListAdapter extends RecyclerView.Adapter<LoanListAdapter.Holder> {
@@ -52,6 +54,9 @@ public class LoanListAdapter extends RecyclerView.Adapter<LoanListAdapter.Holder
               binding.imgLocation.setImageResource(R.drawable.ic_location_white);
               binding.imgArrow.setImageResource(R.drawable.arrow_right_orange);
           }
+          binding.linear1.setOnClickListener(view -> {
+              context.startActivity(new Intent(context, CustomerInfoActivity.class));
+          });
     }
 
     @Override

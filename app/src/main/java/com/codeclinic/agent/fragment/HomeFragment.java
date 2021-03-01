@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.codeclinic.agent.R;
+import com.codeclinic.agent.activity.CreateCustomerActivity;
 import com.codeclinic.agent.activity.CustomerInfoActivity;
 import com.codeclinic.agent.databinding.FragmentHomeBinding;
 
@@ -58,6 +59,11 @@ FragmentHomeBinding binding;
             }
 
         });
+
+        binding.leadLayout.linearCreateCustomer.setOnClickListener(view ->
+        {
+             startActivity(new Intent(getContext(), CreateCustomerActivity.class));
+        });
   binding.card3.setOnClickListener(view -> {
             if (binding.defaultingLinear.linearDefaulting.getVisibility()== View.VISIBLE){
                 binding.defaultingLinear.linearDefaulting.setVisibility(View.GONE);
@@ -90,4 +96,15 @@ binding.defaultersLinear.linearCustomer.setOnClickListener(view -> {
 });
         return binding.getRoot();
     }
+    /*home screen
+    * Loan screen
+    * loan detail screen
+    * defaults screen
+    * Customers screen
+    * profile screen
+    * notification screen
+    * drawer screen
+    * Add interaction
+    * view interaction
+    * search screen */
 }

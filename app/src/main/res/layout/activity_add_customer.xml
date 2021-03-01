@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.AddCustomerActivity">
+<include
+    android:id="@+id/headerLayout"
+    layout="@layout/toolbar"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_margin="20dp"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="match_parent"
+                android:textSize="20dp"
+                android:textColor="@color/black"
+                android:text="First Name(as appears on ID)"
+                android:layout_height="wrap_content"/>
+            <EditText
+                android:backgroundTint="#F4F4F4"
+                android:layout_marginTop="10dp"
+                android:singleLine="true"
+                android:hint="e.g. Victor"
+                android:paddingLeft="10dp"
+                android:background="@drawable/button_bg"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:textSize="20dp"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/black"
+                android:text="Middle Name(as appears on ID)"
+                android:layout_height="wrap_content"/>
+            <EditText
+                android:backgroundTint="#F4F4F4"
+                android:layout_marginTop="10dp"
+                android:singleLine="true"
+                android:hint="e.g. Gachangi"
+                android:background="@drawable/button_bg"
+                android:layout_width="match_parent"
+                android:paddingLeft="10dp"
+                android:layout_height="56dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:textSize="20dp"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/black"
+                android:text="Last Name(as appears on ID)"
+                android:layout_height="wrap_content"/>
+            <EditText
+                android:backgroundTint="#F4F4F4"
+                android:background="@drawable/button_bg"
+                android:layout_marginTop="10dp"
+                android:singleLine="true"
+                android:hint="e.g. Mwangi"
+                android:paddingLeft="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:textSize="20dp"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/black"
+                android:text="Phone Number"
+                android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:backgroundTint="#F4F4F4"
+                android:background="@drawable/button_bg"
+                android:layout_height="56dp">
+
+          <com.rilixtech.CountryCodePicker
+              android:id="@+id/ccp"
+            android:layout_gravity="center"
+              android:layout_width="wrap_content"
+              android:paddingLeft="10dp"
+              app:ccp_textSize="13sp"
+              android:layout_height="wrap_content"
+              app:ccp_hideNameCode="true"
+              app:ccp_defaultNameCode="KE"
+              app:ccp_countryPreference="US,ID,NZ"/>
+
+            <EditText
+
+                android:layout_gravity="center"
+
+                android:singleLine="true"
+                android:hint="e.g. 0720 786 499"
+                android:paddingLeft="10dp"
+                android:background="@android:color/transparent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:textSize="20dp"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/black"
+                android:text="Date of Birth"
+                android:layout_height="wrap_content"/>
+            <EditText
+                android:backgroundTint="#F4F4F4"
+                android:background="@drawable/button_bg"
+                android:layout_marginTop="10dp"
+                android:singleLine="true"
+                android:hint="DD/MM/YYYY"
+                android:paddingLeft="10dp"
+             android:paddingRight="10dp"
+                android:drawableRight="@drawable/ic_caneldar"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:textSize="20dp"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/black"
+                android:text="Email Address"
+                android:layout_height="wrap_content"/>
+            <EditText
+                android:backgroundTint="#F4F4F4"
+                android:background="@drawable/button_bg"
+                android:layout_marginTop="10dp"
+                android:singleLine="true"
+                android:hint="e.g. victor@gmail.com"
+                android:paddingLeft="10dp"
+                android:inputType="textEmailAddress"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:textSize="20dp"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/black"
+                android:text="Postal Address"
+                android:layout_height="wrap_content"/>
+            <EditText
+                android:backgroundTint="#F4F4F4"
+                android:background="@drawable/button_bg"
+                android:layout_marginTop="10dp"
+                android:singleLine="true"
+                android:hint="e.g. 76893"
+                android:paddingLeft="10dp"
+
+                android:layout_width="match_parent"
+                android:layout_height="56dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:textSize="20dp"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/black"
+                android:text="Postal code"
+                android:layout_height="wrap_content"/>
+            <EditText
+                android:backgroundTint="#F4F4F4"
+                android:background="@drawable/button_bg"
+                android:layout_marginTop="10dp"
+                android:singleLine="true"
+                android:hint="e.g. 00100"
+                android:paddingLeft="10dp"
+
+                android:layout_width="match_parent"
+                android:layout_height="56dp"/>
+
+            <Button
+                android:layout_marginTop="20dp"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:background="@drawable/button_bg"
+                android:id="@+id/btnSubmit"
+                android:text="Submit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
+</layout>
