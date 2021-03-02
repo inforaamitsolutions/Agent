@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.InteractionActivity">
+<include
+    android:id="@+id/headerLayout"
+    layout="@layout/toolbar"/>
+    <LinearLayout
+        android:layout_below="@+id/headerLayout"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+         android:id="@+id/linear1"
+        android:orientation="horizontal"
+        android:weightSum="4"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="90dp"
+            android:text="Date"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:layout_width="70dp"
+            android:layout_weight="1"
+            android:text="Type"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:layout_width="90dp"
+            android:layout_weight="1"
+            android:text="Due Date"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:text="Channel"
+            android:textColor="@color/black"
+            android:layout_gravity="end"
+            android:textStyle="bold"
+            android:gravity="end"
+            android:textSize="12sp"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <View
+        android:layout_below="@+id/linear1"
+        android:layout_marginTop="10sp"
+        android:id="@+id/view"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:id="@+id/recyclerView"
+        android:layout_marginBottom="80dp"
+        android:layout_below="@+id/view"
+        android:layout_height="match_parent"/>
+    <LinearLayout
+        android:layout_width="346dp"
+        android:orientation="horizontal"
+        android:layout_marginBottom="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:weightSum="2"
+        android:layout_marginTop="10sp"
+        android:layout_gravity="center"
+        android:background="@drawable/button_bg"
+        android:id="@+id/btnAddInteraction"
+        android:layout_height="52dp">
+        <TextView
+            android:layout_marginLeft="20dp"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:text="Add New Interaction"
+            android:textSize="16sp"
+            android:layout_weight="1.4"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content"/>
+        <ImageView
+
+            android:layout_gravity="center"
+            android:src="@drawable/ic_add_white"
+            android:layout_width="20dp"
+            android:layout_weight="0.6"
+            android:layout_height="21dp"/>
+    </LinearLayout>
+</RelativeLayout>
+
+</layout>

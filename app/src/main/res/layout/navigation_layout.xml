@@ -1,188 +1,233 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:background="@color/black"
-    android:layout_height="match_parent">
-<ScrollView
-    android:layout_marginTop="50dp"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <LinearLayout
-        android:layout_marginLeft="20dp"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_marginBottom="60dp"
-        android:id="@+id/linearProfile"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:layout_width="82dp"
-            android:src="@drawable/dummy_user_img"
-            android:layout_height="82dp"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:text="Victor Gachangi"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textSize="24sp"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:text="vgachangi@mfs.co.ke"
-            android:textSize="14sp"
-            android:textColor="@color/white"
-            android:alpha="0.5"
-            android:layout_marginTop="10dp"
-            android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        android:background="@color/black">
 
-        <LinearLayout
-            android:layout_marginTop="60dp"
+        <ScrollView
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
-            android:id="@+id/homeLinear"
-            android:orientation="horizontal"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:layout_width="20dp"
-                android:src="@drawable/ic_home"
-                android:tint="@color/white"
-                android:layout_height="20dp"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:text="Home"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginLeft="10dp"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_marginTop="30dp"
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:id="@+id/loanLinear"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:layout_width="20dp"
-                android:src="@drawable/ic_loan"
-                android:tint="@color/white"
-                android:layout_height="20dp"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:text="Loan"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginLeft="10dp"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_marginTop="30dp"
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:id="@+id/defaultsLinear"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:layout_width="20dp"
-                android:src="@drawable/ic_nav_alert"
-                android:tint="@color/white"
-                android:layout_height="20dp"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:text="Defaults"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginLeft="10dp"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_marginTop="30dp"
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:id="@+id/leadLinear"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:layout_width="20dp"
-                android:src="@drawable/ic_lead"
-                android:tint="@color/white"
-                android:layout_height="20dp"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:text="Leads"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginLeft="10dp"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_marginTop="30dp"
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:id="@+id/customerLinear"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:layout_width="20dp"
-                android:src="@drawable/ic_customer"
-              android:tint="@color/white"
-                android:layout_height="20dp"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:text="Customers"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginLeft="10dp"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_marginTop="30dp"
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:id="@+id/aboutLinear"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:layout_width="20dp"
-                android:src="@drawable/ic_about"
-            android:tint="@color/white"
-                android:layout_height="20dp"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:text="About"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginLeft="10dp"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp">
 
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/linearProfile"
+                android:layout_width="match_parent"
 
-</ScrollView>
-    <LinearLayout
-        android:layout_marginBottom="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:id="@+id/logoutLinear"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:layout_width="20dp"
-            android:src="@drawable/ic_logout"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:orientation="vertical">
 
-            android:layout_height="20dp"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:text="Log Out"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:layout_marginLeft="10dp"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-</RelativeLayout>
+                <ImageView
+                    android:layout_width="82dp"
+                    android:layout_height="82dp"
+                    android:src="@drawable/dummy_user_img" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Victor Gachangi"
+                    android:textColor="@color/white"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:alpha="0.5"
+                    android:text="vgachangi@mfs.co.ke"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+
+                <LinearLayout
+                    android:id="@+id/homeLinear"
+                    android:layout_width="180dp"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="50dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="15dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_home"
+                        android:tint="@color/white" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:text="Home"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/loanLinear"
+
+                    android:layout_width="180dp"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="15dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_loan"
+                        android:tint="@color/white" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:text="Loan"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/defaultsLinear"
+                    android:layout_width="180dp"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="15dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_nav_alert"
+                        android:tint="@color/white" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:text="Defaults"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/leadLinear"
+                    android:layout_width="180dp"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="15dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_lead"
+                        android:tint="@color/white" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:text="Leads"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/customerLinear"
+                    android:layout_width="180dp"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal"
+
+                    android:paddingLeft="15dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_customer"
+                        android:tint="@color/white" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:text="Customers"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/aboutLinear"
+                    android:layout_width="180dp"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="15dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_about"
+                        android:tint="@color/white" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:text="About"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearLogout"
+                    android:layout_width="180dp"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="20dp"
+
+                    android:orientation="horizontal"
+                    android:paddingLeft="15dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_logout" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:text="Log Out"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </ScrollView>
+
+    </RelativeLayout>
 </layout>

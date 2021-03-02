@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/layoutMain"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:weightSum="2"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:id="@+id/txtHeading"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_weight="0.2"
+            android:text="Lorem ipsum dolor sit amet, consetetur"
+            android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_weight="1.8"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/imgAdd"
+                android:src="@drawable/ic_add_circle"
+                android:layout_width="16dp"
+                android:layout_height="16dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+    <TextView
+        android:layout_margin="20dp"
+        android:layout_width="match_parent"
+        android:id="@+id/txtDescription"
+        android:text="@string/faq_description"
+        android:visibility="gone"
+        android:textSize="14sp"
+        android:layout_height="wrap_content"/>
+    <View
+        android:layout_marginTop="20dp"
+        android:background="@android:color/darker_gray"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+</LinearLayout>
+</layout>

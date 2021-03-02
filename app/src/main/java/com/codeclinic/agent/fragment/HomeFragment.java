@@ -25,7 +25,6 @@ FragmentHomeBinding binding;
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -96,15 +95,5 @@ binding.defaultersLinear.linearCustomer.setOnClickListener(view -> {
 });
         return binding.getRoot();
     }
-    /*home screen
-    * Loan screen
-    * loan detail screen
-    * defaults screen
-    * Customers screen
-    * profile screen
-    * notification screen
-    * drawer screen
-    * Add interaction
-    * view interaction
-    * search screen */
+  
 }

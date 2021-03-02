@@ -62,8 +62,67 @@ CustomerFragment customerFragment;
         //binding.drawerLayout.setScrimColor(Color.parseColor("#414141"));
         binding.drawerLayout.setBackgroundColor(Color.parseColor("#414141"));
 
+        binding.navigationLayout.homeLinear.setOnClickListener(view -> {
+            binding.drawerLayout.closeDrawers();
+            binding.navigationLayout.aboutLinear.setBackground(null);
+            binding.navigationLayout.loanLinear.setBackground(null);
+            binding.navigationLayout.defaultsLinear.setBackground(null);
+            binding.navigationLayout.leadLinear.setBackground(null);
+            binding.navigationLayout.customerLinear.setBackground(null);
+            binding.navigationLayout.homeLinear.setBackground(getResources().getDrawable(R.drawable.button_bg));
+            // Toast.makeText(this, "About", Toast.LENGTH_SHORT).show();
+        });
+        binding.navigationLayout.loanLinear.setOnClickListener(view -> {
+            binding.drawerLayout.closeDrawers();
+            binding.navigationLayout.aboutLinear.setBackground(null);
+            binding.navigationLayout.homeLinear.setBackground(null);
+            binding.navigationLayout.defaultsLinear.setBackground(null);
+            binding.navigationLayout.leadLinear.setBackground(null);
+            binding.navigationLayout.customerLinear.setBackground(null);
+            binding.navigationLayout.loanLinear.setBackground(getResources().getDrawable(R.drawable.button_bg));
+            // Toast.makeText(this, "About", Toast.LENGTH_SHORT).show();
+        });
+        binding.navigationLayout.defaultsLinear.setOnClickListener(view -> {
+            binding.drawerLayout.closeDrawers();
+            binding.navigationLayout.aboutLinear.setBackground(null);
+            binding.navigationLayout.homeLinear.setBackground(null);
+            binding.navigationLayout.loanLinear.setBackground(null);
+            binding.navigationLayout.leadLinear.setBackground(null);
+            binding.navigationLayout.customerLinear.setBackground(null);
+            binding.navigationLayout.defaultsLinear.setBackground(getResources().getDrawable(R.drawable.button_bg));
+            // Toast.makeText(this, "About", Toast.LENGTH_SHORT).show();
+        });
+        binding.navigationLayout.leadLinear.setOnClickListener(view -> {
+            binding.drawerLayout.closeDrawers();
+            binding.navigationLayout.aboutLinear.setBackground(null);
+            binding.navigationLayout.homeLinear.setBackground(null);
+            binding.navigationLayout.loanLinear.setBackground(null);
+            binding.navigationLayout.defaultsLinear.setBackground(null);
+            binding.navigationLayout.customerLinear.setBackground(null);
+            binding.navigationLayout.leadLinear.setBackground(getResources().getDrawable(R.drawable.button_bg));
+            // Toast.makeText(this, "About", Toast.LENGTH_SHORT).show();
+        });
+        binding.navigationLayout.customerLinear.setOnClickListener(view -> {
+            binding.drawerLayout.closeDrawers();
+            binding.navigationLayout.aboutLinear.setBackground(null);
+            binding.navigationLayout.homeLinear.setBackground(null);
+            binding.navigationLayout.loanLinear.setBackground(null);
+            binding.navigationLayout.defaultsLinear.setBackground(null);
+            binding.navigationLayout.leadLinear.setBackground(null);
+            binding.navigationLayout.customerLinear.setBackground(getResources().getDrawable(R.drawable.button_bg));
+            // Toast.makeText(this, "About", Toast.LENGTH_SHORT).show();
+        });
 
-
+       binding.navigationLayout.aboutLinear.setOnClickListener(view -> {
+           binding.drawerLayout.closeDrawers();
+           binding.navigationLayout.homeLinear.setBackground(null);
+           binding.navigationLayout.loanLinear.setBackground(null);
+           binding.navigationLayout.defaultsLinear.setBackground(null);
+           binding.navigationLayout.leadLinear.setBackground(null);
+           binding.navigationLayout.customerLinear.setBackground(null);
+           binding.navigationLayout.aboutLinear.setBackground(getResources().getDrawable(R.drawable.button_bg));
+          // Toast.makeText(this, "About", Toast.LENGTH_SHORT).show();
+       });
         binding.drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
                                      @Override
                                      public void onDrawerSlide(View drawer, float slideOffset) {
@@ -91,12 +150,14 @@ CustomerFragment customerFragment;
             getMenuInflater().inflate(R.menu.notification_menu, menu);
             getMenuInflater().inflate(R.menu.profile_menu, menu);
 
+
             return true;
         }
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             Fragment fragment;
             switch (item.getItemId()) {
+
                 case R.id.home:
                     binding.layoutHeader.toolbar.setVisibility(View.VISIBLE);
                     fragment = new HomeFragment();

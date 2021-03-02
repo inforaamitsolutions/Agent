@@ -3,6 +3,7 @@ package com.codeclinic.agent.activity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.WindowManager;
 
@@ -18,6 +19,9 @@ ActivityProfileBinding binding;
         binding = DataBindingUtil.setContentView(this,R.layout.activity_profile);
         binding.imgBack.setOnClickListener(view -> {
             onBackPressed();
+        });
+        binding.layoutInteraction.setOnClickListener(view -> {
+            startActivity(new Intent(this,InteractionActivity.class));
         });
     }
 }
