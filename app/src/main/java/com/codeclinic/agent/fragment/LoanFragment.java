@@ -1,5 +1,7 @@
 package com.codeclinic.agent.fragment;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.databinding.DataBindingUtil;
@@ -11,13 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.codeclinic.agent.R;
+import com.codeclinic.agent.activity.MainActivity;
 import com.codeclinic.agent.adapter.LoanListAdapter;
 import com.codeclinic.agent.databinding.FragmentLoanBinding;
 
 
 public class LoanFragment extends Fragment {
 
-FragmentLoanBinding binding;
+public FragmentLoanBinding binding;
     public LoanFragment() {
         // Required empty public constructor
     }
@@ -33,6 +36,11 @@ FragmentLoanBinding binding;
         binding.loanRecyclerView.setHasFixedSize(true);
         binding.loanRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.loanRecyclerView.setAdapter(new LoanListAdapter(getContext()));
+
+        binding.headerLayout.imgBack.setOnClickListener(view -> {
+            startActivity(new Intent(getContext(), MainActivity.class));
+            ((Activity)getContext()).finish();
+        });
         return binding.getRoot();
     }
 }

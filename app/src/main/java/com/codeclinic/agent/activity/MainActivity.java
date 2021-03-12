@@ -64,6 +64,8 @@ CustomerFragment customerFragment;
 
         binding.navigationLayout.homeLinear.setOnClickListener(view -> {
             binding.drawerLayout.closeDrawers();
+            binding.bottomNavigation.setSelectedItemId(R.id.home);
+            loadFragment(new HomeFragment());
             binding.navigationLayout.aboutLinear.setBackground(null);
             binding.navigationLayout.loanLinear.setBackground(null);
             binding.navigationLayout.defaultsLinear.setBackground(null);
@@ -74,6 +76,8 @@ CustomerFragment customerFragment;
         });
         binding.navigationLayout.loanLinear.setOnClickListener(view -> {
             binding.drawerLayout.closeDrawers();
+            binding.bottomNavigation.setSelectedItemId(R.id.loan);
+            loadFragment(new LoanFragment());
             binding.navigationLayout.aboutLinear.setBackground(null);
             binding.navigationLayout.homeLinear.setBackground(null);
             binding.navigationLayout.defaultsLinear.setBackground(null);
@@ -84,6 +88,8 @@ CustomerFragment customerFragment;
         });
         binding.navigationLayout.defaultsLinear.setOnClickListener(view -> {
             binding.drawerLayout.closeDrawers();
+            binding.bottomNavigation.setSelectedItemId(R.id.defaults);
+            loadFragment(new DefaultFragment());
             binding.navigationLayout.aboutLinear.setBackground(null);
             binding.navigationLayout.homeLinear.setBackground(null);
             binding.navigationLayout.loanLinear.setBackground(null);
@@ -104,6 +110,8 @@ CustomerFragment customerFragment;
         });
         binding.navigationLayout.customerLinear.setOnClickListener(view -> {
             binding.drawerLayout.closeDrawers();
+            binding.bottomNavigation.setSelectedItemId(R.id.customers);
+            loadFragment(new CustomerFragment());
             binding.navigationLayout.aboutLinear.setBackground(null);
             binding.navigationLayout.homeLinear.setBackground(null);
             binding.navigationLayout.loanLinear.setBackground(null);
@@ -159,21 +167,47 @@ CustomerFragment customerFragment;
             switch (item.getItemId()) {
 
                 case R.id.home:
+                    binding.navigationLayout.aboutLinear.setBackground(null);
+                    binding.navigationLayout.loanLinear.setBackground(null);
+                    binding.navigationLayout.defaultsLinear.setBackground(null);
+                    binding.navigationLayout.leadLinear.setBackground(null);
+                    binding.navigationLayout.customerLinear.setBackground(null);
+                    binding.navigationLayout.homeLinear.setBackground(getResources().getDrawable(R.drawable.button_bg));
                     binding.layoutHeader.toolbar.setVisibility(View.VISIBLE);
                     fragment = new HomeFragment();
                     loadFragment(fragment);
+
                     return true;
                 case R.id.loan:
+                    binding.navigationLayout.aboutLinear.setBackground(null);
+                    binding.navigationLayout.homeLinear.setBackground(null);
+                    binding.navigationLayout.defaultsLinear.setBackground(null);
+                    binding.navigationLayout.leadLinear.setBackground(null);
+                    binding.navigationLayout.customerLinear.setBackground(null);
+                    binding.navigationLayout.loanLinear.setBackground(getResources().getDrawable(R.drawable.button_bg));
                  binding.layoutHeader.toolbar.setVisibility(View.GONE);
                     fragment = new LoanFragment();
                     loadFragment(fragment);
+
                     return true;
                 case R.id.defaults:
+                    binding.navigationLayout.aboutLinear.setBackground(null);
+                    binding.navigationLayout.homeLinear.setBackground(null);
+                    binding.navigationLayout.loanLinear.setBackground(null);
+                    binding.navigationLayout.leadLinear.setBackground(null);
+                    binding.navigationLayout.customerLinear.setBackground(null);
+                    binding.navigationLayout.defaultsLinear.setBackground(getResources().getDrawable(R.drawable.button_bg));
                     binding.layoutHeader.toolbar.setVisibility(View.GONE);
                     fragment = new DefaultFragment();
                     loadFragment(fragment);
                     return true;
                 case R.id.customers:
+                    binding.navigationLayout.aboutLinear.setBackground(null);
+                    binding.navigationLayout.homeLinear.setBackground(null);
+                    binding.navigationLayout.loanLinear.setBackground(null);
+                    binding.navigationLayout.defaultsLinear.setBackground(null);
+                    binding.navigationLayout.leadLinear.setBackground(null);
+                    binding.navigationLayout.customerLinear.setBackground(getResources().getDrawable(R.drawable.button_bg));
                     binding.layoutHeader.toolbar.setVisibility(View.GONE);
                     fragment = new CustomerFragment();
                     loadFragment(fragment);

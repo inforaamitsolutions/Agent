@@ -1,5 +1,7 @@
 package com.codeclinic.agent.fragment;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.databinding.DataBindingUtil;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.codeclinic.agent.R;
+import com.codeclinic.agent.activity.MainActivity;
 import com.codeclinic.agent.adapter.CustomerListAdapter;
 import com.codeclinic.agent.adapter.DefaultListAdapter;
 import com.codeclinic.agent.databinding.FragmentDefaultBinding;
@@ -33,6 +36,10 @@ public class DefaultFragment extends Fragment {
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.setAdapter(new DefaultListAdapter(getContext()));
+        binding.headerLayout.imgBack.setOnClickListener(view -> {
+            startActivity(new Intent(getContext(), MainActivity.class));
+            ((Activity)getContext()).finish();
+        });
         return binding.getRoot();
     }
 }

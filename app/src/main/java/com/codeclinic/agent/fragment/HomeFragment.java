@@ -19,7 +19,7 @@ import com.codeclinic.agent.databinding.FragmentHomeBinding;
 
 
 public class HomeFragment extends Fragment {
-FragmentHomeBinding binding;
+public FragmentHomeBinding binding;
 
     public HomeFragment() {
         // Required empty public constructor
