@@ -17,7 +17,7 @@
         android:layout_marginRight="15dp"
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
-         android:id="@+id/linear1"
+         android:id="@+id/llQuestions"
         android:orientation="horizontal"
         android:weightSum="4"
         android:layout_height="wrap_content">
@@ -59,7 +59,7 @@
             android:layout_height="wrap_content"/>
     </LinearLayout>
     <View
-        android:layout_below="@+id/linear1"
+        android:layout_below="@+id/llQuestions"
         android:layout_marginTop="10sp"
         android:id="@+id/view"
         android:background="@color/colorPrimary"

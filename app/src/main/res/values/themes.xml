@@ -14,6 +14,8 @@
         <!-- Customize your theme here. -->
         <item name="android:windowTitleSize">14dp</item>
         <!--<item name="fontFamily">@font/app_font</item>-->
+        <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
+        <item name="android:fontFamily">@font/montserrat_regular</item>
     </style>
     <style name="DialogThemeloader" parent="@android:style/Theme.Dialog">
         <item name="android:windowNoTitle">true</item>

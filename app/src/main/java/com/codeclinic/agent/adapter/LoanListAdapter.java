@@ -54,7 +54,7 @@ public class LoanListAdapter extends RecyclerView.Adapter<LoanListAdapter.Holder
               binding.imgLocation.setImageResource(R.drawable.ic_location_white);
               binding.imgArrow.setImageResource(R.drawable.arrow_right_orange);
           }
-          binding.linear1.setOnClickListener(view -> {
+          binding.card.setOnClickListener(view -> {
               context.startActivity(new Intent(context, CustomerInfoActivity.class));
           });
     }

@@ -99,6 +99,15 @@
             android:id="@+id/btnSingnin"
             android:layout_marginTop="50dp"
             android:layout_height="64dp"/>
+
+
     </LinearLayout>
+
+
+    <include
+        android:id="@+id/loadingView"
+        layout="@layout/loadingview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>
 </layout>

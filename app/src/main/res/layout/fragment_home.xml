@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:background="@drawable/button_bg"
         android:orientation="horizontal"
-        android:id="@+id/linear1"
+        android:id="@+id/llQuestions"
         android:weightSum="2"
         android:layout_height="52dp">
         <TextView
@@ -48,7 +48,7 @@
     </LinearLayout>
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-       android:layout_below="@id/linear1"
+       android:layout_below="@id/llQuestions"
         android:id="@+id/card1"
         android:layout_marginLeft="20dp"
         app:cardBackgroundColor="@color/white"

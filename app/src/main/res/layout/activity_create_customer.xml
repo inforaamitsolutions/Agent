@@ -1,252 +1,430 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".activity.CreateCustomerActivity">
-<include
-    android:id="@+id/headerLayout"
-    layout="@layout/toolbar"/>
-    <LinearLayout
-        android:layout_marginTop="5dp"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:weightSum="2"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
+
         <LinearLayout
+
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_weight="1"
+            tools:context=".activity.CreateCustomerActivity">
 
-            android:gravity="center"
-            android:layout_height="wrap_content">
-             <LinearLayout
+            <include
+                android:id="@+id/headerLayout"
+                layout="@layout/toolbar" />
 
-                 android:gravity="center"
-                 android:id="@+id/linearCustomers"
-                 android:background="@color/black"
-                 android:layout_width="match_parent"
-                 android:orientation="horizontal"
-                 android:layout_height="61dp">
-                 <ImageView
-                     android:layout_width="21dp"
-                     android:src="@drawable/ic_customer"
-                     android:layout_height="17dp"/>
-                 <TextView
-                     android:layout_marginLeft="10dp"
-                     android:layout_width="wrap_content"
-                     android:text="Customers"
-                     android:id="@+id/txtCustomer"
-                     android:textColor="@color/white"
-                     android:textStyle="bold"
-                     android:textSize="16sp"
-                     android:layout_height="wrap_content"/>
-             </LinearLayout>
-            <ImageView
-                 android:layout_marginTop="-6dp"
-                android:layout_width="11sp"
-                android:src="@drawable/ic_dropdown"
-                android:id="@+id/imgDropDown1"
-                android:layout_height="17dp"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_weight="1"
-
-            android:gravity="center"
-            android:layout_height="wrap_content">
             <LinearLayout
-
-                android:gravity="center"
-                android:id="@+id/linearDistributors"
-                android:background="@color/white"
                 android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_height="61dp">
-                <ImageView
-                    android:layout_width="21dp"
-                    android:src="@drawable/ic_customer"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                    android:layout_height="17dp"/>
-                <TextView
-                    android:layout_marginLeft="10dp"
-                    android:layout_width="wrap_content"
-                    android:text="Distributors"
-                    android:id="@+id/txtDistributors"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:layout_height="wrap_content"/>
+                <LinearLayout
+                    android:id="@+id/linearCustomers"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:background="@color/black"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="21dp"
+                        android:layout_height="17dp"
+                        android:src="@drawable/ic_customer" />
+
+                    <TextView
+                        android:id="@+id/txtCustomer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:text="Customers"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+
+                        android:id="@+id/linearDistributors"
+                        android:layout_width="match_parent"
+                        android:layout_height="61dp"
+                        android:background="@color/white"
+                        android:gravity="center"
+
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="21dp"
+                            android:layout_height="17dp"
+
+                            android:src="@drawable/ic_customer" />
+
+                        <TextView
+                            android:id="@+id/txtDistributors"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="Distributors"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/imgDropDown2"
+                        android:layout_width="11sp"
+                        android:layout_height="17dp"
+                        android:layout_marginTop="-6dp"
+                        android:src="@drawable/ic_dropdown"
+                        android:visibility="gone" />
+                </LinearLayout>
+
             </LinearLayout>
-            <ImageView
-                android:layout_marginTop="-6dp"
-                android:visibility="gone"
-                android:id="@+id/imgDropDown2"
-                android:layout_width="11sp"
-                android:src="@drawable/ic_dropdown"
-                android:layout_height="17dp"/>
-        </LinearLayout>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_gravity="center"
 
-        android:gravity="center"
-        android:id="@+id/linear1"
-        android:layout_height="match_parent">
-        <TextView
-            android:layout_width="match_parent"
-            android:text="Choose Product"
-            android:layout_height="wrap_content"/>
-        <RelativeLayout
-            android:backgroundTint="#F4F4F4"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/button_bg"
-            android:layout_width="match_parent"
-            android:layout_height="56dp">
-            <androidx.appcompat.widget.AppCompatSpinner
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <LinearLayout
+                    android:id="@+id/llQuestions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginHorizontal="20dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/tvTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Main title"
+                        android:textColor="@color/black"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvQuestion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:gravity="center"
+                        android:text="Question"
+                        android:textColor="@color/black"
+                        android:textSize="16dp" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="30dp">
+
+
+                        <RelativeLayout
+                            android:id="@+id/rlSpinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:background="@drawable/button_bg"
+                            android:backgroundTint="#F4F4F4">
+
+                            <androidx.appcompat.widget.AppCompatSpinner
+                                android:id="@+id/spLabel"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp" />
+
+                        </RelativeLayout>
+
+
+                        <EditText
+                            android:id="@+id/edtAnswer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/button_bg"
+                            android:backgroundTint="#F4F4F4"
+                            android:hint="Enter the details"
+                            android:padding="10dp"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/tvDate"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:background="@drawable/button_bg"
+                            android:backgroundTint="#F4F4F4"
+                            android:gravity="center_vertical"
+                            android:hint="Select Date"
+                            android:padding="10dp"
+                            android:textSize="16dp"
+                            android:visibility="gone" />
+
+                        <RadioGroup
+                            android:id="@+id/radioGroup"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:orientation="vertical" />
+
+                    </RelativeLayout>
+
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearUserDetail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginHorizontal="20dp"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:orientation="vertical">
+
+                    <TextView
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Enter Customer Detail"
+                        android:textColor="@color/black"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="30dp"
+                        android:orientation="vertical">
+
+                        <EditText
+                            android:id="@+id/edtFirstName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/button_bg"
+                            android:backgroundTint="#F4F4F4"
+                            android:inputType="text"
+                            android:hint="Enter First Name"
+                            android:padding="10dp"
+                            android:visibility="visible" />
+
+                        <EditText
+                            android:id="@+id/edtMiddleName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/button_bg"
+                            android:backgroundTint="#F4F4F4"
+                            android:inputType="text"
+                            android:layout_marginTop="20dp"
+                            android:hint="Enter Middle Name"
+                            android:padding="10dp"
+                            android:visibility="visible" />
+
+                        <EditText
+                            android:id="@+id/edtLastName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/button_bg"
+                            android:backgroundTint="#F4F4F4"
+                            android:inputType="text"
+                            android:layout_marginTop="20dp"
+                            android:hint="Enter Last Name"
+                            android:padding="10dp"
+                            android:visibility="visible" />
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
+
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnPrevious"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/button_bg"
+                        android:backgroundTint="#F4F4F4"
+                        android:text="Previous"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/btnNext1"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/button_bg"
+                        android:text="Next"
+                        android:textColor="@color/white"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linear2"
                 android:layout_width="match_parent"
 
-                android:id="@+id/productSpinner"
-                android:layout_height="56dp"/>
-        </RelativeLayout>
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-        <Button
-            android:layout_width="305dp"
-            android:text="Next"
-            android:textStyle="bold"
-            android:id="@+id/btnNext1"
-            android:textColor="@color/white"
-            android:textAllCaps="false"
-            android:background="@drawable/button_bg"
-            android:layout_marginTop="80dp"
-            android:layout_height="44dp"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:orientation="vertical"
+                <TextView
+                    android:id="@+id/txtProductName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="MobiDrinks"
+                    android:textColor="@color/black"
+                    android:textSize="19dp"
+                    android:textStyle="bold" />
 
-        android:layout_marginRight="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        android:gravity="center"
-        android:id="@+id/linear2"
-        android:layout_height="match_parent">
-        <TextView
-            android:layout_width="match_parent"
-            android:text="MobiDrinks"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:textSize="19dp"
-            android:id="@+id/txtProductName"
-            android:layout_height="wrap_content"/>
-        <LinearLayout
-            android:layout_marginTop="20dp"
-            android:backgroundTint="#F4F4F4"
-            android:background="@drawable/button_bg"
-            android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_height="60dp">
-            <TextView
-                android:layout_width="match_parent"
-                android:text="6% completed"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_height="wrap_content"/>
-            <com.sasank.roundedhorizontalprogress.RoundedHorizontalProgressBar
-                android:id="@+id/progress_bar_1"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="300dp"
-                android:layout_height="6dp"
-                android:indeterminate="false"
-                android:maxHeight="12dp"
-                android:layout_marginTop="10dp"
-                android:minHeight="12dp"
-                android:layout_marginLeft="10dp"
-                android:progress="20"
-                app:isRounded="true"
-                app:backgroundColor="#ffffff"
-                app:progressColor="#FA911D"/>
-        </LinearLayout>
-        <TextView
-            android:layout_marginTop="50dp"
-            android:layout_width="match_parent"
-            android:text="1. Is this a new or an already
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/button_bg"
+                    android:backgroundTint="#F4F4F4"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="10dp"
+                        android:text="6% completed"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+
+                    <com.sasank.roundedhorizontalprogress.RoundedHorizontalProgressBar
+                        android:id="@+id/progress_bar_1"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="300dp"
+                        android:layout_height="6dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="10dp"
+                        android:indeterminate="false"
+                        android:maxHeight="12dp"
+                        android:minHeight="12dp"
+                        android:progress="20"
+                        app:backgroundColor="#ffffff"
+                        app:isRounded="true"
+                        app:progressColor="#FA911D" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/txtLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
+                    android:text="1. Is this a new or an already
    existing business?"
-            android:textSize="20dp"
-            android:id="@+id/txtLabel"
-            android:textColor="@color/black"
+                    android:textColor="@color/black"
 
-            android:layout_height="wrap_content"/>
-        <RadioGroup
-            android:id="@+id/radioGroup"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_gravity="left"
+                    android:textSize="20dp" />
 
-            android:gravity="left"
-            android:layout_height="wrap_content">
-            <RadioButton
-                android:layout_width="match_parent"
-                android:text="New"
-                android:layout_weight="1"
-                android:layout_height="29dp"/>
-            <RadioButton
-                android:layout_marginLeft="30dp"
-                android:layout_width="match_parent"
-                android:text="Existing"
-                android:layout_weight="1"
-                android:layout_height="29dp"/>
-        </RadioGroup>
-        <EditText
-            android:backgroundTint="#F4F4F4"
-            android:hint="Enter Location"
-            android:paddingLeft="10dp"
-            android:layout_marginTop="20dp"
-            android:text="Rongal"
-            android:singleLine="true"
-            android:visibility="gone"
-            android:id="@+id/edtLocation"
-            android:background="@drawable/button_bg"
+                <!--<RadioGroup
+                    android:id="@+id/radioGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginTop="20dp"
+
+                    android:gravity="left"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="29dp"
+                        android:layout_weight="1"
+                        android:text="New" />
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="29dp"
+                        android:layout_marginLeft="30dp"
+                        android:layout_weight="1"
+                        android:text="Existing" />
+                </RadioGroup-->>
+
+                <EditText
+                    android:id="@+id/edtLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/button_bg"
+                    android:backgroundTint="#F4F4F4"
+                    android:hint="Enter Location"
+                    android:paddingLeft="10dp"
+                    android:singleLine="true"
+                    android:text="Rongal"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/btnNext2"
+                    android:layout_width="305dp"
+                    android:layout_height="44dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="80dp"
+                    android:background="@drawable/button_bg"
+                    android:text="Next"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/btnNext3"
+                    android:layout_width="305dp"
+                    android:layout_height="44dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="80dp"
+                    android:background="@drawable/button_bg"
+                    android:text="Next"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <include
+            android:id="@+id/loadingView"
+            layout="@layout/loadingview"
             android:layout_width="match_parent"
-            android:layout_height="56dp"/>
-        <Button
-            android:layout_width="305dp"
-              android:layout_gravity="center"
-            android:text="Next"
-            android:textStyle="bold"
-            android:id="@+id/btnNext2"
-            android:textColor="@color/white"
-            android:textAllCaps="false"
-            android:background="@drawable/button_bg"
-            android:layout_marginTop="80dp"
-            android:layout_height="44dp"/>
-        <Button
-            android:layout_width="305dp"
-            android:visibility="gone"
-            android:text="Next"
-            android:layout_gravity="center"
-            android:textStyle="bold"
-            android:id="@+id/btnNext3"
-            android:textColor="@color/white"
-            android:textAllCaps="false"
-            android:background="@drawable/button_bg"
-            android:layout_marginTop="80dp"
-            android:layout_height="44dp"/>
-    </LinearLayout>
-</LinearLayout>
+            android:layout_height="match_parent" />
+
+    </RelativeLayout>
+
+
 </layout>

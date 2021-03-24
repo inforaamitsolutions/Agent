@@ -85,7 +85,7 @@
             android:layout_below="@+id/linearHeader"
             android:layout_marginLeft="20sp"
             android:layout_marginTop="10sp"
-            android:id="@+id/linear1"
+            android:id="@+id/llQuestions"
             android:layout_marginRight="20sp"
             android:orientation="horizontal"
             android:weightSum="2">
@@ -183,7 +183,7 @@
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:weightSum="2"
-        android:layout_below="@+id/linear1"
+        android:layout_below="@+id/llQuestions"
         android:layout_marginLeft="20dp"
         android:id="@+id/linear2"
         android:layout_marginRight="20dp"

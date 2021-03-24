@@ -3,6 +3,7 @@ package com.codeclinic.agent.utils;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,9 +16,13 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.DatePicker;
+import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import com.codeclinic.agent.R;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -118,6 +123,83 @@ public class CommonMethods {
 
     }
 
+    public static void datePicker(final TextView tv, Context context) {
+        final Calendar c;
+        c = Calendar.getInstance();
+        int mYear = c.get(Calendar.YEAR);
+        int mMonth = c.get(Calendar.MONTH);
+        final int mDay = c.get(Calendar.DAY_OF_MONTH);
+
+
+        final DatePickerDialog datePickerDialog = new DatePickerDialog(context, R.style.Theme_AppCompat_Light_Dialog, new DatePickerDialog.OnDateSetListener() {
+            String month;
+
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+                int m = monthOfYear + 1;
+
+                if (m == 1) {
+                    //month = getString(R.string.jaunuary);
+                    month = "January";
+                    m = 01;
+                } else if (m == 2) {
+                    //month = getString(R.string.february);
+                    month = "February";
+                    m = 02;
+                } else if (m == 3) {
+                    //month = getString(R.string.march);
+                    month = "March";
+                    m = 03;
+                } else if (m == 4) {
+                    //month = getString(R.string.april);
+                    month = "April";
+                    m = 04;
+                } else if (m == 5) {
+                    //month = getString(R.string.may);
+                    month = "May";
+                    m = 05;
+                } else if (m == 6) {
+//                            month = getString(R.string.june);
+                    month = "June";
+                    m = 06;
+                } else if (m == 7) {
+                    //month = getString(R.string.july);
+                    month = "July";
+                    m = 07;
+                } else if (m == 8) {
+                    //month = getString(R.string.august);
+                    month = "August";
+                    m = 8;
+                } else if (m == 9) {
+                    //month = getString(R.string.september);
+                    month = "September";
+                } else if (m == 10) {
+                    //month = getString(R.string.octomer);
+                    month = "October";
+                } else if (m == 11) {
+                    //month = getString(R.string.november);
+                    month = "November";
+                } else if (m == 12) {
+                    //month = getString(R.string.december);
+                    month = "December";
+                }
+
+
+                if (dayOfMonth < 10) {
+                    tv.setText(m + "/" + "0" + dayOfMonth + "/" + year);
+                } else {
+                    tv.setText(m + "/" + dayOfMonth + "/" + year);
+                }
+
+            }
+        }, mYear, mMonth, mDay);
+        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        //datePickerDialog.getDatePicker().setMinDate(c.getTimeInMillis()-1000);
+        //datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        datePickerDialog.show();
+    }
 
     public static ArrayList<Date> getDayForWholeYear(String weekDay) {
         ArrayList<Date> arrList = new ArrayList();
