@@ -1,9 +1,12 @@
 package com.codeclinic.agent.retrofit;
 
 
-import com.codeclinic.agent.model.FetchCustomerFormModel;
 import com.codeclinic.agent.model.LoginModel;
-import com.codeclinic.agent.model.SubmitFormModel;
+import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
+import com.codeclinic.agent.model.customer.FetchCustomerFormModel;
+import com.codeclinic.agent.model.lead.FetchLeadFormModel;
+import com.codeclinic.agent.model.lead.LeadSubmitFormModel;
+import com.codeclinic.agent.model.user.UserModel;
 
 import io.reactivex.Single;
 import retrofit2.http.Body;
@@ -21,14 +24,30 @@ public interface API {
     Single<LoginModel> LOGIN_MODEL_SINGLE_CALL(@Body String body);
 
 
+    //Get User Credentials API
+    @Headers("Content-Type: application/json")
+    @GET("userservice/manage-users/findUserAndStaffByUserName")
+    Single<UserModel> USER_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Query("userName") String params);
+
+
     //Fetch CustomRegistration Form API
     @Headers("Content-Type: application/json")
-    @GET("surveyservice/survey-definitions/getById")
-    Single<FetchCustomerFormModel> FETCH_CUSTOMER_FORM_MODEL_SINGLE(@Header("Authorization") String header, @Query("surveyDefinitionId") String params);
+    @GET("customerState/getSurveyBySurveyName")
+    Single<FetchCustomerFormModel> FETCH_CUSTOMER_FORM_MODEL_SINGLE(@Header("Authorization") String header, @Query("surveyName") String params);
 
     //Login API
     @Headers("Content-Type: application/json")
     @POST("customerState/registerCustomer")
-    Single<SubmitFormModel> CUSTOMER_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
+    Single<CustomerSubmitFormModel> CUSTOMER_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
+
+    //Fetch LeadRegistration Form API
+    @Headers("Content-Type: application/json")
+    @GET("customerState/getSurveyBySurveyName")
+    Single<FetchLeadFormModel> FETCH_LEAD_FORM_MODEL_SINGLE(@Header("Authorization") String header, @Query("surveyName") String params);
+
+    //Login API
+    @Headers("Content-Type: application/json")
+    @POST("customerState/registerCustomer")
+    Single<LeadSubmitFormModel> LEAD_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
 
 }

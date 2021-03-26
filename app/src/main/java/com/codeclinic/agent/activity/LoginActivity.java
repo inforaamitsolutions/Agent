@@ -72,7 +72,8 @@ public class LoginActivity extends AppCompatActivity {
                     public void onSuccess(@NonNull LoginModel response) {
                         binding.loadingView.loader.setVisibility(View.GONE);
                         if (response.getAccessToken() != null) {
-                            sessionManager.setUserSession("Bearer " + response.getAccessToken()
+                            sessionManager.setUserSession("Bearer " + response.getAccessToken(),
+                                    binding.edtUserName.getText().toString()
                                     , response.getExpiresIn() + ""
                                     , response.getRefreshToken()
                                     , response.getRefreshExpiresIn() + "");

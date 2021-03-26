@@ -1,5 +1,15 @@
 package com.codeclinic.agent.activity;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.widget.RelativeLayout;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
@@ -7,20 +17,9 @@ import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProviders;
 
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
-
+import com.codeclinic.agent.MainViewModel;
 import com.codeclinic.agent.R;
 import com.codeclinic.agent.databinding.ActivityMainBinding;
 import com.codeclinic.agent.fragment.CustomerFragment;
@@ -32,33 +31,41 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
-ActivityMainBinding binding;
-HomeFragment homeFragment;
-LoanFragment loanFragment;
-DefaultFragment defaultFragment;
-CustomerFragment customerFragment;
+    ActivityMainBinding binding;
+    HomeFragment homeFragment;
+    LoanFragment loanFragment;
+    DefaultFragment defaultFragment;
+    CustomerFragment customerFragment;
+    MainViewModel viewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        binding = DataBindingUtil.setContentView(this,R.layout.activity_main);
-         setSupportActionBar(binding.layoutHeader.toolbar);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        setSupportActionBar(binding.layoutHeader.toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-            loadFragment(new HomeFragment());
-         binding.bottomNavigation.setOnNavigationItemSelectedListener(this);
+        loadFragment(new HomeFragment());
+        binding.bottomNavigation.setOnNavigationItemSelectedListener(this);
+
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+
+        viewModel.callCustomerForm();
+
+        viewModel.callLeadForm();
+
+        viewModel.callUserDetailsAPI();
+
 
         binding.layoutHeader.toolbar.setNavigationIcon(new DrawerArrowDrawable(this));
-        binding.layoutHeader.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                                                 @Override
-                                                 public void onClick(View v) {
-                                                     if (binding.drawerLayout.isDrawerOpen(binding.navView)) {
-                                                         binding.drawerLayout.closeDrawer(binding.navView);
-                                                     } else {
-                                                         binding.drawerLayout.openDrawer(binding.navView);
-                                                     }
-                                                 }
-                                             }
+        binding.layoutHeader.toolbar.setNavigationOnClickListener(v -> {
+                    if (binding.drawerLayout.isDrawerOpen(binding.navView)) {
+                        binding.drawerLayout.closeDrawer(binding.navView);
+                    } else {
+                        binding.drawerLayout.openDrawer(binding.navView);
+                    }
+                }
         );
 
 

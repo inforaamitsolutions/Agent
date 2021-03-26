@@ -23,10 +23,13 @@
         android:roundIcon="@mipmap/ic_app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Agent">
-        <activity android:name=".activity.InteractionActivity"/>
+        <activity android:name=".activity.CreateLeadActivity"></activity>
+        <activity android:name=".activity.InteractionActivity" />
         <activity android:name=".activity.FAQActivity" />
         <activity android:name=".activity.AddCustomerActivity" />
-        <activity android:name=".activity.CreateCustomerActivity" />
+        <activity
+            android:name=".activity.CreateCustomerActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".activity.ProfileActivity" />
         <activity android:name=".activity.SearchActivity" />
         <activity android:name=".activity.NotificationActivity" />

@@ -2,6 +2,7 @@ package com.codeclinic.agent.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -28,7 +29,11 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
 
     @Override
     public void onBindViewHolder(@NonNull CustomerListAdapter.Holder holder, int position) {
-
+        if (position == 9) {
+            holder.binding.view.setVisibility(View.VISIBLE);
+        } else {
+            holder.binding.view.setVisibility(View.GONE);
+        }
     }
 
     @Override

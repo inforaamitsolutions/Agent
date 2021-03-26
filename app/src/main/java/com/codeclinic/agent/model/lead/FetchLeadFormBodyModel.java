@@ -1,11 +1,11 @@
-package com.codeclinic.agent.model;
+package com.codeclinic.agent.model.lead;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class FetchCustomerFormBodyModel {
+public class FetchLeadFormBodyModel {
 
     @SerializedName("id")
     @Expose
@@ -37,9 +37,10 @@ public class FetchCustomerFormBodyModel {
     @SerializedName("surveyVersion")
     @Expose
     private Integer surveyVersion;
+
     @SerializedName("surveyDefinitionPages")
     @Expose
-    private List<SurveyDefinitionPageModel> surveyDefinitionPages = null;
+    private List<LeadSurveyDefinitionPageModel> surveyDefinitionPages = null;
 
     public Integer getId() {
         return id;
@@ -121,11 +122,11 @@ public class FetchCustomerFormBodyModel {
         this.surveyVersion = surveyVersion;
     }
 
-    public List<SurveyDefinitionPageModel> getSurveyDefinitionPages() {
+    public List<LeadSurveyDefinitionPageModel> getSurveyDefinitionPages() {
         return surveyDefinitionPages;
     }
 
-    public void setSurveyDefinitionPages(List<SurveyDefinitionPageModel> surveyDefinitionPages) {
+    public void setSurveyDefinitionPages(List<LeadSurveyDefinitionPageModel> surveyDefinitionPages) {
         this.surveyDefinitionPages = surveyDefinitionPages;
     }
 

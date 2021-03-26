@@ -1,12 +1,8 @@
 package com.codeclinic.agent.utils;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-
-import com.codeclinic.agent.activity.LoginActivity;
 
 import java.util.HashMap;
 
@@ -16,11 +12,20 @@ import java.util.HashMap;
 
 public class SessionManager {
 
-
+    /*Tokens*/
     public static final String AccessToken = "accessToken";
+    public static final String UName = "uName";
     public static final String ExpiresIn = "expiresIn";
     public static final String RefreshToken = "refreshToken";
     public static final String RefreshExpiresIn = "refreshExpiresIn";
+
+    /*User Details*/
+    public static final String UserID = "userId";
+    public static final String UserName = "userName";
+    public static final String FirstName = "firstName";
+    public static final String LastName = "lastName";
+    public static final String OtherName = "OtherName";
+    public static final String PhoneNumber = "phoneNumber";
 
 
     public static final String LOGIN_USERNAME = "login_user_name";
@@ -88,8 +93,9 @@ public class SessionManager {
         return prefCredentials.getBoolean(IS_REMEMBER_ME, false);
     }
 
-    public void setUserSession(String accessToken, String expiresIn, String refreshToken, String refreshExpiresIn) {
+    public void setUserSession(String accessToken,String uName ,String expiresIn, String refreshToken, String refreshExpiresIn) {
         editor.putString(AccessToken, accessToken);
+        editor.putString(UName, uName);
         editor.putString(ExpiresIn, expiresIn);
         editor.putString(RefreshToken, refreshToken);
         editor.putString(RefreshExpiresIn, refreshExpiresIn);
@@ -97,13 +103,37 @@ public class SessionManager {
         editor.commit();
     }
 
-    public HashMap<String, String> getUserDetails() {
+    public HashMap<String, String> getTokenDetails() {
 
         HashMap<String, String> user = new HashMap<>();
         user.put(AccessToken, pref.getString(AccessToken, null));
+        user.put(UName, pref.getString(UName, null));
         user.put(ExpiresIn, pref.getString(ExpiresIn, null));
         user.put(RefreshToken, pref.getString(RefreshToken, null));
         user.put(RefreshExpiresIn, pref.getString(RefreshExpiresIn, null));
+
+        return user;
+    }
+
+    public void setUserCredentials(String user_id, String user_name, String first_name, String last_name, String other_name, String phone_no) {
+        editor.putString(UserID, user_id);
+        editor.putString(UserName, user_name);
+        editor.putString(FirstName, first_name);
+        editor.putString(LastName, last_name);
+        editor.putString(OtherName, other_name);
+        editor.putString(PhoneNumber, phone_no);
+        editor.commit();
+    }
+
+    public HashMap<String, String> getUserDetails() {
+
+        HashMap<String, String> user = new HashMap<>();
+        user.put(UserID, pref.getString(UserID, null));
+        user.put(UserName, pref.getString(UserName, null));
+        user.put(FirstName, pref.getString(FirstName, null));
+        user.put(LastName, pref.getString(LastName, null));
+        user.put(OtherName, pref.getString(OtherName, null));
+        user.put(PhoneNumber, pref.getString(PhoneNumber, null));
 
         return user;
     }

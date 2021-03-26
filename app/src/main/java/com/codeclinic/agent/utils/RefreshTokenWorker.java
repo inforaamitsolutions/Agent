@@ -34,7 +34,7 @@ public class RefreshTokenWorker extends Worker {
 
 
         try {
-            long seconds = Long.parseLong(sessionManager.getUserDetails().get(SessionManager.ExpiresIn));
+            long seconds = Long.parseLong(sessionManager.getTokenDetails().get(SessionManager.ExpiresIn));
             seconds = seconds * 1000;
             long finalSeconds = seconds;
 

@@ -18,7 +18,8 @@
             android:layout_width="match_parent"
             android:orientation="vertical"
             android:id="@+id/content"
-            android:layout_height="wrap_content">
+            android:layout_above="@+id/bottomNavigation"
+            android:layout_height="match_parent">
 
 
         <include
@@ -28,7 +29,6 @@
             android:layout_below="@+id/layoutHeader"
             android:id="@+id/frame_container"
             android:layout_width="match_parent"
-
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
@@ -42,20 +42,17 @@
             app:labelVisibilityMode="labeled"
             android:layout_alignParentBottom="true"
             android:layout_height="wrap_content"/>
+
     </RelativeLayout>
 
-<!--<com.google.android.material.navigation.NavigationView
-    android:layout_width="match_parent"
-
-    android:id="@+id/navigationView"
-    android:layout_height="match_parent"/>-->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:background="#414141"
         android:layout_gravity="start"
-       >
+        >
+
 
 <include
     android:id="@+id/navigationLayout"

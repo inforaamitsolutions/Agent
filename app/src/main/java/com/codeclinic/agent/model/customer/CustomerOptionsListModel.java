@@ -1,28 +1,58 @@
-package com.codeclinic.agent.model;
+package com.codeclinic.agent.model.customer;
+
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class OptionsListModel {
+@Entity(tableName = "CustomerQuestionsOptions")
+public class CustomerOptionsListModel {
 
+    @ColumnInfo(name = "optionMainId")
+    @PrimaryKey(autoGenerate = true)
+    @Expose
+    private long mainId;
+
+    @ColumnInfo(name = "optionId")
+    @PrimaryKey(autoGenerate = false)
     @SerializedName("id")
     @Expose
     private Integer id;
+
+    @ColumnInfo(name = "label")
     @SerializedName("label")
     @Expose
     private String label;
+
+    @ColumnInfo(name = "value")
     @SerializedName("value")
     @Expose
-    private Object value;
+    private String value;
+
+    @ColumnInfo(name = "order")
     @SerializedName("order")
     @Expose
-    private Object order;
+    private int order;
+
+    @ColumnInfo(name = "active")
     @SerializedName("active")
     @Expose
     private Boolean active;
+
+    @ColumnInfo(name = "questionToFollow")
     @SerializedName("questionToFollow")
     @Expose
-    private Object questionToFollow;
+    private int questionToFollow;
+
+    public long getMainId() {
+        return mainId;
+    }
+
+    public void setMainId(long mainId) {
+        this.mainId = mainId;
+    }
 
     public Integer getId() {
         return id;
@@ -40,19 +70,19 @@ public class OptionsListModel {
         this.label = label;
     }
 
-    public Object getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(Object value) {
+    public void setValue(String value) {
         this.value = value;
     }
 
-    public Object getOrder() {
+    public int getOrder() {
         return order;
     }
 
-    public void setOrder(Object order) {
+    public void setOrder(int order) {
         this.order = order;
     }
 
@@ -64,11 +94,11 @@ public class OptionsListModel {
         this.active = active;
     }
 
-    public Object getQuestionToFollow() {
+    public int getQuestionToFollow() {
         return questionToFollow;
     }
 
-    public void setQuestionToFollow(Object questionToFollow) {
+    public void setQuestionToFollow(int questionToFollow) {
         this.questionToFollow = questionToFollow;
     }
 

@@ -1,35 +1,71 @@
-package com.codeclinic.agent.model;
+package com.codeclinic.agent.model.customer;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.codeclinic.agent.typeConverters.CustomerQuestionsGsonTypeConverter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class SurveyDefinitionPageModel {
+@Entity(tableName = "CustomerSurveyPages")
+public class CustomerSurveyDefinitionPageModel {
+
+    @ColumnInfo(name = "surveyMainId")
+    @PrimaryKey(autoGenerate = true)
+    @Expose
+    private long mainId;
+
+    @ColumnInfo(name = "surveyId")
     @SerializedName("id")
     @Expose
     private Integer id;
+
+    @ColumnInfo(name = "surveyTitle")
     @SerializedName("title")
     @Expose
     private String title;
+
+    @ColumnInfo(name = "pageName")
     @SerializedName("pageName")
     @Expose
     private String pageName;
+
+    @ColumnInfo(name = "instructions")
     @SerializedName("instructions")
     @Expose
     private String instructions;
+
+    @ColumnInfo(name = "pageOrder")
     @SerializedName("pageOrder")
     @Expose
-    private Object pageOrder;
+    private int pageOrder;
+
+    @ColumnInfo(name = "randomizeQuestions")
     @SerializedName("randomizeQuestions")
     @Expose
     private Boolean randomizeQuestions;
+
+    @ColumnInfo(name = "surveyDefinitionId")
     @SerializedName("surveyDefinitionId")
     @Expose
     private Integer surveyDefinitionId;
+
     @SerializedName("questions")
     @Expose
-    private List<QuestionsListModel> questions = null;
+    @TypeConverters(CustomerQuestionsGsonTypeConverter.class)
+    private List<CustomerQuestionsListModel> questions = null;
+
+    public long getMainId() {
+        return mainId;
+    }
+
+    public void setMainId(long mainId) {
+        this.mainId = mainId;
+    }
 
     public Integer getId() {
         return id;
@@ -63,11 +99,11 @@ public class SurveyDefinitionPageModel {
         this.instructions = instructions;
     }
 
-    public Object getPageOrder() {
+    public int getPageOrder() {
         return pageOrder;
     }
 
-    public void setPageOrder(Object pageOrder) {
+    public void setPageOrder(int pageOrder) {
         this.pageOrder = pageOrder;
     }
 
@@ -87,11 +123,11 @@ public class SurveyDefinitionPageModel {
         this.surveyDefinitionId = surveyDefinitionId;
     }
 
-    public List<QuestionsListModel> getQuestions() {
+    public List<CustomerQuestionsListModel> getQuestions() {
         return questions;
     }
 
-    public void setQuestions(List<QuestionsListModel> questions) {
+    public void setQuestions(List<CustomerQuestionsListModel> questions) {
         this.questions = questions;
     }
 }

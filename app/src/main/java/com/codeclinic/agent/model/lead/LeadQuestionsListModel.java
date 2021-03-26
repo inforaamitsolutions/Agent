@@ -1,53 +1,103 @@
-package com.codeclinic.agent.model;
+package com.codeclinic.agent.model.lead;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.codeclinic.agent.typeConverters.CustomerOptionsGsonTypeConverter;
+import com.codeclinic.agent.typeConverters.LeadOptionsGsonTypeConverter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class QuestionsListModel {
+@Entity(tableName = "LeadQuestions")
+public class LeadQuestionsListModel {
+
+    @ColumnInfo(name = "questionMainId")
+    @PrimaryKey(autoGenerate = true)
+    @Expose
+    private long mainId;
+
+    @ColumnInfo(name = "questionId")
     @SerializedName("id")
     @Expose
     private Integer id;
+
+    @ColumnInfo(name = "questionText")
     @SerializedName("questionText")
     @Expose
     private String questionText;
+
+    @ColumnInfo(name = "fieldName")
     @SerializedName("fieldName")
     @Expose
     private String fieldName;
+
+    @ColumnInfo(name = "required")
     @SerializedName("required")
     @Expose
     private Boolean required;
+
+    @ColumnInfo(name = "tip")
     @SerializedName("tip")
     @Expose
     private String tip;
+
+    @ColumnInfo(name = "regularExpression")
     @SerializedName("regularExpression")
     @Expose
     private String regularExpression;
+
+    @ColumnInfo(name = "allowOtherTextBox")
     @SerializedName("allowOtherTextBox")
     @Expose
     private Boolean allowOtherTextBox;
+
+    @ColumnInfo(name = "questionOrder")
     @SerializedName("questionOrder")
     @Expose
     private Integer questionOrder;
+
+    @ColumnInfo(name = "min")
     @SerializedName("min")
     @Expose
     private Integer min;
+
+    @ColumnInfo(name = "max")
     @SerializedName("max")
     @Expose
     private Integer max;
+
+    @ColumnInfo(name = "fieldType")
     @SerializedName("fieldType")
     @Expose
     private String fieldType;
+
+    @ColumnInfo(name = "surveyDefinitionPageId")
     @SerializedName("surveyDefinitionPageId")
     @Expose
     private Integer surveyDefinitionPageId;
+
+    @ColumnInfo(name = "active")
     @SerializedName("active")
     @Expose
     private Boolean active;
+
+
     @SerializedName("options")
     @Expose
-    private List<OptionsListModel> options = null;
+    @TypeConverters(LeadOptionsGsonTypeConverter.class)
+    private List<LeadOptionsListModel> options = null;
+
+    public long getMainId() {
+        return mainId;
+    }
+
+    public void setMainId(long mainId) {
+        this.mainId = mainId;
+    }
 
     public Integer getId() {
         return id;
@@ -153,11 +203,11 @@ public class QuestionsListModel {
         this.active = active;
     }
 
-    public List<OptionsListModel> getOptions() {
+    public List<LeadOptionsListModel> getOptions() {
         return options;
     }
 
-    public void setOptions(List<OptionsListModel> options) {
+    public void setOptions(List<LeadOptionsListModel> options) {
         this.options = options;
     }
 }

@@ -1,20 +1,17 @@
-package com.codeclinic.agent.model;
+package com.codeclinic.agent.model.user;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class FetchCustomerFormModel {
+public class UserModel {
     @SerializedName("successStatus")
     @Expose
     private String successStatus;
     @SerializedName("body")
     @Expose
-    private FetchCustomerFormBodyModel body;
-    @SerializedName("responseCode")
-    @Expose
-    private Integer responseCode;
+    private UserDetailsModel userDetails;
     @SerializedName("errors")
     @Expose
     private List<Object> errors = null;
@@ -30,21 +27,10 @@ public class FetchCustomerFormModel {
         this.successStatus = successStatus;
     }
 
-    public FetchCustomerFormBodyModel getBody() {
-        return body;
+    public UserDetailsModel getBody() {
+        return userDetails;
     }
 
-    public void setBody(FetchCustomerFormBodyModel body) {
-        this.body = body;
-    }
-
-    public Integer getResponseCode() {
-        return responseCode;
-    }
-
-    public void setResponseCode(Integer responseCode) {
-        this.responseCode = responseCode;
-    }
 
     public List<Object> getErrors() {
         return errors;
@@ -61,5 +47,4 @@ public class FetchCustomerFormModel {
     public void setHttpStatus(String httpStatus) {
         this.httpStatus = httpStatus;
     }
-
 }

@@ -1,9 +1,9 @@
-package com.codeclinic.agent.model;
+package com.codeclinic.agent.model.lead;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class SubmitFormModel {
+public class LeadSubmitFormModel {
     @SerializedName("successStatus")
     @Expose
     private String successStatus;

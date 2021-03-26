@@ -14,11 +14,10 @@ import androidx.databinding.DataBindingUtil;
 
 import com.codeclinic.agent.R;
 import com.codeclinic.agent.databinding.ActivityCreateCustomerBinding;
-import com.codeclinic.agent.model.FetchCustomerFormModel;
-import com.codeclinic.agent.model.OptionsListModel;
-import com.codeclinic.agent.model.QuestionsListModel;
-import com.codeclinic.agent.model.SubmitFormModel;
-import com.codeclinic.agent.model.SurveyDefinitionPageModel;
+import com.codeclinic.agent.model.customer.CustomerQuestionsListModel;
+import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
+import com.codeclinic.agent.model.customer.CustomerSurveyDefinitionPageModel;
+import com.codeclinic.agent.model.customer.FetchCustomerFormModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.gson.Gson;
@@ -39,6 +38,7 @@ import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static android.text.TextUtils.isEmpty;
+import static com.codeclinic.agent.database.LocalDatabase.localDatabase;
 import static com.codeclinic.agent.utils.CommonMethods.datePicker;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
@@ -51,9 +51,9 @@ public class CreateCustomerActivity extends AppCompatActivity {
     int surveyPage = 0, questionPage = 0, radioButtonTextSize;
     ArrayAdapter spAdapter;
 
-    List<SurveyDefinitionPageModel> surveyPagesList = new ArrayList<>();
-    Map<Integer, List<QuestionsListModel>> questionList = new HashMap<>();
-    Map<Integer, List<OptionsListModel>> optionList = new HashMap<>();
+    List<CustomerSurveyDefinitionPageModel> surveyPagesList = new ArrayList<>();
+    Map<Integer, List<CustomerQuestionsListModel>> questionList = new HashMap<>();
+
 
     Map<Integer, Map<Integer, String>> surveyQuestions = new HashMap<>();
     Map<Integer, String> answeredQuestions = new HashMap<>();
@@ -128,19 +128,19 @@ public class CreateCustomerActivity extends AppCompatActivity {
                     updatePage();
 
                 } else {
+
                     if (binding.llQuestions.getVisibility() == View.VISIBLE) {
                         binding.llQuestions.setVisibility(View.GONE);
                         binding.linearUserDetail.setVisibility(View.VISIBLE);
                     } else {
-
                         addAnswers();
                         surveyQuestions.put(surveyPage, answeredQuestions);
                         Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
                         answeredQuestions = new HashMap<>();
                         questionPage = 0;
-
                         submitForm();
                     }
+
                 }
             }
         });
@@ -153,14 +153,37 @@ public class CreateCustomerActivity extends AppCompatActivity {
         layoutParams.setMargins(5, 5, 5, 5);
 
 
-        callCustomerForm();
+        //callCustomerForm();
+        getSurveyForm();
+    }
+
+    private void getSurveyForm() {
+        disposable.add(localDatabase.getDAO().getCustomerSurveyFormList()
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(list -> {
+
+                            surveyPagesList = list;
+                            for (int i = 0; i < surveyPagesList.size(); i++) {
+                                questionList.put(i, surveyPagesList.get(i).getQuestions());
+                            }
+                            Log.i("surveyPages", new Gson().toJson(surveyPagesList));
+                            updatePage();
+
+                        },
+                        throwable -> {
+                            if (throwable.getMessage() != null)
+                                Log.i("customerSurveyForm", "Error == " + throwable.getMessage());
+                        }
+                )
+        );
     }
 
     private void callCustomerForm() {
         binding.loadingView.loader.setVisibility(View.VISIBLE);
         disposable.add(RestClass.getClient().FETCH_CUSTOMER_FORM_MODEL_SINGLE(
-                sessionManager.getUserDetails().get(SessionManager.AccessToken),
-                "25")
+                sessionManager.getTokenDetails().get(SessionManager.AccessToken),
+                "Customer Registration Form")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<FetchCustomerFormModel>() {
@@ -173,11 +196,6 @@ public class CreateCustomerActivity extends AppCompatActivity {
                             for (int i = 0; i < surveyPagesList.size(); i++) {
                                 questionList.put(i, surveyPagesList.get(i).getQuestions());
                             }
-
-                            for (Map.Entry<Integer, List<QuestionsListModel>> entry : questionList.entrySet()) {
-                                optionList.put(entry.getKey(), entry.getValue().get(entry.getKey()).getOptions());
-                            }
-
                             updatePage();
 
                         } else {
@@ -202,7 +220,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
             jsonObject.put("firstName", binding.edtFirstName.getText().toString());
             jsonObject.put("lastName", binding.edtLastName.getText().toString());
             jsonObject.put("middleName", binding.edtMiddleName.getText().toString());
-            jsonObject.put("staffId", "1");
+            jsonObject.put("staffId", sessionManager.getUserCredentials().get(SessionManager.UserID));
             jsonObject.put("status", "COMPLETED");
             jsonObject.put("surveyName", "Customer Registration Form");
 
@@ -247,13 +265,13 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
         Log.i("formReq", jsonObject.toString());
 
-        disposable.add(RestClass.getClient().CUSTOMER_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getUserDetails().get(SessionManager.AccessToken)
+        disposable.add(RestClass.getClient().CUSTOMER_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
                 , jsonObject.toString())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<SubmitFormModel>() {
+                .subscribeWith(new DisposableSingleObserver<CustomerSubmitFormModel>() {
                     @Override
-                    public void onSuccess(@NonNull SubmitFormModel response) {
+                    public void onSuccess(@NonNull CustomerSubmitFormModel response) {
                         binding.loadingView.loader.setVisibility(View.GONE);
                         if (response.getResponseCode() == 0) {
                             finish();
