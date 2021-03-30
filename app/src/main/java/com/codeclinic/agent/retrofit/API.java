@@ -20,34 +20,34 @@ public interface API {
 
     //Login API
     @Headers("Content-Type: application/json")
-    @POST("userservice/userauthentication/getAccessToken")
+    @POST("baseapi/userservice/userauthentication/getAccessToken")
     Single<LoginModel> LOGIN_MODEL_SINGLE_CALL(@Body String body);
 
 
     //Get User Credentials API
     @Headers("Content-Type: application/json")
-    @GET("userservice/manage-users/findUserAndStaffByUserName")
+    @GET("baseapi/userservice/manage-users/findUserAndStaffByUserName")
     Single<UserModel> USER_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Query("userName") String params);
 
 
     //Fetch CustomRegistration Form API
     @Headers("Content-Type: application/json")
-    @GET("customerState/getSurveyBySurveyName")
+    @GET("customer/customerState/getSurveyBySurveyName")
     Single<FetchCustomerFormModel> FETCH_CUSTOMER_FORM_MODEL_SINGLE(@Header("Authorization") String header, @Query("surveyName") String params);
 
-    //Login API
+    //Submit customer form API
     @Headers("Content-Type: application/json")
-    @POST("customerState/registerCustomer")
+    @POST("customer/customerState/registerCustomer")
     Single<CustomerSubmitFormModel> CUSTOMER_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
 
     //Fetch LeadRegistration Form API
     @Headers("Content-Type: application/json")
-    @GET("customerState/getSurveyBySurveyName")
+    @GET("customer/customerState/getSurveyBySurveyName")
     Single<FetchLeadFormModel> FETCH_LEAD_FORM_MODEL_SINGLE(@Header("Authorization") String header, @Query("surveyName") String params);
 
     //Login API
     @Headers("Content-Type: application/json")
-    @POST("customerState/registerCustomer")
+    @POST("customer/customerState/registerCustomer")
     Single<LeadSubmitFormModel> LEAD_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
 
 }
