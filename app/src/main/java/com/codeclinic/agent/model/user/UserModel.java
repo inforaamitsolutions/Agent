@@ -11,13 +11,18 @@ public class UserModel {
     private String successStatus;
     @SerializedName("body")
     @Expose
-    private UserDetailsModel userDetails;
+    private UserBodyModel userDetails;
     @SerializedName("errors")
     @Expose
     private List<Object> errors = null;
     @SerializedName("httpStatus")
     @Expose
     private String httpStatus;
+
+
+    public UserBodyModel getUserDetails() {
+        return userDetails;
+    }
 
     public String getSuccessStatus() {
         return successStatus;
@@ -27,10 +32,9 @@ public class UserModel {
         this.successStatus = successStatus;
     }
 
-    public UserDetailsModel getBody() {
+    public UserBodyModel getBody() {
         return userDetails;
     }
-
 
     public List<Object> getErrors() {
         return errors;

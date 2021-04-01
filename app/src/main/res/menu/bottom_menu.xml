@@ -10,8 +10,8 @@
         android:icon="@drawable/ic_loan"/>
     <item
         android:id="@+id/defaults"
-        android:title="Defaults"
-        android:icon="@drawable/ic_nav_alert"/>
+        android:icon="@drawable/ic_lead"
+        android:title="Leads" />
     <item
         android:id="@+id/customers"
         android:title="Customers"

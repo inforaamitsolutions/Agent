@@ -1,45 +1,74 @@
 package com.codeclinic.agent.model.lead;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.codeclinic.agent.typeConverters.LeadSurveyPageTypeConverter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+@Entity(tableName = "LeadFormBody")
 public class FetchLeadFormBodyModel {
 
+    @ColumnInfo(name = "bodyId")
+    @PrimaryKey(autoGenerate = false)
     @SerializedName("id")
     @Expose
     private Integer id;
+
+    @ColumnInfo(name = "name")
     @SerializedName("name")
     @Expose
     private String name;
+
+    @ColumnInfo(name = "description")
     @SerializedName("description")
     @Expose
     private String description;
+
+    @ColumnInfo(name = "surveyTheme")
     @SerializedName("surveyTheme")
     @Expose
     private String surveyTheme;
+
+    @ColumnInfo(name = "allowMultipleSubmissions")
     @SerializedName("allowMultipleSubmissions")
     @Expose
-    private Object allowMultipleSubmissions;
+    private boolean allowMultipleSubmissions;
+
+    @ColumnInfo(name = "emailInvitationTemplate")
     @SerializedName("emailInvitationTemplate")
     @Expose
-    private Object emailInvitationTemplate;
+    private String emailInvitationTemplate;
+
+    @ColumnInfo(name = "isPublic")
     @SerializedName("isPublic")
     @Expose
-    private Object isPublic;
+    private boolean isPublic;
+
+
+    @ColumnInfo(name = "status")
     @SerializedName("status")
     @Expose
     private String status;
+
+    @ColumnInfo(name = "allowAnonymousSubmissions")
     @SerializedName("allowAnonymousSubmissions")
     @Expose
-    private Object allowAnonymousSubmissions;
+    private boolean allowAnonymousSubmissions;
+
+    @ColumnInfo(name = "surveyVersion")
     @SerializedName("surveyVersion")
     @Expose
     private Integer surveyVersion;
 
     @SerializedName("surveyDefinitionPages")
     @Expose
+    @TypeConverters(LeadSurveyPageTypeConverter.class)
     private List<LeadSurveyDefinitionPageModel> surveyDefinitionPages = null;
 
     public Integer getId() {
@@ -74,27 +103,27 @@ public class FetchLeadFormBodyModel {
         this.surveyTheme = surveyTheme;
     }
 
-    public Object getAllowMultipleSubmissions() {
+    public boolean getAllowMultipleSubmissions() {
         return allowMultipleSubmissions;
     }
 
-    public void setAllowMultipleSubmissions(Object allowMultipleSubmissions) {
+    public void setAllowMultipleSubmissions(boolean allowMultipleSubmissions) {
         this.allowMultipleSubmissions = allowMultipleSubmissions;
     }
 
-    public Object getEmailInvitationTemplate() {
+    public String getEmailInvitationTemplate() {
         return emailInvitationTemplate;
     }
 
-    public void setEmailInvitationTemplate(Object emailInvitationTemplate) {
+    public void setEmailInvitationTemplate(String emailInvitationTemplate) {
         this.emailInvitationTemplate = emailInvitationTemplate;
     }
 
-    public Object getIsPublic() {
+    public boolean getIsPublic() {
         return isPublic;
     }
 
-    public void setIsPublic(Object isPublic) {
+    public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
 
@@ -106,11 +135,11 @@ public class FetchLeadFormBodyModel {
         this.status = status;
     }
 
-    public Object getAllowAnonymousSubmissions() {
+    public boolean getAllowAnonymousSubmissions() {
         return allowAnonymousSubmissions;
     }
 
-    public void setAllowAnonymousSubmissions(Object allowAnonymousSubmissions) {
+    public void setAllowAnonymousSubmissions(boolean allowAnonymousSubmissions) {
         this.allowAnonymousSubmissions = allowAnonymousSubmissions;
     }
 
@@ -129,6 +158,5 @@ public class FetchLeadFormBodyModel {
     public void setSurveyDefinitionPages(List<LeadSurveyDefinitionPageModel> surveyDefinitionPages) {
         this.surveyDefinitionPages = surveyDefinitionPages;
     }
-
 
 }

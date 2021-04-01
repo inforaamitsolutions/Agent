@@ -23,7 +23,9 @@
         android:roundIcon="@mipmap/ic_app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Agent">
-        <activity android:name=".activity.CreateLeadActivity"></activity>
+        <activity
+            android:name=".activity.CreateLeadActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".activity.InteractionActivity" />
         <activity android:name=".activity.FAQActivity" />
         <activity android:name=".activity.AddCustomerActivity" />
@@ -43,6 +45,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.MainActivity" />
+
+        <service
+            android:name=".utils.LogoutService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

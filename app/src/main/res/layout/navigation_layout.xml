@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -26,27 +26,30 @@
                     android:src="@drawable/dummy_user_img" />
 
                 <TextView
+                    android:id="@+id/tvUserName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Victor Gachangi"
                     android:textColor="@color/white"
-                    android:textSize="24sp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="16dp"
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tvEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:alpha="0.5"
                     android:text="vgachangi@mfs.co.ke"
                     android:textColor="@color/white"
-                    android:textSize="14sp" />
+                    android:textSize="15dp" />
 
                 <LinearLayout
                     android:id="@+id/homeLinear"
                     android:layout_width="180dp"
                     android:layout_height="60dp"
-                    android:layout_marginTop="50dp"
+                    android:layout_marginTop="20dp"
                     android:background="@drawable/button_bg"
                     android:orientation="horizontal"
                     android:paddingLeft="15dp">
@@ -56,7 +59,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_home"
-                        android:tint="@color/white" />
+                        app:tint="@color/white" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -83,7 +86,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_loan"
-                        android:tint="@color/white" />
+                        app:tint="@color/white" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -109,7 +112,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_nav_alert"
-                        android:tint="@color/white" />
+                        app:tint="@color/white" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -122,58 +125,37 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/leadLinear"
-                    android:layout_width="180dp"
-                    android:layout_height="60dp"
+
+                <com.skydoves.expandablelayout.ExpandableLayout
+                    android:id="@+id/leadExpandLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginTop="20dp"
-                    android:orientation="horizontal"
-                    android:paddingLeft="15dp">
+                    app:expandable_duration="300"
+                    app:expandable_isExpanded="false"
+                    app:expandable_parentLayout="@layout/lead_parent_view"
+                    app:expandable_secondLayout="@layout/lead_child_view"
+                    app:expandable_showSpinner="false"
+                    app:expandable_spinner_animate="true"
+                    app:expandable_spinner_gravity="start"
+                    app:expandable_spinner_size="0dp" />
 
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_lead"
-                        android:tint="@color/white" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="10dp"
-                        android:text="Leads"
-                        android:textColor="@color/white"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/customerLinear"
-                    android:layout_width="180dp"
-                    android:layout_height="60dp"
+                <com.skydoves.expandablelayout.ExpandableLayout
+                    android:id="@+id/customerExpandLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginTop="20dp"
-                    android:orientation="horizontal"
-
-                    android:paddingLeft="15dp">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_customer"
-                        android:tint="@color/white" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="10dp"
-                        android:text="Customers"
-                        android:textColor="@color/white"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                    app:expandable_duration="300"
+                    app:expandable_isExpanded="false"
+                    app:expandable_parentLayout="@layout/customer_parent_view"
+                    app:expandable_secondLayout="@layout/customer_child_view"
+                    app:expandable_showSpinner="false"
+                    app:expandable_spinner_animate="true"
+                    app:expandable_spinner_gravity="start"
+                    app:expandable_spinner_size="0dp" />
 
                 <LinearLayout
                     android:id="@+id/aboutLinear"
@@ -188,7 +170,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_about"
-                        android:tint="@color/white" />
+                        app:tint="@color/white" />
 
                     <TextView
                         android:layout_width="match_parent"

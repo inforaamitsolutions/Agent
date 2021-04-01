@@ -15,9 +15,9 @@ import androidx.databinding.DataBindingUtil;
 import com.codeclinic.agent.R;
 import com.codeclinic.agent.databinding.ActivityCreateCustomerBinding;
 import com.codeclinic.agent.model.customer.CustomerQuestionsListModel;
-import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
 import com.codeclinic.agent.model.customer.CustomerSurveyDefinitionPageModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormModel;
+import com.codeclinic.agent.model.lead.LeadSubmitFormModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.gson.Gson;
@@ -53,7 +53,6 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
     List<CustomerSurveyDefinitionPageModel> surveyPagesList = new ArrayList<>();
     Map<Integer, List<CustomerQuestionsListModel>> questionList = new HashMap<>();
-
 
     Map<Integer, Map<Integer, String>> surveyQuestions = new HashMap<>();
     Map<Integer, String> answeredQuestions = new HashMap<>();
@@ -97,14 +96,15 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 binding.llQuestions.setVisibility(View.VISIBLE);
                 binding.linearUserDetail.setVisibility(View.GONE);
             } else {
+
                 if (questionPage > 0) {
                     questionPage--;
-                    updatePage();
                 } else if (surveyPage > 0) {
                     surveyPage--;
                     questionPage = surveyPagesList.get(surveyPage).getQuestions().size() - 1;
-                    updatePage();
                 }
+
+                updatePage();
             }
         });
 
@@ -119,7 +119,6 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 } else if (surveyPagesList.size() > (surveyPage + 1)) {
 
                     addAnswers();
-
                     surveyQuestions.put(surveyPage, answeredQuestions);
                     Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
                     answeredQuestions = new HashMap<>();
@@ -158,12 +157,12 @@ public class CreateCustomerActivity extends AppCompatActivity {
     }
 
     private void getSurveyForm() {
-        disposable.add(localDatabase.getDAO().getCustomerSurveyFormList()
+        disposable.add(localDatabase.getDAO().getCustomerSurveyForm()
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(list -> {
+                .subscribe(form -> {
 
-                            surveyPagesList = list;
+                            surveyPagesList = form.getSurveyDefinitionPages();
                             for (int i = 0; i < surveyPagesList.size(); i++) {
                                 questionList.put(i, surveyPagesList.get(i).getQuestions());
                             }
@@ -220,9 +219,9 @@ public class CreateCustomerActivity extends AppCompatActivity {
             jsonObject.put("firstName", binding.edtFirstName.getText().toString());
             jsonObject.put("lastName", binding.edtLastName.getText().toString());
             jsonObject.put("middleName", binding.edtMiddleName.getText().toString());
-            jsonObject.put("staffId", sessionManager.getUserCredentials().get(SessionManager.UserID));
+            jsonObject.put("staffId", sessionManager.getUserDetails().get(SessionManager.UserID));
             jsonObject.put("status", "COMPLETED");
-            jsonObject.put("surveyName", "Customer Registration Form");
+            jsonObject.put("surveyName", "Retail Simulation 2");
 
             JSONArray jsonArrayPages = new JSONArray();
             JSONObject jsonObject1 = new JSONObject();
@@ -244,15 +243,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
                     object.put("responseText", value);
                     jsonArray.put(object);
                 }
-                if (i == 0) {
-                    jsonObject1.put("businessData", jsonArray);
-                } else if (i == 1) {
-                    jsonObject1.put("customerBiodata", jsonArray);
-                } else if (i == 2) {
-                    jsonObject1.put("supplierData", jsonArray);
-                } else {
-                    jsonObject1.put("socialData", jsonArray);
-                }
+
+                jsonObject1.put(surveyPagesList.get(i).getPageName(), jsonArray);
 
             }
 
@@ -265,13 +257,13 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
         Log.i("formReq", jsonObject.toString());
 
-        disposable.add(RestClass.getClient().CUSTOMER_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
+        disposable.add(RestClass.getClient().LEAD_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
                 , jsonObject.toString())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<CustomerSubmitFormModel>() {
+                .subscribeWith(new DisposableSingleObserver<LeadSubmitFormModel>() {
                     @Override
-                    public void onSuccess(@NonNull CustomerSubmitFormModel response) {
+                    public void onSuccess(@NonNull LeadSubmitFormModel response) {
                         binding.loadingView.loader.setVisibility(View.GONE);
                         if (response.getResponseCode() == 0) {
                             finish();
@@ -319,6 +311,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
                         binding.edtAnswer.setText(data.get(questionPage));
                     }
                 }
+            } else if (answeredQuestions.containsKey(questionPage)) {
+                binding.edtAnswer.setText(answeredQuestions.get(questionPage));
             }
 
         } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("textarea")) {
@@ -339,6 +333,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
                         binding.edtAnswer.setText(data.get(questionPage));
                     }
                 }
+            } else if (answeredQuestions.containsKey(questionPage)) {
+                binding.edtAnswer.setText(answeredQuestions.get(questionPage));
             }
 
         } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("number")) {
@@ -359,6 +355,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
                         binding.edtAnswer.setText(data.get(questionPage));
                     }
                 }
+            } else if (answeredQuestions.containsKey(questionPage)) {
+                binding.edtAnswer.setText(answeredQuestions.get(questionPage));
             }
 
         } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("checkbox")) {
@@ -397,6 +395,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
                         binding.tvDate.setText(data.get(questionPage));
                     }
                 }
+            } else if (answeredQuestions.containsKey(questionPage)) {
+                binding.edtAnswer.setText(answeredQuestions.get(questionPage));
             }
         }
     }
@@ -424,6 +424,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
             Log.i("answered", binding.edtAnswer.getText().toString() + "");
             answeredQuestions.put(questionPage, binding.edtAnswer.getText().toString());
         }
+
+
     }
 
     private boolean validateAnswer() {

@@ -47,7 +47,7 @@ public interface API {
 
     //Login API
     @Headers("Content-Type: application/json")
-    @POST("customer/customerState/registerCustomer")
+    @POST("customer/customerState/registerLeadCustomer")
     Single<LeadSubmitFormModel> LEAD_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
 
 }

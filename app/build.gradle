@@ -87,4 +87,9 @@ dependencies {
     implementation "androidx.work:work-runtime:$work_version"
     // optional - RxJava2 support
     implementation "androidx.work:work-rxjava2:$work_version"
+
+    implementation 'com.riyagayasen.android:easyaccordion:1.0.3'
+    implementation 'it.sysdata.mobile:fancyaccordionview:1.0.1'
+    implementation "com.github.skydoves:expandablelayout:1.0.6"
+
 }

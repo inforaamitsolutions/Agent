@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 public class UserRealm {
     @SerializedName("dateTimeCreated")
     @Expose
-    private Integer dateTimeCreated;
+    private long dateTimeCreated;
     @SerializedName("realmId")
     @Expose
     private String realmId;
@@ -17,11 +17,11 @@ public class UserRealm {
     @Expose
     private String realmClientSecret;
 
-    public Integer getDateTimeCreated() {
+    public long getDateTimeCreated() {
         return dateTimeCreated;
     }
 
-    public void setDateTimeCreated(Integer dateTimeCreated) {
+    public void setDateTimeCreated(long dateTimeCreated) {
         this.dateTimeCreated = dateTimeCreated;
     }
 

@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 public class UserDetailsModel {
     @SerializedName("dateTimeCreated")
     @Expose
-    private Integer dateTimeCreated;
+    private long dateTimeCreated;
     @SerializedName("id")
     @Expose
     private Integer id;
@@ -36,7 +36,7 @@ public class UserDetailsModel {
     private String phoneNumber;
     @SerializedName("credentialsExpiryDate")
     @Expose
-    private Integer credentialsExpiryDate;
+    private long credentialsExpiryDate;
     @SerializedName("status")
     @Expose
     private Integer status;
@@ -48,7 +48,7 @@ public class UserDetailsModel {
     private Boolean accountLocked;
     @SerializedName("lastLogin")
     @Expose
-    private Integer lastLogin;
+    private long lastLogin;
     @SerializedName("correlator")
     @Expose
     private String correlator;
@@ -59,11 +59,11 @@ public class UserDetailsModel {
     @Expose
     private Boolean staff;
 
-    public Integer getDateTimeCreated() {
+    public long getDateTimeCreated() {
         return dateTimeCreated;
     }
 
-    public void setDateTimeCreated(Integer dateTimeCreated) {
+    public void setDateTimeCreated(long dateTimeCreated) {
         this.dateTimeCreated = dateTimeCreated;
     }
 
@@ -139,11 +139,11 @@ public class UserDetailsModel {
         this.phoneNumber = phoneNumber;
     }
 
-    public Integer getCredentialsExpiryDate() {
+    public long getCredentialsExpiryDate() {
         return credentialsExpiryDate;
     }
 
-    public void setCredentialsExpiryDate(Integer credentialsExpiryDate) {
+    public void setCredentialsExpiryDate(long credentialsExpiryDate) {
         this.credentialsExpiryDate = credentialsExpiryDate;
     }
 
@@ -171,11 +171,11 @@ public class UserDetailsModel {
         this.accountLocked = accountLocked;
     }
 
-    public Integer getLastLogin() {
+    public long getLastLogin() {
         return lastLogin;
     }
 
-    public void setLastLogin(Integer lastLogin) {
+    public void setLastLogin(long lastLogin) {
         this.lastLogin = lastLogin;
     }
 

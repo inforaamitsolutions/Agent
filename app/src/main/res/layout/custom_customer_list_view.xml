@@ -1,120 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
-
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    app:cardCornerRadius="5dp"
-    android:layout_margin="10sp"
-    app:cardBackgroundColor="@color/white"
-    android:layout_height="wrap_content">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <LinearLayout
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15sp"
-            android:layout_marginTop="10sp"
-            android:layout_marginBottom="10sp"
-            android:orientation="horizontal"
-            android:weightSum="2">
+            android:layout_margin="10sp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Ephantus Githinji"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Tembo Tamu Wines &amp; Spirits"
-                    android:textSize="10dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/imgLocation"
-                        android:layout_width="11dp"
-
-                        android:layout_height="14dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_location_black" />
-
-                    <TextView
-                        android:id="@+id/txtLocation"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-
-                        android:layout_marginLeft="5dp"
-                        android:text="Donholm"
-                        android:textSize="12dp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="10dp"
-                android:layout_weight="1"
+                android:layout_marginLeft="15sp"
+                android:layout_marginTop="10sp"
+                android:layout_marginBottom="10sp"
                 android:orientation="horizontal"
                 android:weightSum="2">
 
-                <TextView
-                    android:id="@+id/txtAmount"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_black_circle"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="Never Borrowed"
-                    android:textColor="@color/white"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Ephantus Githinji"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Tembo Tamu Wines &amp; Spirits"
+                        android:textSize="10dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/imgLocation"
+                            android:layout_width="11dp"
+
+                            android:layout_height="14dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_location_black" />
+
+                        <TextView
+                            android:id="@+id/txtLocation"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginLeft="5dp"
+                            android:text="Donholm"
+                            android:textSize="12dp" />
+                    </LinearLayout>
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
                     android:layout_weight="1"
-                    android:gravity="center">
+                    android:orientation="horizontal"
+                    android:weightSum="2">
 
-                    <ImageView
-                        android:id="@+id/imgArrow"
-                        android:layout_width="20dp"
-                        android:layout_height="21dp"
+                    <TextView
+                        android:id="@+id/txtAmount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_black_circle"
+                        android:gravity="center"
+                        android:padding="5dp"
+                        android:text="Never Borrowed"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
 
-                        android:src="@drawable/arrow_right" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:id="@+id/imgArrow"
+                            android:layout_width="20dp"
+                            android:layout_height="21dp"
+                            android:layout_gravity="center"
+
+                            android:src="@drawable/arrow_right" />
+                    </LinearLayout>
+
                 </LinearLayout>
-
             </LinearLayout>
-        </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
 
         <View
             android:id="@+id/view"
             android:layout_width="match_parent"
             android:layout_height="120dp"
             android:visibility="gone" />
+
     </LinearLayout>
-</androidx.cardview.widget.CardView>
 </layout>

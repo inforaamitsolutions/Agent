@@ -22,6 +22,7 @@ public class SessionManager {
     /*User Details*/
     public static final String UserID = "userId";
     public static final String UserName = "userName";
+    public static final String UserEmail = "userEmail";
     public static final String FirstName = "firstName";
     public static final String LastName = "lastName";
     public static final String OtherName = "OtherName";
@@ -115,8 +116,9 @@ public class SessionManager {
         return user;
     }
 
-    public void setUserCredentials(String user_id, String user_name, String first_name, String last_name, String other_name, String phone_no) {
+    public void setUserCredentials(String user_id, String user_email, String user_name, String first_name, String last_name, String other_name, String phone_no) {
         editor.putString(UserID, user_id);
+        editor.putString(UserEmail, user_email);
         editor.putString(UserName, user_name);
         editor.putString(FirstName, first_name);
         editor.putString(LastName, last_name);
@@ -129,6 +131,7 @@ public class SessionManager {
 
         HashMap<String, String> user = new HashMap<>();
         user.put(UserID, pref.getString(UserID, null));
+        user.put(UserEmail, pref.getString(UserEmail, null));
         user.put(UserName, pref.getString(UserName, null));
         user.put(FirstName, pref.getString(FirstName, null));
         user.put(LastName, pref.getString(LastName, null));
