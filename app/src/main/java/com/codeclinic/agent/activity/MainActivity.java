@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         binding.navigationLayout.defaultsLinear.setOnClickListener(view -> {
             binding.drawerLayout.closeDrawers();
             binding.bottomNavigation.setSelectedItemId(R.id.defaults);
-            loadFragment(new LeadFragment());
+            //loadFragment(new LeadFragment());
             binding.navigationLayout.aboutLinear.setBackground(null);
             binding.navigationLayout.homeLinear.setBackground(null);
             binding.navigationLayout.loanLinear.setBackground(null);
@@ -296,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     loadFragment(fragment);
                     return true;
                 case R.id.customers:
-                    binding.navigationLayout.aboutLinear.setBackground(null);
+                  /*  binding.navigationLayout.aboutLinear.setBackground(null);
                     binding.navigationLayout.homeLinear.setBackground(null);
                     binding.navigationLayout.loanLinear.setBackground(null);
                     binding.navigationLayout.defaultsLinear.setBackground(null);
@@ -304,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     binding.navigationLayout.customerExpandLayout.setBackground(ContextCompat.getDrawable(this, R.drawable.button_bg));
                     binding.layoutHeader.toolbar.setVisibility(View.GONE);
                     fragment = new CustomerFragment();
-                    loadFragment(fragment);
+                    //loadFragment(fragment);*/
                     return true;
             }
 
