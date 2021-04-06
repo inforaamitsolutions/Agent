@@ -15,9 +15,9 @@ import androidx.databinding.DataBindingUtil;
 import com.codeclinic.agent.R;
 import com.codeclinic.agent.databinding.ActivityCreateCustomerBinding;
 import com.codeclinic.agent.model.customer.CustomerQuestionsListModel;
+import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
 import com.codeclinic.agent.model.customer.CustomerSurveyDefinitionPageModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormModel;
-import com.codeclinic.agent.model.lead.LeadSubmitFormModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.gson.Gson;
@@ -257,15 +257,15 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
         Log.i("formReq", jsonObject.toString());
 
-        disposable.add(RestClass.getClient().LEAD_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
+        disposable.add(RestClass.getClient().CUSTOMER_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
                 , jsonObject.toString())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<LeadSubmitFormModel>() {
+                .subscribeWith(new DisposableSingleObserver<CustomerSubmitFormModel>() {
                     @Override
-                    public void onSuccess(@NonNull LeadSubmitFormModel response) {
+                    public void onSuccess(@NonNull CustomerSubmitFormModel response) {
                         binding.loadingView.loader.setVisibility(View.GONE);
-                        if (response.getResponseCode() == 0) {
+                        if (response.getHttpStatus().equals("success")) {
                             finish();
                         }
                         Toast.makeText(CreateCustomerActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
