@@ -4,8 +4,13 @@ import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.AndroidViewModel;
 
+import com.codeclinic.agent.fragment.CustomerFragment;
+import com.codeclinic.agent.fragment.HomeFragment;
+import com.codeclinic.agent.fragment.LeadFragment;
+import com.codeclinic.agent.fragment.LoanFragment;
 import com.codeclinic.agent.model.customer.CustomerSurveyDefinitionPageModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormBodyModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormModel;
@@ -24,6 +29,10 @@ import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.codeclinic.agent.database.LocalDatabase.localDatabase;
+import static com.codeclinic.agent.utils.Constants.CUSTOMER_FRAGMENT;
+import static com.codeclinic.agent.utils.Constants.HOME_FRAGMENT;
+import static com.codeclinic.agent.utils.Constants.LEAD_FRAGMENT;
+import static com.codeclinic.agent.utils.Constants.LOAN_FRAGMENT;
 import static com.codeclinic.agent.utils.SessionManager.AccessToken;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
@@ -32,6 +41,11 @@ public class MainViewModel extends AndroidViewModel {
     private final Application application;
 
     private final CompositeDisposable disposable = new CompositeDisposable();
+
+    private final HomeFragment homeFragment = new HomeFragment();
+    private final CustomerFragment customerFragment = new CustomerFragment();
+    private final LeadFragment leadFragment = new LeadFragment();
+    private final LoanFragment loanFragment = new LoanFragment();
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -43,7 +57,7 @@ public class MainViewModel extends AndroidViewModel {
         /*"Customer Registration Form"*/
         disposable.add(RestClass.getClient().FETCH_CUSTOMER_FORM_MODEL_SINGLE(
                 sessionManager.getTokenDetails().get(AccessToken),
-                "Retail Simulation 2")
+                "customer_registration_form")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<FetchCustomerFormModel>() {
@@ -56,7 +70,7 @@ public class MainViewModel extends AndroidViewModel {
                             }
 
                         } else {
-                            Log.i("customerForm", "Server Error " + response.getSuccessStatus());
+                            Log.i("customerForm", "Response Error " + response.getSuccessStatus());
                         }
 
                     }
@@ -107,12 +121,12 @@ public class MainViewModel extends AndroidViewModel {
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {
-                        Log.i("customerSurveyForm", "added to local");
+                        Log.i("customerForm", "added to local");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.i("customerSurveyForm", "Error  ==  " + e.getMessage());
+                        Log.i("customerForm", "Error  ==  " + e.getMessage());
                     }
                 }));
     }
@@ -219,6 +233,24 @@ public class MainViewModel extends AndroidViewModel {
                     }
                 }));
     }*/
+
+
+    /****************************** Manage Fragment Section *********************************************/
+
+    public Fragment getFragment(int fragment) {
+
+        if (fragment == HOME_FRAGMENT) {
+            return homeFragment;
+        } else if (fragment == LOAN_FRAGMENT) {
+            return loanFragment;
+        } else if (fragment == LEAD_FRAGMENT) {
+            return leadFragment;
+        } else if (fragment == CUSTOMER_FRAGMENT) {
+            return customerFragment;
+        }
+        return null;
+    }
+
 
     @Override
     protected void onCleared() {

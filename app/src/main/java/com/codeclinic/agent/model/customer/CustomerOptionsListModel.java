@@ -3,7 +3,9 @@ package com.codeclinic.agent.model.customer;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
+import com.codeclinic.agent.typeConverters.CustomerQuestionToFollowConverter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -41,10 +43,10 @@ public class CustomerOptionsListModel {
     @Expose
     private Boolean active;
 
-    @ColumnInfo(name = "questionToFollow")
     @SerializedName("questionToFollow")
     @Expose
-    private int questionToFollow;
+    @TypeConverters(CustomerQuestionToFollowConverter.class)
+    private CustomerQuestionToFollowModel questionToFollow = null;
 
     public long getMainId() {
         return mainId;
@@ -94,11 +96,11 @@ public class CustomerOptionsListModel {
         this.active = active;
     }
 
-    public int getQuestionToFollow() {
+    public CustomerQuestionToFollowModel getQuestionToFollow() {
         return questionToFollow;
     }
 
-    public void setQuestionToFollow(int questionToFollow) {
+    public void setQuestionToFollow(CustomerQuestionToFollowModel questionToFollow) {
         this.questionToFollow = questionToFollow;
     }
 

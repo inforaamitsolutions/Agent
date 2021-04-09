@@ -22,16 +22,54 @@
             android:layout_height="match_parent">
 
 
-        <include
-            android:id="@+id/layoutHeader"
-            layout="@layout/toolbar"/>
-        <FrameLayout
-            android:layout_below="@+id/layoutHeader"
-            android:id="@+id/frame_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            <include
+                android:id="@+id/layoutHeader"
+                layout="@layout/toolbar" />
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.viewpager.widget.ViewPager
+                    android:id="@+id/viewpager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@+id/tabLayout" />
+
+
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/tabLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_alignParentBottom="true"
+                    android:elevation="5dp"
+                    app:tabGravity="fill"
+                    app:tabIndicatorHeight="0dp"
+                    app:tabMode="fixed">
+
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hapticFeedbackEnabled="true" />
+
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hapticFeedbackEnabled="true" />
+
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hapticFeedbackEnabled="true" />
+
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hapticFeedbackEnabled="true" />
+
+                </com.google.android.material.tabs.TabLayout>
+
+            </RelativeLayout>
 
         </LinearLayout>
         <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -39,6 +77,7 @@
             android:background="@color/white"
             android:id="@+id/bottomNavigation"
             app:menu="@menu/bottom_menu"
+            android:visibility="gone"
             app:labelVisibilityMode="labeled"
             android:layout_alignParentBottom="true"
             android:layout_height="wrap_content"/>

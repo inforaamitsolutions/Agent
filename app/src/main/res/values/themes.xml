@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.Agent" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#FF941E</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">@color/white</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
@@ -17,6 +17,7 @@
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
         <item name="android:fontFamily">@font/montserrat_regular</item>
     </style>
+
     <style name="DialogThemeloader" parent="@android:style/Theme.Dialog">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">false</item>
@@ -26,6 +27,18 @@
         <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:backgroundDimEnabled">true</item>
+
+    </style>
+
+    <style name="TransparentTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/montserrat_regular</item>
+
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowFullscreen">true</item>
 
     </style>
 </resources>

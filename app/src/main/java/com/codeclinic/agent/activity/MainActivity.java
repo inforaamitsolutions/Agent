@@ -3,44 +3,48 @@ package com.codeclinic.agent.activity;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.codeclinic.agent.MainViewModel;
 import com.codeclinic.agent.R;
+import com.codeclinic.agent.adapter.ViewPagerAdapter;
 import com.codeclinic.agent.databinding.ActivityMainBinding;
-import com.codeclinic.agent.fragment.CustomerFragment;
-import com.codeclinic.agent.fragment.HomeFragment;
-import com.codeclinic.agent.fragment.LeadFragment;
-import com.codeclinic.agent.fragment.LoanFragment;
 import com.codeclinic.agent.utils.Connection_Detector;
 import com.codeclinic.agent.utils.SessionManager;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.tabs.TabLayout;
 
+import static com.codeclinic.agent.utils.Constants.CUSTOMER_FRAGMENT;
+import static com.codeclinic.agent.utils.Constants.HOME_FRAGMENT;
+import static com.codeclinic.agent.utils.Constants.LEAD_FRAGMENT;
+import static com.codeclinic.agent.utils.Constants.LOAN_FRAGMENT;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
-public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
     ActivityMainBinding binding;
-    HomeFragment homeFragment;
-    LoanFragment loanFragment;
-    LeadFragment leadFragment;
-    CustomerFragment customerFragment;
+
     MainViewModel viewModel;
+
+    private final String[] tabTitles = new String[]{"Home", "Loan", "Lead", "Customer"};
+    private final int[] tabImageResId = {R.drawable.ic_home, R.drawable.ic_loan, R.drawable.ic_lead, R.drawable.ic_customer};
+    private ViewPagerAdapter adapter;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -51,8 +55,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         setSupportActionBar(binding.layoutHeader.toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        loadFragment(new HomeFragment());
-        binding.bottomNavigation.setOnNavigationItemSelectedListener(this);
+
 
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
@@ -90,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         binding.navigationLayout.homeLinear.setOnClickListener(view -> {
             binding.drawerLayout.closeDrawers();
             binding.bottomNavigation.setSelectedItemId(R.id.home);
-            loadFragment(new HomeFragment());
             binding.navigationLayout.aboutLinear.setBackground(null);
             binding.navigationLayout.loanLinear.setBackground(null);
             binding.navigationLayout.defaultsLinear.setBackground(null);
@@ -100,22 +102,23 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
             binding.navigationLayout.leadExpandLayout.collapse();
             binding.navigationLayout.customerExpandLayout.collapse();
+            binding.viewpager.setCurrentItem(0);
         });
         binding.navigationLayout.loanLinear.setOnClickListener(view -> {
             binding.drawerLayout.closeDrawers();
             binding.bottomNavigation.setSelectedItemId(R.id.loan);
-            loadFragment(new LoanFragment());
             binding.navigationLayout.aboutLinear.setBackground(null);
             binding.navigationLayout.homeLinear.setBackground(null);
             binding.navigationLayout.defaultsLinear.setBackground(null);
             binding.navigationLayout.leadExpandLayout.setBackground(null);
             binding.navigationLayout.customerExpandLayout.setBackground(null);
             binding.navigationLayout.loanLinear.setBackground(ContextCompat.getDrawable(this, R.drawable.button_bg));
-
-
             binding.navigationLayout.leadExpandLayout.collapse();
             binding.navigationLayout.customerExpandLayout.collapse();
+
+            binding.viewpager.setCurrentItem(1);
         });
+
         binding.navigationLayout.defaultsLinear.setOnClickListener(view -> {
             binding.drawerLayout.closeDrawers();
             binding.bottomNavigation.setSelectedItemId(R.id.defaults);
@@ -129,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
             binding.navigationLayout.leadExpandLayout.collapse();
             binding.navigationLayout.customerExpandLayout.collapse();
+
 
         });
 
@@ -155,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .setOnClickListener(v -> {
                     binding.drawerLayout.closeDrawers();
                     binding.navigationLayout.leadExpandLayout.collapse();
-                    loadFragment(new LeadFragment());
+                    binding.viewpager.setCurrentItem(2);
                 });
         binding.navigationLayout.leadExpandLayout.secondLayout.findViewById(R.id.llLeadRegister)
                 .setOnClickListener(v -> {
@@ -185,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .setOnClickListener(v -> {
                     binding.drawerLayout.closeDrawers();
                     binding.navigationLayout.customerExpandLayout.collapse();
-                    loadFragment(new CustomerFragment());
+                    binding.viewpager.setCurrentItem(3);
                 });
         binding.navigationLayout.customerExpandLayout.secondLayout.findViewById(R.id.llCustomerRegister)
                 .setOnClickListener(v -> {
@@ -244,102 +248,120 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             }
         });
 
+        setupViewPager();
+
     }
-        @Override
-        public boolean onCreateOptionsMenu(Menu menu) {
-            // Inflate the menu; this adds items to the action bar if it is present.
-            getMenuInflater().inflate(R.menu.search_menu, menu);
-            getMenuInflater().inflate(R.menu.notification_menu, menu);
-            getMenuInflater().inflate(R.menu.profile_menu, menu);
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+// Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.search_menu, menu);
+        getMenuInflater().inflate(R.menu.notification_menu, menu);
+        getMenuInflater().inflate(R.menu.profile_menu, menu);
+        return true;
+    }
 
-            return true;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.profile:
+                startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+                return true;
+            case R.id.notification:
+                startActivity(new Intent(MainActivity.this, NotificationActivity.class));
+                return true;
+            case R.id.search:
+                startActivity(new Intent(MainActivity.this, SearchActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Fragment fragment;
-            switch (item.getItemId()) {
+    }
 
-                case R.id.home:
-                    binding.navigationLayout.aboutLinear.setBackground(null);
-                    binding.navigationLayout.loanLinear.setBackground(null);
-                    binding.navigationLayout.defaultsLinear.setBackground(null);
-                    binding.navigationLayout.leadExpandLayout.setBackground(null);
-                    binding.navigationLayout.customerExpandLayout.setBackground(null);
-                    binding.navigationLayout.homeLinear.setBackground(ContextCompat.getDrawable(this, R.drawable.button_bg));
-                    binding.layoutHeader.toolbar.setVisibility(View.VISIBLE);
-                    fragment = new HomeFragment();
-                    loadFragment(fragment);
-
-                    return true;
-                case R.id.loan:
-                    binding.navigationLayout.aboutLinear.setBackground(null);
-                    binding.navigationLayout.homeLinear.setBackground(null);
-                    binding.navigationLayout.defaultsLinear.setBackground(null);
-                    binding.navigationLayout.leadExpandLayout.setBackground(null);
-                    binding.navigationLayout.customerExpandLayout.setBackground(null);
-                    binding.navigationLayout.loanLinear.setBackground(ContextCompat.getDrawable(this, R.drawable.button_bg));
-                    binding.layoutHeader.toolbar.setVisibility(View.GONE);
-                    fragment = new LoanFragment();
-                    loadFragment(fragment);
-
-                    return true;
-                case R.id.defaults:
-                    binding.navigationLayout.aboutLinear.setBackground(null);
-                    binding.navigationLayout.homeLinear.setBackground(null);
-                    binding.navigationLayout.loanLinear.setBackground(null);
-                    binding.navigationLayout.leadExpandLayout.setBackground(null);
-                    binding.navigationLayout.customerExpandLayout.setBackground(null);
-                    binding.navigationLayout.defaultsLinear.setBackground(ContextCompat.getDrawable(this, R.drawable.button_bg));
-                    binding.layoutHeader.toolbar.setVisibility(View.GONE);
-                    fragment = new LeadFragment();
-                    loadFragment(fragment);
-                    return true;
-                case R.id.customers:
-                  /*  binding.navigationLayout.aboutLinear.setBackground(null);
-                    binding.navigationLayout.homeLinear.setBackground(null);
-                    binding.navigationLayout.loanLinear.setBackground(null);
-                    binding.navigationLayout.defaultsLinear.setBackground(null);
-                    binding.navigationLayout.leadExpandLayout.setBackground(null);
-                    binding.navigationLayout.customerExpandLayout.setBackground(ContextCompat.getDrawable(this, R.drawable.button_bg));
-                    binding.layoutHeader.toolbar.setVisibility(View.GONE);
-                    fragment = new CustomerFragment();
-                    //loadFragment(fragment);*/
-                    return true;
+    private void setupViewPager() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        adapter = new ViewPagerAdapter(fragmentManager);
+        adapter.addFrag(viewModel.getFragment(HOME_FRAGMENT));
+        adapter.addFrag(viewModel.getFragment(LOAN_FRAGMENT));
+        adapter.addFrag(viewModel.getFragment(LEAD_FRAGMENT));
+        adapter.addFrag(viewModel.getFragment(CUSTOMER_FRAGMENT));
+        binding.viewpager.setAdapter(adapter);
+        binding.viewpager.setOffscreenPageLimit(4);
+        binding.tabLayout.setupWithViewPager(binding.viewpager);
+        for (int i = 0; i < 4; i++) {
+            TabLayout.Tab tab = binding.tabLayout.getTabAt(i);
+            if (tab != null) {
+                tab.setCustomView(getTabView(i));
             }
-
-            return false;
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            switch (id){
-                case R.id.profile:
-                    startActivity(new Intent(MainActivity.this,ProfileActivity.class));
-                    return true;
-                case R.id.notification:
-                    startActivity(new Intent(MainActivity.this,NotificationActivity.class));
-                    return true;
-                case R.id.search:
-                   startActivity(new Intent(MainActivity.this,SearchActivity.class));
-                    return true;
-                default:
-                    return super.onOptionsItemSelected(item);
+            if (i == 0) {
+                if (tab != null) {
+                    setOnSelectView(tab);
+                }
+            } else {
+                if (tab != null) {
+                    setUnSelectView(tab);
+                }
             }
         }
 
-        private void loadFragment(Fragment fragment) {
-            // load fragment
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.frame_container, fragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
-        }
+        binding.tabLayout.addOnTabSelectedListener(this);
+    }
 
-        @Override
-        public void onBackPressed() {
+    public View getTabView(int position) {
+        View v = LayoutInflater.from(this).inflate(R.layout.custom_tab_view, null);
+        ImageView img = v.findViewById(R.id.icon);
+        TextView tv = v.findViewById(R.id.tv_item);
+        img.setImageResource(tabImageResId[position]);
+        tv.setText(tabTitles[position]);
+        return v;
+    }
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        setOnSelectView(tab);
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+        setUnSelectView(tab);
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
+    }
+
+
+    public void setOnSelectView(TabLayout.Tab tab) {
+        View selected = tab.getCustomView();
+        ImageView icon = selected.findViewById(R.id.icon);
+        TextView tv = selected.findViewById(R.id.tv_item);
+        icon.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+        tv.setTextColor(getResources().getColor(R.color.colorPrimary));
+        if (tab.getPosition() == 0) {
+            binding.layoutHeader.toolbar.setVisibility(View.VISIBLE);
+        } else {
+            binding.layoutHeader.toolbar.setVisibility(View.GONE);
+        }
+    }
+
+    public void setUnSelectView(TabLayout.Tab tab) {
+        View selected = tab.getCustomView();
+        ImageView icon = selected.findViewById(R.id.icon);
+        TextView tv = selected.findViewById(R.id.tv_item);
+        icon.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.grayColor)));
+        tv.setTextColor(getResources().getColor(R.color.grayColor));
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (binding.viewpager.getCurrentItem() == 0) {
             super.onBackPressed();
             finish();
+        } else {
+            binding.viewpager.setCurrentItem(0);
         }
     }
+
+}

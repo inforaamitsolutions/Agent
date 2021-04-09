@@ -129,6 +129,17 @@
                         android:textColor="@color/black"
                         android:textSize="16dp" />
 
+                    <TextView
+                        android:id="@+id/tvQuestionToFollow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:gravity="center"
+                        android:text="Question"
+                        android:textColor="@color/black"
+                        android:textSize="16dp"
+                        android:visibility="gone" />
+
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -148,7 +159,6 @@
                                 android:layout_height="45dp" />
 
                         </RelativeLayout>
-
 
                         <EditText
                             android:id="@+id/edtAnswer"
@@ -179,6 +189,15 @@
                             android:layout_centerHorizontal="true"
                             android:layout_centerVertical="true"
                             android:orientation="vertical" />
+
+                        <ImageView
+                            android:id="@+id/imgUser"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_centerHorizontal="true"
+                            android:background="@drawable/avatar"
+                            android:scaleType="centerCrop"
+                            android:visibility="gone" />
 
                     </RelativeLayout>
 

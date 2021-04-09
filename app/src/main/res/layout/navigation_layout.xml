@@ -68,8 +68,7 @@
                         android:layout_marginLeft="10dp"
                         android:text="Home"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:textSize="16dp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -95,8 +94,7 @@
                         android:layout_marginLeft="10dp"
                         android:text="Loan"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:textSize="16dp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -121,8 +119,7 @@
                         android:layout_marginLeft="10dp"
                         android:text="Defaults"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:textSize="16dp" />
                 </LinearLayout>
 
 
@@ -179,8 +176,7 @@
                         android:layout_marginLeft="10dp"
                         android:text="About"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:textSize="16dp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -205,8 +201,7 @@
                         android:layout_marginLeft="10dp"
                         android:text="Log Out"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:textSize="16dp" />
                 </LinearLayout>
             </LinearLayout>
 
