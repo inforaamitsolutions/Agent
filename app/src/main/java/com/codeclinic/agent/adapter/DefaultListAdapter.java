@@ -28,7 +28,7 @@ public class DefaultListAdapter extends RecyclerView.Adapter<DefaultListAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull DefaultListAdapter.Holder holder, int position) {
-               binding.txtAmount.setText("KES 16,500");
+
     }
 
     @Override

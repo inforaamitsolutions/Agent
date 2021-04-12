@@ -1,9 +1,9 @@
-package com.codeclinic.agent.model.leadList;
+package com.codeclinic.agent.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class LeadCustomerHasRoleListModel {
+public class CustomerHasRoleListModel {
     @SerializedName("active")
     @Expose
     private Boolean active;

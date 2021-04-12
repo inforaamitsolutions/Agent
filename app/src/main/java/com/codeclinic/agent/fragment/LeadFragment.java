@@ -116,12 +116,16 @@ public class LeadFragment extends Fragment {
             }
         });
 
-        viewModel.leadList.observe(getActivity(), list -> {
+        viewModel.lead.observe(getActivity(), lead -> {
             binding.loadingView.loader.setVisibility(View.GONE);
-            if (list != null) {
-                binding.recyclerView.setAdapter(new LeadListAdapter(list, getActivity()));
-                if (binding.searchChildView.llSearchChild.getVisibility() == View.VISIBLE) {
-                    binding.searchChildView.llSearchChild.setVisibility(View.GONE);
+            if (lead != null) {
+                if (lead.getLeadList() != null) {
+                    binding.recyclerView.setAdapter(new LeadListAdapter(lead.getLeadList(), getActivity()));
+                    if (binding.searchChildView.llSearchChild.getVisibility() == View.VISIBLE) {
+                        binding.searchChildView.llSearchChild.setVisibility(View.GONE);
+                    }
+                } else {
+                    Toast.makeText(getActivity(), "Error No Records", Toast.LENGTH_SHORT).show();
                 }
             } else {
                 Toast.makeText(getActivity(), "Error No Records", Toast.LENGTH_SHORT).show();
@@ -140,7 +144,7 @@ public class LeadFragment extends Fragment {
         defaultSearches.add("Customer Name");
         defaultSearches.add("Customer ID");
         defaultSearches.add("Phone Number");
-        defaultSearches.add("Other");
+        defaultSearches.add("Others");
         ArrayAdapter<String> defaultAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_item_view, defaultSearches);
         binding.searchChildView.spDefaultSearch.setAdapter(defaultAdapter);
         binding.searchChildView.spDefaultSearch.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -243,11 +247,13 @@ public class LeadFragment extends Fragment {
                         JSONArray jsonGroupArray = new JSONArray();
                         if (binding.searchChildView.spAssignedTo.getSelectedItemPosition() == 1) {
                             jsonGroupArray.put(viewModel.staffList.getValue().get(binding.searchChildView.spStaff.getSelectedItemPosition()).getId());
-                        } else {
+                            jsonObject.put("groupIds", jsonGroupArray);
+                        } else if (binding.searchChildView.spAssignedTo.getSelectedItemPosition() == 2) {
                             jsonGroupArray.put(viewModel.zoneList.getValue().get(binding.searchChildView.spZone.getSelectedItemPosition()).getId());
                             jsonGroupArray.put(viewModel.marketList.getValue().get(binding.searchChildView.spMarket.getSelectedItemPosition()).getId());
+                            jsonObject.put("groupIds", jsonGroupArray);
                         }
-                        jsonObject.put("groupIds", jsonGroupArray);
+
 
                         Log.i("jsonReq", jsonObject.toString());
                     } catch (JSONException e) {

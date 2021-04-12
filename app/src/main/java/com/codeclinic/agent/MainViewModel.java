@@ -14,17 +14,21 @@ import com.codeclinic.agent.fragment.LeadFragment;
 import com.codeclinic.agent.fragment.LoanFragment;
 import com.codeclinic.agent.model.MarketListModel;
 import com.codeclinic.agent.model.MarketModel;
+import com.codeclinic.agent.model.ProductSegmentListModel;
+import com.codeclinic.agent.model.ProductSegmentModel;
 import com.codeclinic.agent.model.StaffListModel;
 import com.codeclinic.agent.model.StaffModel;
+import com.codeclinic.agent.model.StatusListModel;
+import com.codeclinic.agent.model.StatusModel;
 import com.codeclinic.agent.model.ZoneListModel;
 import com.codeclinic.agent.model.ZonesModel;
 import com.codeclinic.agent.model.customer.CustomerSurveyDefinitionPageModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormBodyModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormModel;
+import com.codeclinic.agent.model.customerList.CustomerModel;
 import com.codeclinic.agent.model.lead.FetchLeadFormBodyModel;
 import com.codeclinic.agent.model.lead.FetchLeadFormModel;
 import com.codeclinic.agent.model.lead.LeadSurveyDefinitionPageModel;
-import com.codeclinic.agent.model.leadList.LeadListModel;
 import com.codeclinic.agent.model.leadList.LeadModel;
 import com.codeclinic.agent.retrofit.RestClass;
 
@@ -93,7 +97,6 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-
     private void addCustomerSurveyForm(FetchCustomerFormBodyModel customerForm) {
         disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
                 .addCustomerSurveyForm(customerForm))
@@ -112,8 +115,9 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public MutableLiveData<List<ZoneListModel>> zoneList = new MutableLiveData<>();
-    public MutableLiveData<List<MarketListModel>> marketList = new MutableLiveData<>();
+    public MutableLiveData<List<StatusListModel>> statusesList = new MutableLiveData<>();
+    public MutableLiveData<List<ProductSegmentListModel>> productSegmentList = new MutableLiveData<>();
+
 
     /****************************** Manage Filters Data Section *********************************************/
 
@@ -139,27 +143,10 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public MutableLiveData<List<LeadListModel>> leadList = new MutableLiveData<>();
-
-    public void getZonesAPI() {
-        disposable.add(RestClass.getClient().FETCH_ZONES_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<ZonesModel>() {
-                    @Override
-                    public void onSuccess(@io.reactivex.annotations.NonNull ZonesModel response) {
-                        if (response.getZoneList() != null) {
-                            zoneList.postValue(response.getZoneList());
-                        }
-                    }
-
-                    @Override
-                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-                        Log.i("zones", "" + e.getMessage());
-                        zoneList.postValue(null);
-                    }
-                }));
-    }
+    public MutableLiveData<List<ZoneListModel>> zoneList = new MutableLiveData<>();
+    public MutableLiveData<List<MarketListModel>> marketList = new MutableLiveData<>();
+    public MutableLiveData<LeadModel> lead = new MutableLiveData<>();
+    public MutableLiveData<CustomerModel> customer = new MutableLiveData<>();
 
     public void callLeadForm() {
         disposable.add(RestClass.getClient().FETCH_LEAD_FORM_MODEL_SINGLE(
@@ -207,6 +194,26 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
+    public void getStatusAPI() {
+        disposable.add(RestClass.getClient().FETCH_STATUSES_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<StatusModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull StatusModel response) {
+                        if (response.getStatusList() != null) {
+                            statusesList.postValue(response.getStatusList());
+                        }
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("status", "" + e.getMessage());
+                        statusesList.postValue(null);
+                    }
+                }));
+    }
+
     public void getMarketsAPI(String parentId) {
         disposable.add(RestClass.getClient().FETCH_MARKETS_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken), parentId)
                 .subscribeOn(Schedulers.io())
@@ -227,6 +234,46 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
+    public void getSegmentsAPI() {
+        disposable.add(RestClass.getClient().FETCH_SEGMENTS_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<ProductSegmentModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull ProductSegmentModel response) {
+                        if (response.getProductSegmentList() != null) {
+                            productSegmentList.postValue(response.getProductSegmentList());
+                        }
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("segment", "" + e.getMessage());
+                        productSegmentList.postValue(null);
+                    }
+                }));
+    }
+
+    public void getZonesAPI() {
+        disposable.add(RestClass.getClient().FETCH_ZONES_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<ZonesModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull ZonesModel response) {
+                        if (response.getZoneList() != null) {
+                            zoneList.postValue(response.getZoneList());
+                        }
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("zones", "" + e.getMessage());
+                        zoneList.postValue(null);
+                    }
+                }));
+    }
+
     public void getLeadsAPI(JSONObject jsonObject) {
         disposable.add(RestClass.getClient().GET_LEAD_LIST_MODEL_SINGLE_CALL(
                 sessionManager.getTokenDetails().get(AccessToken), jsonObject.toString())
@@ -235,15 +282,33 @@ public class MainViewModel extends AndroidViewModel {
                 .subscribeWith(new DisposableSingleObserver<LeadModel>() {
                     @Override
                     public void onSuccess(@io.reactivex.annotations.NonNull LeadModel response) {
-                        if (response.getLeadList() != null) {
-                            leadList.postValue(response.getLeadList());
-                        }
+                        lead.postValue(response);
+
                     }
 
                     @Override
                     public void onError(@io.reactivex.annotations.NonNull Throwable e) {
                         Log.i("leads", "" + e.getMessage());
-                        leadList.postValue(null);
+                        lead.postValue(null);
+                    }
+                }));
+    }
+
+    public void getCustomersAPI(JSONObject jsonObject) {
+        disposable.add(RestClass.getClient().GET_CUSTOMER_LIST_MODEL_SINGLE_CALL(
+                sessionManager.getTokenDetails().get(AccessToken), jsonObject.toString())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<CustomerModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull CustomerModel response) {
+                        customer.postValue(response);
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("customer", "" + e.getMessage());
+                        customer.postValue(null);
                     }
                 }));
     }

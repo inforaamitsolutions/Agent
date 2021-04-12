@@ -1,4 +1,4 @@
-package com.codeclinic.agent.model.leadList;
+package com.codeclinic.agent.model.customerList;
 
 import com.codeclinic.agent.model.CustomerAttributesListModel;
 import com.codeclinic.agent.model.CustomerHasRoleListModel;
@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class LeadListModel {
+public class CustomerListModel {
     @SerializedName("id")
     @Expose
     private Integer id;

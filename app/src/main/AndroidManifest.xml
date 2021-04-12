@@ -10,11 +10,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
-
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
-
 
     <application
         android:name=".utils.App"
@@ -24,6 +22,7 @@
         android:roundIcon="@mipmap/ic_app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Agent">
+        <activity android:name=".activity.LeadInfoActivity"></activity>
         <activity
             android:name=".activity.CreateLeadActivity"
             android:windowSoftInputMode="adjustResize" />
@@ -38,7 +37,9 @@
         <activity android:name=".activity.NotificationActivity" />
         <activity android:name=".activity.AddInteractionActivity" />
         <activity android:name=".activity.CustomerInfoActivity" />
-        <activity android:name=".activity.LoginActivity">
+        <activity
+            android:name=".activity.LoginActivity"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -46,7 +47,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.MainActivity" />
-
         <activity
             android:name=".utils.AccessMediaUtil"
             android:theme="@style/TransparentTheme" />

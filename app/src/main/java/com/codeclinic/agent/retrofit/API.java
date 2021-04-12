@@ -3,12 +3,16 @@ package com.codeclinic.agent.retrofit;
 
 import com.codeclinic.agent.model.LoginModel;
 import com.codeclinic.agent.model.MarketModel;
+import com.codeclinic.agent.model.ProductSegmentModel;
 import com.codeclinic.agent.model.StaffModel;
+import com.codeclinic.agent.model.StatusModel;
 import com.codeclinic.agent.model.ZonesModel;
 import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormModel;
+import com.codeclinic.agent.model.customerList.CustomerModel;
 import com.codeclinic.agent.model.lead.FetchLeadFormModel;
 import com.codeclinic.agent.model.lead.LeadSubmitFormModel;
+import com.codeclinic.agent.model.leadInfo.LeadInfoModel;
 import com.codeclinic.agent.model.leadList.LeadModel;
 import com.codeclinic.agent.model.user.UserModel;
 
@@ -61,6 +65,16 @@ public interface API {
     @GET("baseapi/staffservice/staff/findAllStaff")
     Single<StaffModel> FETCH_STAFF_MODEL_SINGLE(@Header("Authorization") String header);
 
+    //Fetch Statuses List API
+    @Headers("Content-Type: application/json")
+    @GET("baseapi/customerservice/customer-status/getAll")
+    Single<StatusModel> FETCH_STATUSES_MODEL_SINGLE(@Header("Authorization") String header);
+
+    //Fetch Segments List API
+    @Headers("Content-Type: application/json")
+    @GET("baseapi/loanservice/products/getAll")
+    Single<ProductSegmentModel> FETCH_SEGMENTS_MODEL_SINGLE(@Header("Authorization") String header);
+
     //Fetch Zones List API
     @Headers("Content-Type: application/json")
     @GET("customer/customers/getAllParentGroups")
@@ -75,5 +89,17 @@ public interface API {
     @Headers("Content-Type: application/json")
     @POST("customer/customers/getLeadCustomers")
     Single<LeadModel> GET_LEAD_LIST_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
+
+    //Customer List API
+    @Headers("Content-Type: application/json")
+    @POST("customer/customers/getLeadCustomers")
+    Single<CustomerModel> GET_CUSTOMER_LIST_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
+
+
+    //Fetch Lead Info API
+    @Headers("Content-Type: application/json")
+    @GET("customer/customers/getOneCustomer")
+    Single<LeadInfoModel> FETCH_LEAD_INFO_MODEL_SINGLE(@Header("Authorization") String header, @Query("custId") String params);
+
 
 }

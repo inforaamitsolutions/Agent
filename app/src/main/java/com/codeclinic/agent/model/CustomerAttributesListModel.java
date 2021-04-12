@@ -1,9 +1,9 @@
-package com.codeclinic.agent.model.leadList;
+package com.codeclinic.agent.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class LeadAttributesListModel {
+public class CustomerAttributesListModel {
     @SerializedName("name")
     @Expose
     private String name;

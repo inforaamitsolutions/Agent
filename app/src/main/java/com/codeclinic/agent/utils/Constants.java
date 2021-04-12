@@ -13,4 +13,7 @@ public class Constants {
     public static int LOAN_FRAGMENT = 2;
     public static int LEAD_FRAGMENT = 3;
     public static int CUSTOMER_FRAGMENT = 4;
+
+    /*Intent Claus*/
+    public static String CustomerID = "customerId";
 }
