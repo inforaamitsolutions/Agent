@@ -309,6 +309,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
         viewModel.getStaffAPI();
         viewModel.getZonesAPI();
 
+
         binding.tabLayout.addOnTabSelectedListener(this);
     }
 

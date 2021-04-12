@@ -12,6 +12,8 @@ import com.codeclinic.agent.fragment.CustomerFragment;
 import com.codeclinic.agent.fragment.HomeFragment;
 import com.codeclinic.agent.fragment.LeadFragment;
 import com.codeclinic.agent.fragment.LoanFragment;
+import com.codeclinic.agent.model.MarketListModel;
+import com.codeclinic.agent.model.MarketModel;
 import com.codeclinic.agent.model.StaffListModel;
 import com.codeclinic.agent.model.StaffModel;
 import com.codeclinic.agent.model.ZoneListModel;
@@ -110,30 +112,54 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
+    public MutableLiveData<List<ZoneListModel>> zoneList = new MutableLiveData<>();
+    public MutableLiveData<List<MarketListModel>> marketList = new MutableLiveData<>();
+
     /****************************** Manage Filters Data Section *********************************************/
 
     public MutableLiveData<List<StaffListModel>> staffList = new MutableLiveData<>();
 
-    private void addLeadSurveyForm(FetchLeadFormBodyModel entity) {
-        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
-                .addLeadSurveyForm(entity))
+    public void getStaffAPI() {
+        disposable.add(RestClass.getClient().FETCH_STAFF_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
+                .subscribeWith(new DisposableSingleObserver<StaffModel>() {
                     @Override
-                    public void onComplete() {
-                        Log.i("LeadSurveyForm", "added to local");
+                    public void onSuccess(@io.reactivex.annotations.NonNull StaffModel response) {
+                        if (response.getStaffList() != null) {
+                            staffList.postValue(response.getStaffList());
+                        }
                     }
 
                     @Override
-                    public void onError(Throwable e) {
-                        Log.i("LeadSurveyForm", "Error  ==  " + e.getMessage());
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("staff", "" + e.getMessage());
+                        staffList.postValue(null);
                     }
                 }));
     }
 
-    public MutableLiveData<List<ZoneListModel>> zoneList = new MutableLiveData<>();
     public MutableLiveData<List<LeadListModel>> leadList = new MutableLiveData<>();
+
+    public void getZonesAPI() {
+        disposable.add(RestClass.getClient().FETCH_ZONES_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<ZonesModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull ZonesModel response) {
+                        if (response.getZoneList() != null) {
+                            zoneList.postValue(response.getZoneList());
+                        }
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("zones", "" + e.getMessage());
+                        zoneList.postValue(null);
+                    }
+                }));
+    }
 
     public void callLeadForm() {
         disposable.add(RestClass.getClient().FETCH_LEAD_FORM_MODEL_SINGLE(
@@ -163,42 +189,40 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public void getStaffAPI() {
-        disposable.add(RestClass.getClient().FETCH_STAFF_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
+    private void addLeadSurveyForm(FetchLeadFormBodyModel entity) {
+        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                .addLeadSurveyForm(entity))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<StaffModel>() {
+                .subscribeWith(new DisposableCompletableObserver() {
                     @Override
-                    public void onSuccess(@io.reactivex.annotations.NonNull StaffModel response) {
-                        if (response.getStaffList() != null) {
-                            staffList.postValue(response.getStaffList());
-                        }
+                    public void onComplete() {
+                        Log.i("LeadSurveyForm", "added to local");
                     }
 
                     @Override
-                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-                        Log.i("staff", "" + e.getMessage());
-                        staffList.postValue(null);
+                    public void onError(Throwable e) {
+                        Log.i("LeadSurveyForm", "Error  ==  " + e.getMessage());
                     }
                 }));
     }
 
-    public void getZonesAPI() {
-        disposable.add(RestClass.getClient().FETCH_ZONES_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
+    public void getMarketsAPI(String parentId) {
+        disposable.add(RestClass.getClient().FETCH_MARKETS_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken), parentId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<ZonesModel>() {
+                .subscribeWith(new DisposableSingleObserver<MarketModel>() {
                     @Override
-                    public void onSuccess(@io.reactivex.annotations.NonNull ZonesModel response) {
-                        if (response.getZoneList() != null) {
-                            zoneList.postValue(response.getZoneList());
+                    public void onSuccess(@io.reactivex.annotations.NonNull MarketModel response) {
+                        if (response.getMarketList() != null) {
+                            marketList.postValue(response.getMarketList());
                         }
                     }
 
                     @Override
                     public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-                        Log.i("zones", "" + e.getMessage());
-                        zoneList.postValue(null);
+                        Log.i("market", "" + e.getMessage());
+                        marketList.postValue(null);
                     }
                 }));
     }
@@ -223,6 +247,7 @@ public class MainViewModel extends AndroidViewModel {
                     }
                 }));
     }
+
 
     /****************************** Manage Fragment Section *********************************************/
 

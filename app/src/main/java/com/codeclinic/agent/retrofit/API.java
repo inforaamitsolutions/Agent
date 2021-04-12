@@ -2,6 +2,7 @@ package com.codeclinic.agent.retrofit;
 
 
 import com.codeclinic.agent.model.LoginModel;
+import com.codeclinic.agent.model.MarketModel;
 import com.codeclinic.agent.model.StaffModel;
 import com.codeclinic.agent.model.ZonesModel;
 import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
@@ -68,11 +69,11 @@ public interface API {
     //Fetch Markets List API
     @Headers("Content-Type: application/json")
     @GET("customer/customers/getSubGroupsByParent/{parentId}")
-    Single<ZonesModel> FETCH_MARKETS_MODEL_SINGLE(@Header("Authorization") String header, @Path("parentId") String parentId);
+    Single<MarketModel> FETCH_MARKETS_MODEL_SINGLE(@Header("Authorization") String header, @Path("parentId") String parentId);
 
     //Lead List API
     @Headers("Content-Type: application/json")
-    @POST("customer/customerState/registerLeadCustomer")
+    @POST("customer/customers/getLeadCustomers")
     Single<LeadModel> GET_LEAD_LIST_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
 
 }

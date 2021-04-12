@@ -19,7 +19,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="5dp">
+                android:padding="10dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -43,7 +43,7 @@
                         android:layout_marginTop="5dp"
                         android:text="Tembo Tamu Wines &amp; Spirits"
                         android:textColor="@color/black"
-                        android:textSize="12dp" />
+                        android:textSize="14dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -66,7 +66,7 @@
                             android:layout_marginLeft="5dp"
                             android:text="Donholm"
                             android:textColor="@color/black"
-                            android:textSize="12dp" />
+                            android:textSize="14dp" />
                     </LinearLayout>
                 </LinearLayout>
 
