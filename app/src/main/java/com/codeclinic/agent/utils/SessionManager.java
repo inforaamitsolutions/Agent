@@ -71,7 +71,7 @@ public class SessionManager {
 
     }
 
-    public void setLoginCredentials(String userName, String userPassword) {
+  /*  public void setLoginCredentials(String userName, String userPassword) {
         editorCredentials.putString(LOGIN_USERNAME, userName);
         editorCredentials.putString(USER_PASSWORD, userPassword);
         editorCredentials.putBoolean(IS_REMEMBER_ME, true);
@@ -83,7 +83,7 @@ public class SessionManager {
         user.put(LOGIN_USERNAME, prefCredentials.getString(LOGIN_USERNAME, ""));
         user.put(USER_PASSWORD, prefCredentials.getString(USER_PASSWORD, ""));
         return user;
-    }
+    }*/
 
     public void disableRememberMe() {
         editorCredentials.putBoolean(IS_REMEMBER_ME, false);

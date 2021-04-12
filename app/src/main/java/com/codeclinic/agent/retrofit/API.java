@@ -2,10 +2,13 @@ package com.codeclinic.agent.retrofit;
 
 
 import com.codeclinic.agent.model.LoginModel;
+import com.codeclinic.agent.model.StaffModel;
+import com.codeclinic.agent.model.ZonesModel;
 import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormModel;
 import com.codeclinic.agent.model.lead.FetchLeadFormModel;
 import com.codeclinic.agent.model.lead.LeadSubmitFormModel;
+import com.codeclinic.agent.model.leadList.LeadModel;
 import com.codeclinic.agent.model.user.UserModel;
 
 import io.reactivex.Single;
@@ -14,6 +17,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface API {
@@ -49,5 +53,26 @@ public interface API {
     @Headers("Content-Type: application/json")
     @POST("customer/customerState/registerLeadCustomer")
     Single<LeadSubmitFormModel> LEAD_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
+
+
+    //Fetch Staff List API
+    @Headers("Content-Type: application/json")
+    @GET("baseapi/staffservice/staff/findAllStaff")
+    Single<StaffModel> FETCH_STAFF_MODEL_SINGLE(@Header("Authorization") String header);
+
+    //Fetch Zones List API
+    @Headers("Content-Type: application/json")
+    @GET("customer/customers/getAllParentGroups")
+    Single<ZonesModel> FETCH_ZONES_MODEL_SINGLE(@Header("Authorization") String header);
+
+    //Fetch Markets List API
+    @Headers("Content-Type: application/json")
+    @GET("customer/customers/getSubGroupsByParent/{parentId}")
+    Single<ZonesModel> FETCH_MARKETS_MODEL_SINGLE(@Header("Authorization") String header, @Path("parentId") String parentId);
+
+    //Lead List API
+    @Headers("Content-Type: application/json")
+    @POST("customer/customerState/registerLeadCustomer")
+    Single<LeadModel> GET_LEAD_LIST_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
 
 }

@@ -51,7 +51,6 @@ import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 public class CreateCustomerActivity extends AppCompatActivity {
     ActivityCreateCustomerBinding binding;
-    String[] products = {"MobiDrinks"};
 
     CompositeDisposable disposable = new CompositeDisposable();
 
@@ -247,37 +246,6 @@ public class CreateCustomerActivity extends AppCompatActivity {
     private void moveToNextQuestion() {
         if (validateAnswer()) {
             if (surveyPagesList.get(surveyPage).getQuestions().size() > (questionPage + 1)) {
-
-                   /* if ((questionList.get(surveyPage).get(questionPage).getFieldType().equals("select_one")
-                            || questionList.get(surveyPage).get(questionPage).getFieldType().equals("select_multiple"))) {
-
-                        CustomerQuestionToFollowModel questionToFollowList = questionList.get(surveyPage).get(questionPage).getOptions().get(binding.spLabel.getSelectedItemPosition()).getQuestionToFollow();
-
-                        if (questionToFollowList != null) {
-                            if (questionToFollowPage == 0) {
-                                addQuestionToFollowAnswers();
-                                questionToFollowPage++;
-                                updateQuestionToFollowPage();
-                            } else {
-                                addQuestionToFollowAnswers();
-                                optionQuestions.put(questionPage, answeredToFollowQuestions);
-                                Log.i("optionsQuestions", new Gson().toJson(optionQuestions));
-                                answeredToFollowQuestions = new HashMap<>();
-                                questionToFollowPage = 0;
-                                questionPage++;
-                                updatePage();
-                            }
-                        } else {
-                            addAnswers();
-                            questionPage++;
-                            updatePage();
-                        }
-
-                    } else {
-                        addAnswers();
-                        questionPage++;
-                        updatePage();
-                    }*/
 
                 addAnswers();
                 questionPage++;

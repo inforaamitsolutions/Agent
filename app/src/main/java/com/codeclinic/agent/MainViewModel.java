@@ -6,18 +6,27 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.MutableLiveData;
 
 import com.codeclinic.agent.fragment.CustomerFragment;
 import com.codeclinic.agent.fragment.HomeFragment;
 import com.codeclinic.agent.fragment.LeadFragment;
 import com.codeclinic.agent.fragment.LoanFragment;
+import com.codeclinic.agent.model.StaffListModel;
+import com.codeclinic.agent.model.StaffModel;
+import com.codeclinic.agent.model.ZoneListModel;
+import com.codeclinic.agent.model.ZonesModel;
 import com.codeclinic.agent.model.customer.CustomerSurveyDefinitionPageModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormBodyModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormModel;
 import com.codeclinic.agent.model.lead.FetchLeadFormBodyModel;
 import com.codeclinic.agent.model.lead.FetchLeadFormModel;
 import com.codeclinic.agent.model.lead.LeadSurveyDefinitionPageModel;
+import com.codeclinic.agent.model.leadList.LeadListModel;
+import com.codeclinic.agent.model.leadList.LeadModel;
 import com.codeclinic.agent.retrofit.RestClass;
+
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -82,36 +91,6 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-   /* private void getCustomerSurveyForm(List<CustomerSurveyDefinitionPageModel> customers) {
-        disposable.add(localDatabase.getDAO().getCustomerSurveyForm()
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(list -> {
-                            disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
-                                    .removeCustomerForm(list))
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribeWith(new DisposableCompletableObserver() {
-                                        @Override
-                                        public void onComplete() {
-                                            Log.i("customerFormDelete", "removed");
-                                            addCustomerSurveyForm(customers);
-                                        }
-
-                                        @Override
-                                        public void onError(Throwable e) {
-                                            Log.i("customerFormDelete", "Error  ==  " + e.getMessage());
-                                        }
-                                    }));
-
-                        },
-                        throwable -> {
-                            if (throwable.getMessage() != null)
-                                Log.i("leadSurveyForm", "Error == " + throwable.getMessage());
-                        }
-                )
-        );
-    }*/
 
     private void addCustomerSurveyForm(FetchCustomerFormBodyModel customerForm) {
         disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
@@ -131,10 +110,35 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
+    /****************************** Manage Filters Data Section *********************************************/
+
+    public MutableLiveData<List<StaffListModel>> staffList = new MutableLiveData<>();
+
+    private void addLeadSurveyForm(FetchLeadFormBodyModel entity) {
+        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                .addLeadSurveyForm(entity))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.i("LeadSurveyForm", "added to local");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("LeadSurveyForm", "Error  ==  " + e.getMessage());
+                    }
+                }));
+    }
+
+    public MutableLiveData<List<ZoneListModel>> zoneList = new MutableLiveData<>();
+    public MutableLiveData<List<LeadListModel>> leadList = new MutableLiveData<>();
+
     public void callLeadForm() {
         disposable.add(RestClass.getClient().FETCH_LEAD_FORM_MODEL_SINGLE(
                 sessionManager.getTokenDetails().get(AccessToken),
-                "Lead Registration")
+                "lead_registration_form_test")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<FetchLeadFormModel>() {
@@ -159,81 +163,66 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-     /*    private void getLeadSurveyForm(List<LeadSurveyDefinitionPageModel> leads) {
-        disposable.add(localDatabase.getDAO().getLeadSurveyFormList()
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(list -> {
-                            disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
-                                    .removeLeadForm(list))
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribeWith(new DisposableCompletableObserver() {
-                                        @Override
-                                        public void onComplete() {
-                                            Log.i("LeadFormDelete", "removed");
-                                            addLeadSurveyForm(leads);
-                                        }
-
-                                        @Override
-                                        public void onError(Throwable e) {
-                                            Log.i("LeadFormDelete", "Error  ==  " + e.getMessage());
-                                        }
-                                    }));
-
-                        },
-                        throwable -> {
-                            if (throwable.getMessage() != null)
-                                Log.i("leadSurveyForm", "Error == " + throwable.getMessage());
-                        }
-                )
-        );
-    }*/
-
-    private void addLeadSurveyForm(FetchLeadFormBodyModel entity) {
-        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
-                .addLeadSurveyForm(entity))
+    public void getStaffAPI() {
+        disposable.add(RestClass.getClient().FETCH_STAFF_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
+                .subscribeWith(new DisposableSingleObserver<StaffModel>() {
                     @Override
-                    public void onComplete() {
-                        Log.i("LeadSurveyForm", "added to local");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.i("LeadSurveyForm", "Error  ==  " + e.getMessage());
-                    }
-                }));
-    }
-
-   /* public void callUserDetailsAPI() {
-        disposable.add(RestClass.getClient().USER_MODEL_SINGLE_CALL(
-                sessionManager.getTokenDetails().get(AccessToken),
-                sessionManager.getTokenDetails().get(UName))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<UserModel>() {
-                    @Override
-                    public void onSuccess(@io.reactivex.annotations.NonNull UserModel response) {
-                        if (response.getBody() != null) {
-                            UserDetailsModel user = response.getBody().getUser();
-                            Log.i("userDetails", "Data ==> " + new Gson().toJson(user));
-                            sessionManager.setUserCredentials(user.getId() + "", user.getUserName(), user.getFirstName(), user.getLastName(), user.getOtherName(), user.getPhoneNumber() + "");
-                        } else {
-                            Log.i("userDetails", "Server Error " + response.getSuccessStatus());
+                    public void onSuccess(@io.reactivex.annotations.NonNull StaffModel response) {
+                        if (response.getStaffList() != null) {
+                            staffList.postValue(response.getStaffList());
                         }
-
                     }
 
                     @Override
                     public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-                        Log.i("userDetails", "Server Error " + e.getMessage());
+                        Log.i("staff", "" + e.getMessage());
+                        staffList.postValue(null);
                     }
                 }));
-    }*/
+    }
 
+    public void getZonesAPI() {
+        disposable.add(RestClass.getClient().FETCH_ZONES_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<ZonesModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull ZonesModel response) {
+                        if (response.getZoneList() != null) {
+                            zoneList.postValue(response.getZoneList());
+                        }
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("zones", "" + e.getMessage());
+                        zoneList.postValue(null);
+                    }
+                }));
+    }
+
+    public void getLeadsAPI(JSONObject jsonObject) {
+        disposable.add(RestClass.getClient().GET_LEAD_LIST_MODEL_SINGLE_CALL(
+                sessionManager.getTokenDetails().get(AccessToken), jsonObject.toString())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<LeadModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull LeadModel response) {
+                        if (response.getLeadList() != null) {
+                            leadList.postValue(response.getLeadList());
+                        }
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("leads", "" + e.getMessage());
+                        leadList.postValue(null);
+                    }
+                }));
+    }
 
     /****************************** Manage Fragment Section *********************************************/
 

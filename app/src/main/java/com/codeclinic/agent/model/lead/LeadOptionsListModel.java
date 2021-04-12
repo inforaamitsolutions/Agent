@@ -3,7 +3,9 @@ package com.codeclinic.agent.model.lead;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
+import com.codeclinic.agent.typeConverters.LeadQuestionToFollowConverter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -41,10 +43,10 @@ public class LeadOptionsListModel {
     @Expose
     private Boolean active;
 
-    @ColumnInfo(name = "questionToFollow")
     @SerializedName("questionToFollow")
     @Expose
-    private int questionToFollow;
+    @TypeConverters(LeadQuestionToFollowConverter.class)
+    private LeadQuestionToFollowModel questionToFollow = null;
 
     public long getMainId() {
         return mainId;
@@ -94,11 +96,11 @@ public class LeadOptionsListModel {
         this.active = active;
     }
 
-    public int getQuestionToFollow() {
+    public LeadQuestionToFollowModel getQuestionToFollow() {
         return questionToFollow;
     }
 
-    public void setQuestionToFollow(int questionToFollow) {
+    public void setQuestionToFollow(LeadQuestionToFollowModel questionToFollow) {
         this.questionToFollow = questionToFollow;
     }
 
