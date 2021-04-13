@@ -56,8 +56,8 @@ public class InteractionActivity extends AppCompatActivity {
 
 
         binding.btnAddInteraction.setOnClickListener(view -> {
-            startActivity(new Intent(this, AddInteractionActivity.class));
-            finish();
+            startActivity(new Intent(this, AddInteractionActivity.class)
+                    .putExtra(CustomerID, customerID));
         });
 
         callInteractionsHistory();

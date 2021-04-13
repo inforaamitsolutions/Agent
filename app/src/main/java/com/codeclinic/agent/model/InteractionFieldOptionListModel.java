@@ -116,4 +116,8 @@ public class InteractionFieldOptionListModel {
         this._new = _new;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }
