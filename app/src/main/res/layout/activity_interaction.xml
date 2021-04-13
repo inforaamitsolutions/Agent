@@ -29,7 +29,7 @@
                     android:layout_width="90dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Date"
+                    android:text="CustomerID"
                     android:textColor="@color/black"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -49,7 +49,7 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Due Date"
+                    android:text="CategoryName"
                     android:textColor="@color/black"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -60,7 +60,7 @@
                     android:layout_gravity="end"
                     android:layout_weight="1"
                     android:gravity="end"
-                    android:text="Channel"
+                    android:text="Active"
                     android:textColor="@color/black"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -113,6 +113,12 @@
                 android:layout_weight="0.6"
                 android:src="@drawable/ic_add_white" />
         </LinearLayout>
+
+        <include
+            android:id="@+id/loadingView"
+            layout="@layout/loadingview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </RelativeLayout>
 

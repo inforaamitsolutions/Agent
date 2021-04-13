@@ -1,6 +1,7 @@
 package com.codeclinic.agent.retrofit;
 
 
+import com.codeclinic.agent.model.InteractionCategoryModel;
 import com.codeclinic.agent.model.LoginModel;
 import com.codeclinic.agent.model.MarketModel;
 import com.codeclinic.agent.model.ProductSegmentModel;
@@ -13,6 +14,7 @@ import com.codeclinic.agent.model.customerList.CustomerModel;
 import com.codeclinic.agent.model.lead.FetchLeadFormModel;
 import com.codeclinic.agent.model.lead.LeadSubmitFormModel;
 import com.codeclinic.agent.model.leadInfo.LeadInfoModel;
+import com.codeclinic.agent.model.leadInfo.LeadInteractionHistoryModel;
 import com.codeclinic.agent.model.leadList.LeadModel;
 import com.codeclinic.agent.model.user.UserModel;
 
@@ -99,6 +101,16 @@ public interface API {
     @Headers("Content-Type: application/json")
     @GET("customer/customers/getOneCustomer")
     Single<LeadInfoModel> FETCH_LEAD_INFO_MODEL_SINGLE(@Header("Authorization") String header, @Query("custId") String params);
+
+    //Fetch Lead Interaction history API
+    @Headers("Content-Type: application/json")
+    @GET("customer/customers/interactions")
+    Single<LeadInteractionHistoryModel> LEAD_INTERACTION_HISTORY_MODEL_SINGLE(@Header("Authorization") String header, @Query("customerId") String params);
+
+    //Fetch Lead Interaction Categories API
+    @Headers("Content-Type: application/json")
+    @GET("customer/customers/interactions/categories")
+    Single<InteractionCategoryModel> INTERACTION_CATEGORY_MODEL_SINGLE(@Header("Authorization") String header);
 
 
 }

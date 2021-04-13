@@ -1,6 +1,7 @@
 package com.codeclinic.agent.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -44,6 +45,11 @@ public class LeadInfoActivity extends AppCompatActivity {
         customerID = getIntent().getStringExtra(CustomerID);
 
         binding.recyclerViewAttributes.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+
+
+        binding.cardInteraction.setOnClickListener(v -> {
+            startActivity(new Intent(this, InteractionActivity.class));
+        });
 
         callLeadInfoAPI();
 
