@@ -22,7 +22,7 @@
         android:roundIcon="@mipmap/ic_app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Agent">
-        <activity android:name=".activity.LeadInfoActivity"></activity>
+        <activity android:name=".activity.LeadInfoActivity" />
         <activity
             android:name=".activity.CreateLeadActivity"
             android:windowSoftInputMode="adjustResize" />

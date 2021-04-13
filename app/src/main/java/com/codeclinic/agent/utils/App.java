@@ -27,5 +27,6 @@ public class App extends Application {
 
         //create Local Database
         LocalDatabase.createInstance(this);
+
     }
 }

@@ -321,4 +321,20 @@ public class CommonMethods {
             return true;
         }
     }
+
+    public static boolean askLocationPermission(Context context) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                return true;
+            } else {
+                ActivityCompat.requestPermissions((Activity) context,
+                        new String[]{"android.permission.ACCESS_FINE_LOCATION",
+                                "android.permission.ACCESS_COARSE_LOCATION"}, 300);
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
 }

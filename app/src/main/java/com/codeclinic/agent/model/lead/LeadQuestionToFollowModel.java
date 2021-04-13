@@ -3,9 +3,13 @@ package com.codeclinic.agent.model.lead;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
+import com.codeclinic.agent.typeConverters.LeadOptionsGsonTypeConverter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 @Entity(tableName = "LeadQuestionsToFollow")
 public class LeadQuestionToFollowModel {
@@ -68,6 +72,11 @@ public class LeadQuestionToFollowModel {
     @SerializedName("active")
     @Expose
     private Boolean active;
+
+    @SerializedName("options")
+    @Expose
+    @TypeConverters(LeadOptionsGsonTypeConverter.class)
+    private List<LeadOptionsListModel> options = null;
 
 
     public long getMainId() {
@@ -164,5 +173,13 @@ public class LeadQuestionToFollowModel {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public List<LeadOptionsListModel> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<LeadOptionsListModel> options) {
+        this.options = options;
     }
 }

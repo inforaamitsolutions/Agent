@@ -10,16 +10,12 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
-
 import com.codeclinic.agent.Interface.LocationCallBacks;
 
 import java.util.List;
 import java.util.Locale;
 
 public class LocationInfo {
-
-    public static double latitude = 0.00;
-    public static double longitude = 0.00;
 
     public static String locationName;
     public static Location location = null;
@@ -33,8 +29,8 @@ public class LocationInfo {
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 Log.e("location", location.getLatitude() + "");
-               LocationInfo.location = location;
-                if (location != null) {
+                LocationInfo.location = location;
+                if (locationCallBacks != null) {
                     //latLong = new LatLng(((Activity) context).getIntent().getDoubleExtra("LATITUDE", LocationInfo.location.getLatitude()), ((Activity) context).getIntent().getDoubleExtra("LONGITUDE", LocationInfo.location.getLongitude()));
                     locationCallBacks.onLocationChange();
                 }

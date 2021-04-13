@@ -161,6 +161,21 @@
 
                         </RelativeLayout>
 
+                        <RelativeLayout
+                            android:id="@+id/rlQueToFollowSpinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:background="@drawable/button_bg"
+                            android:backgroundTint="#F4F4F4"
+                            android:visibility="gone">
+
+                            <androidx.appcompat.widget.AppCompatSpinner
+                                android:id="@+id/spQueToFollow"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp" />
+
+                        </RelativeLayout>
+
 
                         <EditText
                             android:id="@+id/edtAnswer"

@@ -92,4 +92,7 @@ dependencies {
     implementation 'it.sysdata.mobile:fancyaccordionview:1.0.1'
     implementation "com.github.skydoves:expandablelayout:1.0.6"
 
+    //location
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+
 }
