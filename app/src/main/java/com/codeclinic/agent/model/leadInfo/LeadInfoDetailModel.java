@@ -44,7 +44,7 @@ public class LeadInfoDetailModel {
     private String customerType;
     @SerializedName("documentNumber")
     @Expose
-    private Object documentNumber;
+    private String documentNumber;
     @SerializedName("documentType")
     @Expose
     private String documentType;
@@ -179,11 +179,11 @@ public class LeadInfoDetailModel {
         this.customerType = customerType;
     }
 
-    public Object getDocumentNumber() {
+    public String getDocumentNumber() {
         return documentNumber;
     }
 
-    public void setDocumentNumber(Object documentNumber) {
+    public void setDocumentNumber(String documentNumber) {
         this.documentNumber = documentNumber;
     }
 

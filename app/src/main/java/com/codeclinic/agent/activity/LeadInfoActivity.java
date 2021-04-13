@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codeclinic.agent.R;
+import com.codeclinic.agent.adapter.AttributeListAdapter;
 import com.codeclinic.agent.databinding.ActivityLeadInfoBinding;
 import com.codeclinic.agent.model.leadInfo.LeadInfoModel;
 import com.codeclinic.agent.retrofit.RestClass;
@@ -55,8 +56,23 @@ public class LeadInfoActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<LeadInfoModel>() {
                     @Override
-                    public void onSuccess(@NonNull LeadInfoModel leadInfoModel) {
+                    public void onSuccess(@NonNull LeadInfoModel response) {
                         binding.loadingView.loader.setVisibility(View.GONE);
+                        if (response.getLeadInfo() != null) {
+                            binding.tvCustomerID.setText(customerID);
+                            binding.tvCustomerName.setText(response.getLeadInfo().getFullName());
+                            binding.tvPhone.setText(response.getLeadInfo().getPhoneNumber());
+                            if (response.getLeadInfo().getDocumentNumber() != null) {
+                                binding.tvDocNumber.setText(response.getLeadInfo().getDocumentNumber());
+                            } else {
+                                binding.llDocumentNo.setVisibility(View.GONE);
+                            }
+                            if (response.getLeadInfo().getAttributeValues() != null) {
+                                binding.recyclerViewAttributes.setAdapter(new AttributeListAdapter(response.getLeadInfo().getAttributeValues(), LeadInfoActivity.this));
+                            }
+                        } else {
+                            Toast.makeText(LeadInfoActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override

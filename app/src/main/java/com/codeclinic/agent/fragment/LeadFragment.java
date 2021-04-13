@@ -39,7 +39,8 @@ public class LeadFragment extends Fragment {
 
     FragmentLeadBinding binding;
     private MainViewModel viewModel;
-
+    private final List<String> zoneIds = new ArrayList<>();
+    private final List<String> marketIds = new ArrayList<>();
 
     public LeadFragment() {
         // Required empty public constructor
@@ -98,6 +99,11 @@ public class LeadFragment extends Fragment {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                         Log.i("parentId", "" + list.get(i).getId());
+                        if (zoneIds.contains(list.get(i).getId() + "")) {
+                            zoneIds.remove(list.get(i).getId() + "");
+                        } else {
+                            zoneIds.add(list.get(i).getId() + "");
+                        }
                         viewModel.getMarketsAPI(list.get(i).getParentId() + "");
                     }
 
@@ -113,6 +119,22 @@ public class LeadFragment extends Fragment {
             if (list != null) {
                 ArrayAdapter<MarketListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, list);
                 binding.searchChildView.spMarket.setAdapter(adapter);
+                binding.searchChildView.spMarket.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                        Log.i("marketId", "" + list.get(i).getId());
+                        if (marketIds.contains(list.get(i).getId() + "")) {
+                            marketIds.remove(list.get(i).getId() + "");
+                        } else {
+                            marketIds.add(list.get(i).getId() + "");
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+
+                    }
+                });
             }
         });
 
@@ -249,8 +271,13 @@ public class LeadFragment extends Fragment {
                             jsonGroupArray.put(viewModel.staffList.getValue().get(binding.searchChildView.spStaff.getSelectedItemPosition()).getId());
                             jsonObject.put("groupIds", jsonGroupArray);
                         } else if (binding.searchChildView.spAssignedTo.getSelectedItemPosition() == 2) {
-                            jsonGroupArray.put(viewModel.zoneList.getValue().get(binding.searchChildView.spZone.getSelectedItemPosition()).getId());
-                            jsonGroupArray.put(viewModel.marketList.getValue().get(binding.searchChildView.spMarket.getSelectedItemPosition()).getId());
+                            for (int i = 0; i < zoneIds.size(); i++) {
+                                jsonGroupArray.put(zoneIds.get(i));
+                            }
+                            for (int i = 0; i < marketIds.size(); i++) {
+                                jsonGroupArray.put(marketIds.get(i));
+                            }
+                            //jsonGroupArray.put(viewModel.marketList.getValue().get(binding.searchChildView.spMarket.getSelectedItemPosition()).getId());
                             jsonObject.put("groupIds", jsonGroupArray);
                         }
 

@@ -22,7 +22,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface API {
@@ -83,7 +82,7 @@ public interface API {
     //Fetch Markets List API
     @Headers("Content-Type: application/json")
     @GET("customer/customers/getSubGroupsByParent/{parentId}")
-    Single<MarketModel> FETCH_MARKETS_MODEL_SINGLE(@Header("Authorization") String header, @Path("parentId") String parentId);
+    Single<MarketModel> FETCH_MARKETS_MODEL_SINGLE(@Header("Authorization") String header, @Query("parentId") String params);
 
     //Lead List API
     @Headers("Content-Type: application/json")
