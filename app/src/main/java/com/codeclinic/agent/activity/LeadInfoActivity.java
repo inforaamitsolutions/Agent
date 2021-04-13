@@ -1,5 +1,6 @@
 package com.codeclinic.agent.activity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -55,11 +56,13 @@ public class LeadInfoActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<LeadInfoModel>() {
+                    @SuppressLint("SetTextI18n")
                     @Override
                     public void onSuccess(@NonNull LeadInfoModel response) {
                         binding.loadingView.loader.setVisibility(View.GONE);
                         if (response.getLeadInfo() != null) {
                             binding.tvCustomerID.setText(customerID);
+                            binding.tvStatus.setText("Customer Status - " + response.getLeadInfo().getCustomerStatuses().get(0).getStatusName());
                             binding.tvCustomerName.setText(response.getLeadInfo().getFullName());
                             binding.tvPhone.setText(response.getLeadInfo().getPhoneNumber());
                             if (response.getLeadInfo().getDocumentNumber() != null) {
