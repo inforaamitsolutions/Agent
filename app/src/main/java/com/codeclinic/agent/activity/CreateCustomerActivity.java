@@ -236,7 +236,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(@NonNull CustomerSubmitFormModel response) {
                         binding.loadingView.loader.setVisibility(View.GONE);
-                        if (response.getHttpStatus().equals("success")) {
+                        if (response.getSuccessStatus().equals("success")) {
                             finish();
                         }
                         Toast.makeText(CreateCustomerActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();

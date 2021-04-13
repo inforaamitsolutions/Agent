@@ -239,7 +239,7 @@ public class CreateLeadActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(@NonNull LeadSubmitFormModel response) {
                         binding.loadingView.loader.setVisibility(View.GONE);
-                        if (response.getHttpStatus().equals("success")) {
+                        if (response.getSuccessStatus().equals("success")) {
                             finish();
                         }
                         Toast.makeText(CreateLeadActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
