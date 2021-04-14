@@ -7,6 +7,7 @@ import com.codeclinic.agent.model.MarketModel;
 import com.codeclinic.agent.model.ProductSegmentModel;
 import com.codeclinic.agent.model.StaffModel;
 import com.codeclinic.agent.model.StatusModel;
+import com.codeclinic.agent.model.SubmitInteractionRecordModel;
 import com.codeclinic.agent.model.ZonesModel;
 import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormModel;
@@ -28,6 +29,7 @@ import retrofit2.http.Query;
 
 public interface API {
 
+
     //Login API
     @Headers("Content-Type: application/json")
     @POST("baseapi/userservice/userauthentication/getAccessToken")
@@ -39,6 +41,8 @@ public interface API {
     @GET("baseapi/userservice/manage-users/findUserAndStaffByUserName")
     Single<UserModel> USER_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Query("userName") String params);
 
+
+    /****************************************** Dynamic Lead Customer Forms  *****************************************************/
 
     //Fetch CustomRegistration Form API
     @Headers("Content-Type: application/json")
@@ -60,6 +64,8 @@ public interface API {
     @POST("customer/customerState/registerLeadCustomer")
     Single<LeadSubmitFormModel> LEAD_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
 
+
+    /****************************************** Filter Lead and Customer list *****************************************************/
 
     //Fetch Staff List API
     @Headers("Content-Type: application/json")
@@ -97,6 +103,9 @@ public interface API {
     Single<CustomerModel> GET_CUSTOMER_LIST_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
 
 
+    /****************************************** Lead Info and interactions *****************************************************/
+
+
     //Fetch Lead Info API
     @Headers("Content-Type: application/json")
     @GET("customer/customers/getOneCustomer")
@@ -111,6 +120,20 @@ public interface API {
     @Headers("Content-Type: application/json")
     @GET("customer/customers/interactions/categories")
     Single<InteractionCategoryModel> INTERACTION_CATEGORY_MODEL_SINGLE(@Header("Authorization") String header);
+
+    //Submit Interactions Record API
+    @Headers("Content-Type: application/json")
+    @POST("customer/customers/interactions/create")
+    Single<SubmitInteractionRecordModel> SUBMIT_INTERACTION_RECORD_MODEL_SINGLE(@Header("Authorization") String header, @Body String body);
+
+
+    /****************************************** Customer Info and interactions *****************************************************/
+
+
+    //Fetch CustomerInfo API
+    @Headers("Content-Type: application/json")
+    @GET("customer/customerState")
+    Single<com.codeclinic.agent.model.customerInfo.CustomerModel> FETCH_CUSTOMER_INFO_MODEL_SINGLE(@Header("Authorization") String header, @Query("customerId") String params);
 
 
 }

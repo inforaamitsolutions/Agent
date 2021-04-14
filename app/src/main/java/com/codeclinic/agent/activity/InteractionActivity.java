@@ -59,7 +59,11 @@ public class InteractionActivity extends AppCompatActivity {
             startActivity(new Intent(this, AddInteractionActivity.class)
                     .putExtra(CustomerID, customerID));
         });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         callInteractionsHistory();
     }
 

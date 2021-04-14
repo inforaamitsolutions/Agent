@@ -48,7 +48,8 @@ public class LeadInfoActivity extends AppCompatActivity {
 
 
         binding.cardInteraction.setOnClickListener(v -> {
-            startActivity(new Intent(this, InteractionActivity.class));
+            startActivity(new Intent(this, InteractionActivity.class)
+                    .putExtra(CustomerID, customerID));
         });
 
         callLeadInfoAPI();

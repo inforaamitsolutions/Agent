@@ -1,6 +1,7 @@
 package com.codeclinic.agent.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,10 +11,13 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codeclinic.agent.R;
+import com.codeclinic.agent.activity.ProfileActivity;
 import com.codeclinic.agent.databinding.CustomCustomerListViewBinding;
 import com.codeclinic.agent.model.customerList.CustomerListModel;
 
 import java.util.List;
+
+import static com.codeclinic.agent.utils.Constants.CustomerID;
 
 public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapter.Holder> {
     CustomCustomerListViewBinding binding;
@@ -48,6 +52,11 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
         holder.binding.tvCustomerName.setText(arrayList.get(position).getFullName());
         holder.binding.tvPhoneNumber.setText(arrayList.get(position).getPhoneNumber());
         holder.binding.tvLocation.setText(arrayList.get(position).getCountry());
+
+        holder.binding.tvViewCustomer.setOnClickListener(v -> {
+            context.startActivity(new Intent(context, ProfileActivity.class)
+                    .putExtra(CustomerID, arrayList.get(position).getCustomerId() + ""));
+        });
     }
 
     @Override

@@ -216,8 +216,6 @@ public class CreateLeadActivity extends AppCompatActivity {
                             }
                         }
                     }
-
-
                 }
                 jsonObject1.put(surveyPagesList.get(i).getPageName(), jsonArray);
             }

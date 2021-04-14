@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -24,18 +25,26 @@ import com.codeclinic.agent.databinding.ActivityAddInteractionBinding;
 import com.codeclinic.agent.model.InteractionCategoryFieldListModel;
 import com.codeclinic.agent.model.InteractionCategoryListModel;
 import com.codeclinic.agent.model.InteractionCategoryModel;
+import com.codeclinic.agent.model.SubmitInteractionRecordModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.SessionManager;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
+import static android.text.TextUtils.isEmpty;
 import static com.codeclinic.agent.utils.CommonMethods.datePicker;
 import static com.codeclinic.agent.utils.Constants.CustomerID;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
@@ -51,6 +60,7 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
     InteractionCategoryListModel selectedInteractionCategory;
     List<InteractionCategoryFieldListModel> fieldList = new ArrayList<>();
     ArrayAdapter spAdapter;
+    Map<Integer, String> answeredQuestions = new HashMap<>();
 
     String customerID;
     LinearLayout.LayoutParams layoutParams;
@@ -102,9 +112,15 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
         layoutParams.setMargins(5, 5, 5, 5);
 
         binding.btnNext.setOnClickListener(view -> {
-            if (fieldList.size() > (fieldQuestionPosition + 1)) {
-                fieldQuestionPosition++;
-                updatePage();
+            if (validateAnswer()) {
+                if (fieldList.size() > (fieldQuestionPosition + 1)) {
+                    addAnswers();
+                    fieldQuestionPosition++;
+                    updatePage();
+                } else {
+                    addAnswers();
+                    submitInteraction();
+                }
             }
         });
 
@@ -138,11 +154,10 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
                 }));
     }
 
-
     @SuppressLint("SetTextI18n")
     private void updatePage() {
 
-        binding.tvQuestion.setText(fieldList.get(fieldQuestionPosition).getName());
+        binding.tvQuestion.setText(fieldList.get(fieldQuestionPosition).getLabel());
 
         binding.tvQuestionToFollow.setVisibility(View.GONE);
         binding.rlQueToFollowSpinner.setVisibility(View.GONE);
@@ -222,6 +237,11 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
         } else if (fieldList.get(fieldQuestionPosition).getFieldType().equals("date")
                 || fieldList.get(fieldQuestionPosition).getFieldType().equals("time")) {
 
+            if (fieldList.get(fieldQuestionPosition).getFieldType().equals("date")) {
+                binding.tvDate.setHint("Select Date");
+            } else {
+                binding.tvDate.setHint("Select Time");
+            }
 
             binding.tvDate.setText("");
             binding.tvDate.setVisibility(View.VISIBLE);
@@ -229,6 +249,108 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
         }
     }
 
+    private void addAnswers() {
+        if (fieldList.get(fieldQuestionPosition).getFieldType().equals("select")) {
+
+            Log.i("answered", binding.spLabel.getSelectedItem().toString() + "");
+            answeredQuestions.put(fieldQuestionPosition, binding.spLabel.getSelectedItem().toString());
+
+        } else if (fieldList.get(fieldQuestionPosition).getFieldType().equals("checkbox")) {
+
+            int selectedId = binding.radioGroup.getCheckedRadioButtonId();
+            RadioButton selectedRadioButton = findViewById(selectedId);
+            Log.i("answered", selectedRadioButton.getText().toString() + "");
+            answeredQuestions.put(fieldQuestionPosition, selectedRadioButton.getText().toString());
+
+        } else if (fieldList.get(fieldQuestionPosition).getFieldType().equals("date")
+                || fieldList.get(fieldQuestionPosition).getFieldType().equals("time")) {
+
+            Log.i("answered", binding.tvDate.getText().toString() + "");
+            answeredQuestions.put(fieldQuestionPosition, binding.tvDate.getText().toString());
+
+        } else {
+            Log.i("answered", binding.edtAnswer.getText().toString() + "");
+            answeredQuestions.put(fieldQuestionPosition, binding.edtAnswer.getText().toString());
+        }
+
+
+    }
+
+    private boolean validateAnswer() {
+
+        if (isEmpty(binding.edtAnswer.getText().toString()) && fieldList.get(fieldQuestionPosition).getFieldType().equals("text")) {
+            Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (isEmpty(binding.edtAnswer.getText().toString()) && fieldList.get(fieldQuestionPosition).getFieldType().equals("textField")) {
+            Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (isEmpty(binding.edtAnswer.getText().toString()) && fieldList.get(fieldQuestionPosition).getFieldType().equals("textArea")) {
+            Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (isEmpty(binding.edtAnswer.getText().toString()) && fieldList.get(fieldQuestionPosition).getFieldType().equals("decimal")) {
+            Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (isEmpty(binding.edtAnswer.getText().toString()) && fieldList.get(fieldQuestionPosition).getFieldType().equals("number")) {
+            Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (fieldList.get(fieldQuestionPosition).getFieldType().equals("checkbox") && binding.radioGroup.getCheckedRadioButtonId() == -1) {
+            Toast.makeText(this, "Please select one option", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (fieldList.get(fieldQuestionPosition).getFieldType().equals("date") && isEmpty(binding.tvDate.getText().toString())) {
+            Toast.makeText(this, "Please enter date", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (fieldList.get(fieldQuestionPosition).getFieldType().equals("time") && isEmpty(binding.tvDate.getText().toString())) {
+            Toast.makeText(this, "Please enter time", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    private void submitInteraction() {
+        binding.loadingView.loader.setVisibility(View.VISIBLE);
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("active", true);
+            jsonObject.put("customerId", customerID);
+            jsonObject.put("interactionCategoryName", selectedInteractionCategory.getName());
+            jsonObject.put("interactionTypeName", binding.typeSpinner.getSelectedItem().toString());
+            JSONArray jsonArray = new JSONArray();
+            for (int i = 0; i < fieldList.size(); i++) {
+                JSONObject object = new JSONObject();
+                object.put("field", fieldList.get(i).getName());
+                String value = answeredQuestions.get(i);
+                object.put("value", value);
+                jsonArray.put(object);
+            }
+            jsonObject.put("interactionSubmissions", jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.i("formReq", jsonObject.toString());
+        disposable.add(RestClass.getClient().SUBMIT_INTERACTION_RECORD_MODEL_SINGLE(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
+                , jsonObject.toString())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<SubmitInteractionRecordModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull SubmitInteractionRecordModel response) {
+                        binding.loadingView.loader.setVisibility(View.GONE);
+                        if (response.getSuccessStatus().equals("success")) {
+                            finish();
+                        }
+                        Toast.makeText(AddInteractionActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        binding.loadingView.loader.setVisibility(View.GONE);
+                        Toast.makeText(AddInteractionActivity.this, "Server error", Toast.LENGTH_SHORT).show();
+                    }
+                }));
+    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -257,5 +379,6 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
         binding.recyclerViewCategories.setVisibility(View.GONE);
         binding.llAddInteractions.setVisibility(View.VISIBLE);
         fieldList = selectedInteractionCategory.getInteractionCategoryFieldList();
+        updatePage();
     }
 }

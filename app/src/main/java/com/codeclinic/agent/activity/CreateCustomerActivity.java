@@ -186,17 +186,13 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
                 Map<Integer, String> mapAnswered = surveyQuestions.get(i);
 
-               /* for (int j =0 ; j<surveyPagesList.get(i).getQuestions().size();j++){
-                    JSONObject object = new JSONObject();
-                    object.put("fieldName", surveyPagesList.get(i).getQuestions().get(j).getFieldName());
-                    object.put("responseText", surveyQuestions.get(i).get(j));
-                    jsonArray.put(object);
-                }*/
+
                 for (Map.Entry<Integer, String> entry : mapAnswered.entrySet()) {
                     String value = entry.getValue();
                     JSONObject object = new JSONObject();
                     object.put("fieldName", surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldName());
                     object.put("responseText", value);
+                    jsonArray.put(object);
 
                     if ((surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_one")
                             || surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_multiple"))) {
@@ -204,15 +200,16 @@ public class CreateCustomerActivity extends AppCompatActivity {
                         for (int j = 0; j < options.size(); j++) {
                             if (value.equals(options.get(j).getLabel())) {
                                 if (options.get(j).getQuestionToFollow() != null) {
-                                    object.put("fieldName", options.get(j).getQuestionToFollow().getFieldName());
-                                    object.put("responseText", answeredToFollowQuestions.get(entry.getKey()));
+                                    JSONObject jObject = new JSONObject();
+                                    jObject.put("fieldName", options.get(j).getQuestionToFollow().getFieldName());
+                                    Map<Integer, String> answer = optionQuestions.get(entry.getKey());
+                                    jObject.put("responseText", answer.get(0));
+                                    jsonArray.put(jObject);
                                     break;
                                 }
                             }
                         }
                     }
-
-                    jsonArray.put(object);
                 }
 
                 jsonObject1.put(surveyPagesList.get(i).getPageName(), jsonArray);
