@@ -35,9 +35,9 @@ public class LoanFragment extends Fragment {
         binding.headerLayout.txtHeading.setText("Loans");
 
 
-        binding.loanRecyclerView.setHasFixedSize(true);
-        binding.loanRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.loanRecyclerView.setAdapter(new LoanListAdapter(getContext()));
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.recyclerView.setHasFixedSize(true);
+        binding.recyclerView.setAdapter(new LoanListAdapter(getContext()));
 
 
         return binding.getRoot();

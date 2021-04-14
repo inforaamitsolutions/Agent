@@ -7,4 +7,4 @@
     android:paddingStart="5dp"
     android:text=""
     android:textColor="@color/black"
-    android:textSize="12dp" />
+    android:textSize="14dp" />

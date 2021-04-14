@@ -70,7 +70,7 @@ public class InteractionActivity extends AppCompatActivity {
     private void callInteractionsHistory() {
         binding.loadingView.loader.setVisibility(View.VISIBLE);
         disposable.add(RestClass.getClient().LEAD_INTERACTION_HISTORY_MODEL_SINGLE(sessionManager.getTokenDetails().get(SessionManager.AccessToken),
-                "MFS000125")
+                customerID)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<LeadInteractionHistoryModel>() {

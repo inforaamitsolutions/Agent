@@ -69,6 +69,7 @@
                             android:src="@drawable/ic_call2" />
 
                         <TextView
+                            android:id="@+id/tvCallNumber"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10sp"
@@ -789,7 +790,7 @@
                     </net.cachapa.expandablelayout.ExpandableLayout>
 
                     <androidx.cardview.widget.CardView
-                        android:id="@+id/cardLoan"
+                        android:id="@+id/cardLoanAccounts"
                         android:layout_width="match_parent"
                         android:layout_height="52dp"
                         android:layout_marginTop="20dp"

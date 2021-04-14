@@ -115,39 +115,6 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public MutableLiveData<List<StatusListModel>> statusesList = new MutableLiveData<>();
-    public MutableLiveData<List<ProductSegmentListModel>> productSegmentList = new MutableLiveData<>();
-
-
-    /****************************** Manage Filters Data Section *********************************************/
-
-    public MutableLiveData<List<StaffListModel>> staffList = new MutableLiveData<>();
-
-    public void getStaffAPI() {
-        disposable.add(RestClass.getClient().FETCH_STAFF_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<StaffModel>() {
-                    @Override
-                    public void onSuccess(@io.reactivex.annotations.NonNull StaffModel response) {
-                        if (response.getStaffList() != null) {
-                            staffList.postValue(response.getStaffList());
-                        }
-                    }
-
-                    @Override
-                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-                        Log.i("staff", "" + e.getMessage());
-                        staffList.postValue(null);
-                    }
-                }));
-    }
-
-    public MutableLiveData<List<ZoneListModel>> zoneList = new MutableLiveData<>();
-    public MutableLiveData<List<MarketListModel>> marketList = new MutableLiveData<>();
-    public MutableLiveData<LeadModel> lead = new MutableLiveData<>();
-    public MutableLiveData<CustomerModel> customer = new MutableLiveData<>();
-
     public void callLeadForm() {
         disposable.add(RestClass.getClient().FETCH_LEAD_FORM_MODEL_SINGLE(
                 sessionManager.getTokenDetails().get(AccessToken),
@@ -193,6 +160,17 @@ public class MainViewModel extends AndroidViewModel {
                     }
                 }));
     }
+
+
+    /****************************** Manage Filters Data Section *********************************************/
+
+    public MutableLiveData<List<StaffListModel>> staffList = new MutableLiveData<>();
+    public MutableLiveData<List<StatusListModel>> statusesList = new MutableLiveData<>();
+    public MutableLiveData<List<ProductSegmentListModel>> productSegmentList = new MutableLiveData<>();
+    public MutableLiveData<List<ZoneListModel>> zoneList = new MutableLiveData<>();
+    public MutableLiveData<List<MarketListModel>> marketList = new MutableLiveData<>();
+    public MutableLiveData<LeadModel> lead = new MutableLiveData<>();
+    public MutableLiveData<CustomerModel> customer = new MutableLiveData<>();
 
     public void getStatusAPI() {
         disposable.add(RestClass.getClient().FETCH_STATUSES_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
@@ -309,6 +287,26 @@ public class MainViewModel extends AndroidViewModel {
                     public void onError(@io.reactivex.annotations.NonNull Throwable e) {
                         Log.i("customer", "" + e.getMessage());
                         customer.postValue(null);
+                    }
+                }));
+    }
+
+    public void getStaffAPI() {
+        disposable.add(RestClass.getClient().FETCH_STAFF_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<StaffModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull StaffModel response) {
+                        if (response.getStaffList() != null) {
+                            staffList.postValue(response.getStaffList());
+                        }
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("staff", "" + e.getMessage());
+                        staffList.postValue(null);
                     }
                 }));
     }

@@ -2,12 +2,15 @@ package com.codeclinic.agent.retrofit;
 
 
 import com.codeclinic.agent.model.InteractionCategoryModel;
+import com.codeclinic.agent.model.LoanAccountsModel;
+import com.codeclinic.agent.model.LoanProductsModel;
 import com.codeclinic.agent.model.LoginModel;
 import com.codeclinic.agent.model.MarketModel;
 import com.codeclinic.agent.model.ProductSegmentModel;
 import com.codeclinic.agent.model.StaffModel;
 import com.codeclinic.agent.model.StatusModel;
 import com.codeclinic.agent.model.SubmitInteractionRecordModel;
+import com.codeclinic.agent.model.SupplierModel;
 import com.codeclinic.agent.model.ZonesModel;
 import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormModel;
@@ -25,6 +28,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface API {
@@ -65,7 +69,7 @@ public interface API {
     Single<LeadSubmitFormModel> LEAD_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
 
 
-    /****************************************** Filter Lead and Customer list *****************************************************/
+    /****************************************** Filter Loan , Lead  and Customer list *****************************************************/
 
     //Fetch Staff List API
     @Headers("Content-Type: application/json")
@@ -76,6 +80,16 @@ public interface API {
     @Headers("Content-Type: application/json")
     @GET("baseapi/customerservice/customer-status/getAll")
     Single<StatusModel> FETCH_STATUSES_MODEL_SINGLE(@Header("Authorization") String header);
+
+    //Fetch Product List API
+    @Headers("Content-Type: application/json")
+    @GET("baseapi/loanservice/products/getAll")
+    Single<LoanProductsModel> FETCH_LOAN_PRODUCT_MODEL_SINGLE(@Header("Authorization") String header);
+
+    //Fetch Supplier List API
+    @Headers("Content-Type: application/json")
+    @GET("customer/customers/getCustomersByRole?role=SUPPLIER")
+    Single<SupplierModel> FETCH_SUPPLIER_MODEL_SINGLE(@Header("Authorization") String header);
 
     //Fetch Segments List API
     @Headers("Content-Type: application/json")
@@ -134,6 +148,14 @@ public interface API {
     @Headers("Content-Type: application/json")
     @GET("customer/customerState")
     Single<com.codeclinic.agent.model.customerInfo.CustomerModel> FETCH_CUSTOMER_INFO_MODEL_SINGLE(@Header("Authorization") String header, @Query("customerId") String params);
+
+    //Fetch Customer Loan Accounts API
+    @Headers("Content-Type: application/json")
+    @GET("baseapi/loansummary/findAllAccountsByCustomerId/{CustomerId}")
+    Single<LoanAccountsModel> FETCH_CUSTOMER_LOAN_ACCOUNTS_MODEL_SINGLE(@Header("Authorization") String header,
+                                                                        @Path("CustomerId") String CustomerID,
+                                                                        @Query("startDate") String startDate,
+                                                                        @Query("endDate") String endDateDate);
 
 
 }

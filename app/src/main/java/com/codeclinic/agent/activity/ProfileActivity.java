@@ -46,13 +46,6 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(new Intent(this, InteractionActivity.class));
         });
 
-        binding.cardLoan.setOnClickListener(v -> {
-            if (binding.expandedLoan.isExpanded()) {
-                binding.expandedLoan.collapse();
-            } else {
-                binding.expandedLoan.expand();
-            }
-        });
 
         binding.cardBusiness.setOnClickListener(v -> {
             if (binding.expandedBusiness.isExpanded()) {
@@ -67,6 +60,11 @@ public class ProfileActivity extends AppCompatActivity {
                     .putExtra(CustomerID, customerID));
         });
 
+        binding.cardLoanAccounts.setOnClickListener(v -> {
+            startActivity(new Intent(this, CustomerLoanAccountsActivity.class)
+                    .putExtra(CustomerID, customerID));
+        });
+
 
         callCustomerInfoAPI();
     }
@@ -75,7 +73,7 @@ public class ProfileActivity extends AppCompatActivity {
     private void callCustomerInfoAPI() {
         binding.loadingView.loader.setVisibility(View.VISIBLE);
         disposable.add(RestClass.getClient().FETCH_CUSTOMER_INFO_MODEL_SINGLE(
-                sessionManager.getTokenDetails().get(SessionManager.AccessToken), "MFS000317")
+                sessionManager.getTokenDetails().get(SessionManager.AccessToken), customerID)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<CustomerModel>() {
@@ -87,6 +85,7 @@ public class ProfileActivity extends AppCompatActivity {
                             CustomerBioDataModel customerBioData = response.getCustomerInfo().getCustomerInfoPages().get(0).getCustomerBioData();
                             binding.tvName.setText(customerBioData.getCustomerName() + "");
                             binding.tvPhone.setText(customerBioData.getMobileNumber() + "");
+                            binding.tvCallNumber.setText(customerBioData.getMobileNumber() + "");
                             binding.tvIdNumber.setText(customerBioData.getIdNumber() + "");
                             binding.tvAge.setText(customerBioData.getCustomerAge() + "");
                             binding.tvGender.setText(customerBioData.getGender() + "");
