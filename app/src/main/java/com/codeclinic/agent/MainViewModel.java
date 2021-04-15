@@ -12,6 +12,10 @@ import com.codeclinic.agent.fragment.CustomerFragment;
 import com.codeclinic.agent.fragment.HomeFragment;
 import com.codeclinic.agent.fragment.LeadFragment;
 import com.codeclinic.agent.fragment.LoanFragment;
+import com.codeclinic.agent.model.LoanProductListModel;
+import com.codeclinic.agent.model.LoanProductsModel;
+import com.codeclinic.agent.model.LoanStatusListModel;
+import com.codeclinic.agent.model.LoanStatusModel;
 import com.codeclinic.agent.model.MarketListModel;
 import com.codeclinic.agent.model.MarketModel;
 import com.codeclinic.agent.model.ProductSegmentListModel;
@@ -20,6 +24,10 @@ import com.codeclinic.agent.model.StaffListModel;
 import com.codeclinic.agent.model.StaffModel;
 import com.codeclinic.agent.model.StatusListModel;
 import com.codeclinic.agent.model.StatusModel;
+import com.codeclinic.agent.model.SupplierListModel;
+import com.codeclinic.agent.model.SupplierModel;
+import com.codeclinic.agent.model.TimeLineStatusListModel;
+import com.codeclinic.agent.model.TimeLineStatusModel;
 import com.codeclinic.agent.model.ZoneListModel;
 import com.codeclinic.agent.model.ZonesModel;
 import com.codeclinic.agent.model.customer.CustomerSurveyDefinitionPageModel;
@@ -171,6 +179,10 @@ public class MainViewModel extends AndroidViewModel {
     public MutableLiveData<List<MarketListModel>> marketList = new MutableLiveData<>();
     public MutableLiveData<LeadModel> lead = new MutableLiveData<>();
     public MutableLiveData<CustomerModel> customer = new MutableLiveData<>();
+    public MutableLiveData<List<LoanProductListModel>> productList = new MutableLiveData<>();
+    public MutableLiveData<List<SupplierListModel>> supplierList = new MutableLiveData<>();
+    public MutableLiveData<List<LoanStatusListModel>> loanStatusList = new MutableLiveData<>();
+    public MutableLiveData<List<TimeLineStatusListModel>> timeLineStatusList = new MutableLiveData<>();
 
     public void getStatusAPI() {
         disposable.add(RestClass.getClient().FETCH_STATUSES_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
@@ -307,6 +319,88 @@ public class MainViewModel extends AndroidViewModel {
                     public void onError(@io.reactivex.annotations.NonNull Throwable e) {
                         Log.i("staff", "" + e.getMessage());
                         staffList.postValue(null);
+                    }
+                }));
+    }
+
+    public void getLoanProductAPI() {
+        disposable.add(RestClass.getClient().FETCH_LOAN_PRODUCT_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<LoanProductsModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull LoanProductsModel response) {
+                        if (response.getLoanProductList() != null) {
+                            productList.postValue(response.getLoanProductList());
+                        }
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("loanProducts", "" + e.getMessage());
+                        productList.postValue(null);
+                    }
+                }));
+    }
+
+    public void getSuppliersAPI() {
+        disposable.add(RestClass.getClient().FETCH_SUPPLIER_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<SupplierModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull SupplierModel response) {
+                        if (response.getBody() != null) {
+                            supplierList.postValue(response.getBody());
+                        }
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("suppliers", "" + e.getMessage());
+                        supplierList.postValue(null);
+                    }
+                }));
+    }
+
+    public void getLoanStatusAPI() {
+        disposable.add(RestClass.getClient().FETCH_LOAN_STATUS_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<LoanStatusModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull LoanStatusModel response) {
+                        if (response.getBody() != null) {
+                            loanStatusList.postValue(response.getBody());
+                        }
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("loanStatus", "" + e.getMessage());
+                        loanStatusList.postValue(null);
+                    }
+                }));
+    }
+
+    public void getTimeLoanStatusAPI(String productID) {
+        disposable.add(RestClass.getClient().FETCH_TIMELINE_STATUS_MODEL_SINGLE(
+                sessionManager.getTokenDetails().get(AccessToken)
+                , productID)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<TimeLineStatusModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull TimeLineStatusModel response) {
+                        if (response.getTimeLineStatusList() != null) {
+                            timeLineStatusList.postValue(response.getTimeLineStatusList());
+                        }
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("timeLineStatus", "" + e.getMessage());
+                        timeLineStatusList.postValue(null);
                     }
                 }));
     }

@@ -12,6 +12,7 @@ import com.codeclinic.agent.model.StaffModel;
 import com.codeclinic.agent.model.StatusModel;
 import com.codeclinic.agent.model.SubmitInteractionRecordModel;
 import com.codeclinic.agent.model.SupplierModel;
+import com.codeclinic.agent.model.TimeLineStatusModel;
 import com.codeclinic.agent.model.ZonesModel;
 import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormModel;
@@ -100,7 +101,7 @@ public interface API {
     //Fetch Time Lines Status List API
     @Headers("Content-Type: application/json")
     @GET("baseapi/loanservice/timeline-states/getByProductId")
-    Single<LoanStatusModel> FETCH_TIMELINE_STATUS_MODEL_SINGLE(@Header("Authorization") String header, @Query("productId") String params);
+    Single<TimeLineStatusModel> FETCH_TIMELINE_STATUS_MODEL_SINGLE(@Header("Authorization") String header, @Query("productId") String params);
 
 
     //Fetch Segments List API

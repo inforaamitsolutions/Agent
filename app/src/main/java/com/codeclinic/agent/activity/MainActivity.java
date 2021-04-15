@@ -308,6 +308,9 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
         viewModel.getStaffAPI();
         viewModel.getZonesAPI();
+        viewModel.getLoanProductAPI();
+        viewModel.getSuppliersAPI();
+        viewModel.getLoanStatusAPI();
 
 
         binding.tabLayout.addOnTabSelectedListener(this);
