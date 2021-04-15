@@ -12,6 +12,8 @@ import com.codeclinic.agent.fragment.CustomerFragment;
 import com.codeclinic.agent.fragment.HomeFragment;
 import com.codeclinic.agent.fragment.LeadFragment;
 import com.codeclinic.agent.fragment.LoanFragment;
+import com.codeclinic.agent.model.LoanAccountsByNoModel;
+import com.codeclinic.agent.model.LoanAccountsModel;
 import com.codeclinic.agent.model.LoanProductListModel;
 import com.codeclinic.agent.model.LoanProductsModel;
 import com.codeclinic.agent.model.LoanStatusListModel;
@@ -39,6 +41,7 @@ import com.codeclinic.agent.model.lead.FetchLeadFormModel;
 import com.codeclinic.agent.model.lead.LeadSurveyDefinitionPageModel;
 import com.codeclinic.agent.model.leadList.LeadModel;
 import com.codeclinic.agent.retrofit.RestClass;
+import com.codeclinic.agent.utils.SessionManager;
 
 import org.json.JSONObject;
 
@@ -179,6 +182,8 @@ public class MainViewModel extends AndroidViewModel {
     public MutableLiveData<List<MarketListModel>> marketList = new MutableLiveData<>();
     public MutableLiveData<LeadModel> lead = new MutableLiveData<>();
     public MutableLiveData<CustomerModel> customer = new MutableLiveData<>();
+    public MutableLiveData<LoanAccountsModel> loanAccounts = new MutableLiveData<>();
+    public MutableLiveData<LoanAccountsByNoModel> loanAccountsByNo = new MutableLiveData<>();
     public MutableLiveData<List<LoanProductListModel>> productList = new MutableLiveData<>();
     public MutableLiveData<List<SupplierListModel>> supplierList = new MutableLiveData<>();
     public MutableLiveData<List<LoanStatusListModel>> loanStatusList = new MutableLiveData<>();
@@ -403,6 +408,33 @@ public class MainViewModel extends AndroidViewModel {
                         timeLineStatusList.postValue(null);
                     }
                 }));
+    }
+
+    public void fetchLoanAccountsByCustomerIDAPI(String customerID, String startDate, String endDate) {
+
+        disposable.add(RestClass.getClient().FETCH_CUSTOMER_LOAN_ACCOUNTS_MODEL_SINGLE(
+                sessionManager.getTokenDetails().get(SessionManager.AccessToken),
+                customerID,
+                startDate,
+                endDate)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<LoanAccountsModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull LoanAccountsModel response) {
+                        loanAccounts.postValue(response);
+
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        loanAccounts.postValue(null);
+                    }
+                }));
+    }
+
+    public void fetchLoanAccountsByLoanNoAPI(String loanNumber) {
+
     }
 
 

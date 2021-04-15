@@ -310,6 +310,8 @@ public class LeadFragment extends Fragment {
 
         binding.searchChildView.btnReset.setOnClickListener(v -> {
             binding.searchChildView.edtSearch.getText().clear();
+            binding.searchChildView.tvFromDate.setText("");
+            binding.searchChildView.tvToDate.setText("");
 
             ArrayAdapter<StaffListModel> staffAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, viewModel.staffList.getValue());
             binding.searchChildView.spStaff.setAdapter(staffAdapter);

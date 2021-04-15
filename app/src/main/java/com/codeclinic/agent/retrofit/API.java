@@ -2,6 +2,7 @@ package com.codeclinic.agent.retrofit;
 
 
 import com.codeclinic.agent.model.InteractionCategoryModel;
+import com.codeclinic.agent.model.LoanAccountsByNoModel;
 import com.codeclinic.agent.model.LoanAccountsModel;
 import com.codeclinic.agent.model.LoanProductsModel;
 import com.codeclinic.agent.model.LoanStatusModel;
@@ -128,6 +129,11 @@ public interface API {
     @Headers("Content-Type: application/json")
     @POST("customer/customers/getLeadCustomers")
     Single<CustomerModel> GET_CUSTOMER_LIST_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
+
+    //Loan List By Number List API
+    @Headers("Content-Type: application/json")
+    @GET("baseapi/loansummary/getLoanAccountSummaryByLoanNumber/{loanNo}")
+    Single<LoanAccountsByNoModel> GET_LOAN_ACCOUNT_BY_NUMBER_CALL(@Header("Authorization") String header, @Path("loanNo") String loanNo);
 
 
     /****************************************** Lead Info and interactions *****************************************************/

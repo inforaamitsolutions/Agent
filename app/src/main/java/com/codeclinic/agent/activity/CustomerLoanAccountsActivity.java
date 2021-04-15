@@ -79,7 +79,7 @@ public class CustomerLoanAccountsActivity extends AppCompatActivity {
         Log.i("customerId", customerID + "");
         disposable.add(RestClass.getClient().FETCH_CUSTOMER_LOAN_ACCOUNTS_MODEL_SINGLE(
                 sessionManager.getTokenDetails().get(SessionManager.AccessToken),
-                "MFS000317",
+                customerID,
                 fromDate,
                 toDate)
                 .subscribeOn(Schedulers.io())
