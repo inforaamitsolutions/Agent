@@ -4,6 +4,7 @@ package com.codeclinic.agent.retrofit;
 import com.codeclinic.agent.model.InteractionCategoryModel;
 import com.codeclinic.agent.model.LoanAccountsModel;
 import com.codeclinic.agent.model.LoanProductsModel;
+import com.codeclinic.agent.model.LoanStatusModel;
 import com.codeclinic.agent.model.LoginModel;
 import com.codeclinic.agent.model.MarketModel;
 import com.codeclinic.agent.model.ProductSegmentModel;
@@ -90,6 +91,17 @@ public interface API {
     @Headers("Content-Type: application/json")
     @GET("customer/customers/getCustomersByRole?role=SUPPLIER")
     Single<SupplierModel> FETCH_SUPPLIER_MODEL_SINGLE(@Header("Authorization") String header);
+
+    //Fetch Loan Status List API
+    @Headers("Content-Type: application/json")
+    @GET("baseapi/loanstatus")
+    Single<LoanStatusModel> FETCH_LOAN_STATUS_MODEL_SINGLE(@Header("Authorization") String header);
+
+    //Fetch Time Lines Status List API
+    @Headers("Content-Type: application/json")
+    @GET("baseapi/loanservice/timeline-states/getByProductId")
+    Single<LoanStatusModel> FETCH_TIMELINE_STATUS_MODEL_SINGLE(@Header("Authorization") String header, @Query("productId") String params);
+
 
     //Fetch Segments List API
     @Headers("Content-Type: application/json")
