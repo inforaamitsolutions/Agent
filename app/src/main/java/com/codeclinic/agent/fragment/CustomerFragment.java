@@ -27,6 +27,7 @@ import com.codeclinic.agent.model.StaffListModel;
 import com.codeclinic.agent.model.StatusListModel;
 import com.codeclinic.agent.model.ZoneListModel;
 import com.codeclinic.agent.utils.CommonMethods;
+import com.codeclinic.agent.utils.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
+import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 
 public class CustomerFragment extends Fragment {
@@ -308,6 +310,9 @@ public class CustomerFragment extends Fragment {
                             for (int i = 0; i < marketIds.size(); i++) {
                                 jsonGroupArray.put(marketIds.get(i));
                             }
+                            jsonObject.put("groupIds", jsonGroupArray);
+                        } else {
+                            jsonGroupArray.put(sessionManager.getUserDetails().get(SessionManager.UserID));
                             jsonObject.put("groupIds", jsonGroupArray);
                         }
 

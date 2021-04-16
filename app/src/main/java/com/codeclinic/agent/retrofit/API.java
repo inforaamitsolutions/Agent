@@ -135,6 +135,11 @@ public interface API {
     @GET("baseapi/loansummary/getLoanAccountSummaryByLoanNumber/{loanNo}")
     Single<LoanAccountsByNoModel> GET_LOAN_ACCOUNT_BY_NUMBER_CALL(@Header("Authorization") String header, @Path("loanNo") String loanNo);
 
+    //Loan List By Multiple Filters List API
+    @Headers("Content-Type: application/json")
+    @POST("baseapi/loanservice/loanSummary")
+    Single<LoanAccountsModel> GET_LOAN_ACCOUNT_BY_FILTERS_CALL(@Header("Authorization") String header, @Body String body);
+
 
     /****************************************** Lead Info and interactions *****************************************************/
 

@@ -2,10 +2,10 @@ package com.codeclinic.agent.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 
@@ -15,12 +15,15 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codeclinic.agent.R;
+import com.codeclinic.agent.activity.LoanProfileActivity;
 import com.codeclinic.agent.databinding.CustomLoanAccountListViewBinding;
 import com.codeclinic.agent.model.LoanAccountListModel;
 
 import net.cachapa.expandablelayout.ExpandableLayout;
 
 import java.util.List;
+
+import static com.codeclinic.agent.utils.Constants.LoanNumber;
 
 public class LoanAccountsListAdapter extends RecyclerView.Adapter<LoanAccountsListAdapter.Holder> {
     private final List<LoanAccountListModel> arrayList;
@@ -46,7 +49,10 @@ public class LoanAccountsListAdapter extends RecyclerView.Adapter<LoanAccountsLi
 
     @Override
     public void onBindViewHolder(@NonNull LoanAccountsListAdapter.Holder holder, int position) {
-
+        holder.binding.llMain.setOnClickListener(v -> {
+            context.startActivity(new Intent(context, LoanProfileActivity.class)
+                    .putExtra(LoanNumber, arrayList.get(position).getLoanNumber() + ""));
+        });
     }
 
     @Override
@@ -74,8 +80,8 @@ public class LoanAccountsListAdapter extends RecyclerView.Adapter<LoanAccountsLi
 
             binding.expandedDetail.setInterpolator(new OvershootInterpolator());
             binding.expandedDetail.setOnExpansionUpdateListener(this);
-            binding.llLoanDetails.setOnClickListener((View.OnClickListener) view -> {
-                RecyclerView.ViewHolder holder = (RecyclerView.ViewHolder) recyclerView.findViewHolderForAdapterPosition(selectedItem);
+            binding.llLoanDetails.setOnClickListener(view -> {
+                RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(selectedItem);
                 if (holder != null) {
                     binding.llLoanDetails.setSelected(false);
                     binding.expandedDetail.collapse();

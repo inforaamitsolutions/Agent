@@ -28,6 +28,7 @@ import com.codeclinic.agent.model.SupplierListModel;
 import com.codeclinic.agent.model.TimeLineStatusListModel;
 import com.codeclinic.agent.model.ZoneListModel;
 import com.codeclinic.agent.utils.CommonMethods;
+import com.codeclinic.agent.utils.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
+import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 
 public class LoanFragment extends Fragment {
@@ -77,9 +79,6 @@ public class LoanFragment extends Fragment {
             }
         });
 
-        binding.searchChildView.tvReferenceDate.setOnClickListener(v -> {
-            CommonMethods.datePicker(binding.searchChildView.tvReferenceDate, getActivity());
-        });
 
         binding.searchChildView.tvFromDate.setOnClickListener(v -> {
             CommonMethods.datePicker(binding.searchChildView.tvFromDate, getActivity());
@@ -226,6 +225,7 @@ public class LoanFragment extends Fragment {
         });
 
         viewModel.loanAccounts.observe(getActivity(), account -> {
+            binding.loadingView.loader.setVisibility(View.GONE);
             if (account != null) {
                 if (account.getLoanAccountList() != null) {
                     binding.recyclerView.setAdapter(new LoanAccountsListAdapter(account.getLoanAccountList(), getActivity(), binding.recyclerView));
@@ -237,6 +237,7 @@ public class LoanFragment extends Fragment {
         });
 
         viewModel.loanAccountsByNo.observe(getActivity(), account -> {
+            binding.loadingView.loader.setVisibility(View.GONE);
             if (account != null) {
                 if (account.getLoanAccountsByNoDetail() != null) {
                     if (account.getLoanAccountsByNoDetail().getAccount() != null) {
@@ -251,6 +252,7 @@ public class LoanFragment extends Fragment {
             }
         });
 
+        manageSpinners();
 
         return binding.getRoot();
     }
@@ -288,14 +290,12 @@ public class LoanFragment extends Fragment {
             }
         });
 
-
         List<String> assigned = new ArrayList<>();
         assigned.add("--Select--");
         assigned.add("Staff");
         assigned.add("Zones and Markets");
         ArrayAdapter<String> assignedAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_item_view, assigned);
         binding.searchChildView.spAssignedTo.setAdapter(assignedAdapter);
-
         binding.searchChildView.spAssignedTo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -317,6 +317,13 @@ public class LoanFragment extends Fragment {
             }
         });
 
+        List<String> reference = new ArrayList<>();
+        reference.add("COMMENCEMENT_DATE");
+        reference.add("DUE_DATE");
+        ArrayAdapter<String> referenceAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_item_view, reference);
+        binding.searchChildView.spReferenceDate.setAdapter(referenceAdapter);
+
+
         binding.searchChildView.btnSearch.setOnClickListener(v -> {
             if (binding.searchChildView.spDefaultSearch.getSelectedItemPosition() == 0) {
                 Toast.makeText(getActivity(), "Please select one filter option", Toast.LENGTH_SHORT).show();
@@ -333,9 +340,6 @@ public class LoanFragment extends Fragment {
                     && isEmpty(binding.searchChildView.edtSearch.getText().toString())) {
                 Toast.makeText(getActivity(), "Please enter loan number", Toast.LENGTH_SHORT).show();
             } else if (binding.searchChildView.spDefaultSearch.getSelectedItemPosition() == 3
-                    && isEmpty(binding.searchChildView.tvReferenceDate.getText().toString())) {
-                Toast.makeText(getActivity(), "Please enter reference Date", Toast.LENGTH_SHORT).show();
-            } else if (binding.searchChildView.spDefaultSearch.getSelectedItemPosition() == 3
                     && isEmpty(binding.searchChildView.tvFromDate.getText().toString())) {
                 Toast.makeText(getActivity(), "Please enter from Date", Toast.LENGTH_SHORT).show();
             } else if (binding.searchChildView.spDefaultSearch.getSelectedItemPosition() == 3
@@ -347,7 +351,7 @@ public class LoanFragment extends Fragment {
                     JSONObject jsonObject = new JSONObject();
                     try {
 
-                        jsonObject.put("referenceDate", binding.searchChildView.tvReferenceDate.getText().toString());
+                        jsonObject.put("referenceDate", binding.searchChildView.spReferenceDate.getSelectedItem().toString());
                         jsonObject.put("startDate", binding.searchChildView.tvFromDate.getText().toString());
                         jsonObject.put("endDate", binding.searchChildView.tvToDate.getText().toString());
                         jsonObject.put("productId", viewModel.productList.getValue().get(binding.searchChildView.spLoanProducts.getSelectedItemPosition()).getProductId());
@@ -368,23 +372,27 @@ public class LoanFragment extends Fragment {
                            /* jsonGroupArray.put(viewModel.zoneList.getValue().get(binding.searchChildView.spZone.getSelectedItemPosition()).getId());
                             jsonGroupArray.put(viewModel.marketList.getValue().get(binding.searchChildView.spMarket.getSelectedItemPosition()).getId());*/
                             for (int i = 0; i < zoneIds.size(); i++) {
-                                jsonGroupArray.put(zoneIds.get(i));
+                                jsonGroupArray.put(Integer.parseInt(zoneIds.get(i)));
                             }
                             for (int i = 0; i < marketIds.size(); i++) {
-                                jsonGroupArray.put(marketIds.get(i));
+                                jsonGroupArray.put(Integer.parseInt(marketIds.get(i)));
                             }
                             jsonObject.put("groupIds", jsonGroupArray);
+                        } else {
+                            jsonObject.put("staff", sessionManager.getUserDetails().get(SessionManager.UserID));
                         }
 
 
                         JSONArray jsonTimeLineArray = new JSONArray();
                         for (int i = 0; i < timeLineStatus.size(); i++) {
-                            jsonTimeLineArray.put(timeLineStatus.get(i));
+                            jsonTimeLineArray.put(Integer.parseInt(timeLineStatus.get(i)));
                         }
                         jsonObject.put("timelineStates", jsonTimeLineArray);
 
 
                         Log.i("jsonReq", jsonObject.toString());
+
+                        viewModel.fetchLoanAccountsByFiltersAPI(jsonObject);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -409,7 +417,6 @@ public class LoanFragment extends Fragment {
             binding.searchChildView.edtSearch.getText().clear();
             binding.searchChildView.tvCustomerIdFromDate.setText("");
             binding.searchChildView.tvCustomerIdToDate.setText("");
-            binding.searchChildView.tvReferenceDate.setText("");
             binding.searchChildView.tvFromDate.setText("");
             binding.searchChildView.tvToDate.setText("");
 

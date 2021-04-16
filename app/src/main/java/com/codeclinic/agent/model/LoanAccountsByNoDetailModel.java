@@ -14,22 +14,23 @@ public class LoanAccountsByNoDetailModel {
     private String partnerPhoneNumber;
     @SerializedName("installment")
     @Expose
-    private List<Object> installment = null;
+    private List<InstallmentListModel> installment = null;
     @SerializedName("accountEntries")
     @Expose
-    private List<Object> accountEntries = null;
+    private List<LoanAccountEntryListModel> accountEntries = null;
     @SerializedName("currentStatus")
     @Expose
-    private Object currentStatus;
+    private CurrentLoanStatusModel currentStatus;
     @SerializedName("statuses")
     @Expose
-    private List<Object> statuses = null;
+    private List<CustomerStatusListModel> statuses = null;
     @SerializedName("currentTimelineState")
     @Expose
     private Object currentTimelineState;
     @SerializedName("timelineState")
     @Expose
-    private List<Object> timelineState = null;
+    private List<LoanTimeLineStateListModel> timelineState = null;
+
 
     public LoanAccountListModel getAccount() {
         return account;
@@ -47,35 +48,35 @@ public class LoanAccountsByNoDetailModel {
         this.partnerPhoneNumber = partnerPhoneNumber;
     }
 
-    public List<Object> getInstallment() {
+    public List<InstallmentListModel> getInstallment() {
         return installment;
     }
 
-    public void setInstallment(List<Object> installment) {
+    public void setInstallment(List<InstallmentListModel> installment) {
         this.installment = installment;
     }
 
-    public List<Object> getAccountEntries() {
+    public List<LoanAccountEntryListModel> getAccountEntries() {
         return accountEntries;
     }
 
-    public void setAccountEntries(List<Object> accountEntries) {
+    public void setAccountEntries(List<LoanAccountEntryListModel> accountEntries) {
         this.accountEntries = accountEntries;
     }
 
-    public Object getCurrentStatus() {
+    public CurrentLoanStatusModel getCurrentStatus() {
         return currentStatus;
     }
 
-    public void setCurrentStatus(Object currentStatus) {
+    public void setCurrentStatus(CurrentLoanStatusModel currentStatus) {
         this.currentStatus = currentStatus;
     }
 
-    public List<Object> getStatuses() {
+    public List<CustomerStatusListModel> getStatuses() {
         return statuses;
     }
 
-    public void setStatuses(List<Object> statuses) {
+    public void setStatuses(List<CustomerStatusListModel> statuses) {
         this.statuses = statuses;
     }
 
@@ -87,12 +88,11 @@ public class LoanAccountsByNoDetailModel {
         this.currentTimelineState = currentTimelineState;
     }
 
-    public List<Object> getTimelineState() {
+    public List<LoanTimeLineStateListModel> getTimelineState() {
         return timelineState;
     }
 
-    public void setTimelineState(List<Object> timelineState) {
+    public void setTimelineState(List<LoanTimeLineStateListModel> timelineState) {
         this.timelineState = timelineState;
     }
-
 }

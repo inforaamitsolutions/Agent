@@ -188,10 +188,9 @@ public class CommonMethods {
 
 
                 if (dayOfMonth < 10) {
-                    tv.setText(year + "-" + m + "-" + "0" + dayOfMonth);
+                    tv.setText(year + "-" + (m < 10 ? ("0" + m) : m) + "-" + "0" + dayOfMonth);
                 } else {
-                    tv.setText(m + "/" + dayOfMonth + "/" + year);
-                    tv.setText(year + "-" + m + "-" + dayOfMonth);
+                    tv.setText(year + "-" + (m < 10 ? ("0" + m) : m) + "-" + dayOfMonth);
                 }
 
             }

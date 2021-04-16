@@ -42,6 +42,7 @@ import com.codeclinic.agent.model.lead.LeadSurveyDefinitionPageModel;
 import com.codeclinic.agent.model.leadList.LeadModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.SessionManager;
+import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
@@ -277,6 +278,7 @@ public class MainViewModel extends AndroidViewModel {
                 .subscribeWith(new DisposableSingleObserver<LeadModel>() {
                     @Override
                     public void onSuccess(@io.reactivex.annotations.NonNull LeadModel response) {
+                        Log.i("responseLead", new Gson().toJson(response) + " ");
                         lead.postValue(response);
 
                     }
@@ -297,6 +299,7 @@ public class MainViewModel extends AndroidViewModel {
                 .subscribeWith(new DisposableSingleObserver<CustomerModel>() {
                     @Override
                     public void onSuccess(@io.reactivex.annotations.NonNull CustomerModel response) {
+                        Log.i("responseCustomer", new Gson().toJson(response) + " ");
                         customer.postValue(response);
                     }
 
@@ -422,19 +425,61 @@ public class MainViewModel extends AndroidViewModel {
                 .subscribeWith(new DisposableSingleObserver<LoanAccountsModel>() {
                     @Override
                     public void onSuccess(@io.reactivex.annotations.NonNull LoanAccountsModel response) {
+                        Log.i("responseLoan", new Gson().toJson(response) + " ");
                         loanAccounts.postValue(response);
 
                     }
 
                     @Override
                     public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("loanAccountsByCustomer", " " + e.getMessage());
                         loanAccounts.postValue(null);
                     }
                 }));
     }
 
     public void fetchLoanAccountsByLoanNoAPI(String loanNumber) {
+        disposable.add(RestClass.getClient().GET_LOAN_ACCOUNT_BY_NUMBER_CALL(
+                sessionManager.getTokenDetails().get(SessionManager.AccessToken),
+                loanNumber)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<LoanAccountsByNoModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull LoanAccountsByNoModel response) {
+                        Log.i("responseLoan", new Gson().toJson(response) + " ");
+                        loanAccountsByNo.postValue(response);
 
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("loanAccountsByNo", " " + e.getMessage());
+                        loanAccountsByNo.postValue(null);
+                    }
+                }));
+    }
+
+    public void fetchLoanAccountsByFiltersAPI(JSONObject jsonObject) {
+        disposable.add(RestClass.getClient().GET_LOAN_ACCOUNT_BY_FILTERS_CALL(
+                sessionManager.getTokenDetails().get(SessionManager.AccessToken),
+                jsonObject.toString())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<LoanAccountsModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull LoanAccountsModel response) {
+                        Log.i("responseLoan", new Gson().toJson(response) + " ");
+                        loanAccounts.postValue(response);
+
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("loanAccountsByFilters", " " + e.getMessage());
+                        loanAccounts.postValue(null);
+                    }
+                }));
     }
 
 

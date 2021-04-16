@@ -16,4 +16,5 @@ public class Constants {
 
     /*Intent Claus*/
     public static String CustomerID = "customerId";
+    public static String LoanNumber = "loanNumber";
 }
