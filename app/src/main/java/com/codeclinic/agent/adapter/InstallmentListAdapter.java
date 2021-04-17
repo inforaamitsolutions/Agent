@@ -35,15 +35,15 @@ public class InstallmentListAdapter extends RecyclerView.Adapter<InstallmentList
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull InstallmentListAdapter.Holder holder, int position) {
-       /* holder.binding.tvDueDate.setText(arrayList.get(position).getDueDate() + " ");
+        holder.binding.tvDueDate.setText(arrayList.get(position).getDueDate() + " ");
         holder.binding.tvExpectedAmount.setText(arrayList.get(position).getExpectedTotal() + " ");
         holder.binding.tvPaidAmount.setText(arrayList.get(position).getPaidTotal() + " ");
-        holder.binding.tvStatus.setText(arrayList.get(position).getStatus() + " ");*/
+        holder.binding.tvStatus.setText(arrayList.get(position).getStatus() + " ");
     }
 
     @Override
     public int getItemCount() {
-        return 5;
+        return arrayList.size();
     }
 
     public class Holder extends RecyclerView.ViewHolder {

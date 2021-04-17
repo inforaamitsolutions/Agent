@@ -46,9 +46,8 @@
                     android:id="@+id/llQuestions"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginHorizontal="20dp"
                     android:layout_marginTop="20dp"
-                    android:layout_marginRight="10dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -695,20 +694,26 @@
                     <net.cachapa.expandablelayout.ExpandableLayout
                         android:id="@+id/expandedInstallments"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         app:el_duration="200"
                         app:el_expanded="false">
 
                         <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_marginHorizontal="5dp"
-                            android:layout_marginBottom="10dp">
+                            android:layout_marginBottom="10dp"
+                            app:cardBackgroundColor="@color/bgColor">
 
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/recyclerViewInstallments"
+                            <RelativeLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent" />
+                                android:layout_height="match_parent">
+
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/recyclerViewInstallments"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent" />
+                            </RelativeLayout>
                         </androidx.cardview.widget.CardView>
 
 

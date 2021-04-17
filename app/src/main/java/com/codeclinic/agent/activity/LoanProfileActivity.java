@@ -12,12 +12,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codeclinic.agent.R;
+import com.codeclinic.agent.adapter.InstallmentListAdapter;
 import com.codeclinic.agent.databinding.ActivityLoanProfileBinding;
+import com.codeclinic.agent.model.InstallmentListModel;
 import com.codeclinic.agent.model.LoanAccountListModel;
 import com.codeclinic.agent.model.LoanAccountsByNoModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.gson.Gson;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -38,6 +43,9 @@ public class LoanProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_loan_profile);
 
+
+        binding.imgBack.setOnClickListener(v -> finish());
+
         loanNumber = getIntent().getStringExtra(LoanNumber);
 
         binding.recyclerViewInstallments.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
@@ -51,6 +59,24 @@ public class LoanProfileActivity extends AppCompatActivity {
         binding.recyclerViewTimeLineStatus.setHasFixedSize(true);
 
 
+        binding.cardLoanSummary.setOnClickListener(v -> {
+            binding.expandedInstallments.collapse();
+            if (binding.expandedLoanSummary.isExpanded()) {
+                binding.expandedLoanSummary.collapse();
+            } else {
+                binding.expandedLoanSummary.expand();
+            }
+        });
+
+        binding.cardInstallments.setOnClickListener(v -> {
+            binding.expandedLoanSummary.collapse();
+            if (binding.expandedInstallments.isExpanded()) {
+                binding.expandedInstallments.collapse();
+            } else {
+                binding.expandedInstallments.expand();
+            }
+        });
+
         fetchLoanAccountsByLoanNoAPI();
 
 
@@ -60,7 +86,7 @@ public class LoanProfileActivity extends AppCompatActivity {
         binding.loadingView.loader.setVisibility(View.VISIBLE);
         disposable.add(RestClass.getClient().GET_LOAN_ACCOUNT_BY_NUMBER_CALL(
                 sessionManager.getTokenDetails().get(SessionManager.AccessToken),
-                loanNumber)
+                "2103170001188")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<LoanAccountsByNoModel>() {
@@ -77,7 +103,21 @@ public class LoanProfileActivity extends AppCompatActivity {
                             binding.tvSupplierName.setText(loanAccount.getPartnerId() + "");
                             binding.tvCustomerStatus.setText("Customer Status - " + loanAccount.getStatus());
                             binding.tvCallNumber.setText("" + loanAccount.getCustomerPhoneNumber());
-                            //binding.recyclerViewInstallments.setAdapter();
+
+                            /*loan summary*/
+                            binding.tvLoanNumber.setText(loanNumber + "");
+                            binding.tvAmount.setText(loanAccount.getLoanAmount() + "");
+                            binding.tvInterest.setText(loanAccount.getLoanInterest() + "");
+                            binding.tvCharges.setText(loanAccount.getLoanCharges() + "");
+                            binding.tvPenalties.setText(loanAccount.getLoanPenalty() + "");
+                            binding.tvBalance.setText(loanAccount.getRunningBalance() + "");
+                            binding.tvDueDate.setText(loanAccount.getDueDate() + "");
+                            binding.tvLoanStatus.setText(loanAccount.getStatus() + "");
+
+                            if (response.getLoanAccountsByNoDetail().getInstallment() != null) {
+                                List<InstallmentListModel> list = new ArrayList<>();
+                                binding.recyclerViewInstallments.setAdapter(new InstallmentListAdapter(list, LoanProfileActivity.this));
+                            }
                         } else {
                             Toast.makeText(LoanProfileActivity.this, " " + response.getHttpStatus(), Toast.LENGTH_SHORT).show();
                         }

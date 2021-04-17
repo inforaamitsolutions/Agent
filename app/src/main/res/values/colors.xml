@@ -18,6 +18,7 @@
     <color name="lightGreen">#66c085</color>
 
 
+    <color name="bgColor">#F8F7F7</color>
     <color name="editTextColor">#ECECEC</color>
     <color name="editTextColor2">#EFEFEF</color>
 
