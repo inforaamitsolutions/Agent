@@ -195,7 +195,7 @@ public class CommonMethods {
 
             }
         }, mYear, mMonth, mDay);
-        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        //datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         //datePickerDialog.getDatePicker().setMinDate(c.getTimeInMillis()-1000);
         //datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         datePickerDialog.show();

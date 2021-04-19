@@ -3,6 +3,7 @@ package com.codeclinic.agent.activity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -86,10 +87,13 @@ public class CreateLeadActivity extends AppCompatActivity {
         });
 
         binding.btnPrevious.setOnClickListener(v -> {
+            questionToFollowPage = 0;
             if (binding.llQuestions.getVisibility() == View.GONE) {
                 binding.llQuestions.setVisibility(View.VISIBLE);
                 binding.linearUserDetail.setVisibility(View.GONE);
                 isSubmitForm = false;
+                questionPage = surveyPagesList.get(surveyPage).getQuestions().size() - 1;
+                updatePage();
             } else {
                 if (questionPage > 0) {
                     questionPage--;
@@ -307,16 +311,43 @@ public class CreateLeadActivity extends AppCompatActivity {
         binding.tvQuestionToFollow.setVisibility(View.GONE);
         binding.tvQuestionToFollow.setText("");
 
-        if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("select_one") || questionList.get(surveyPage).get(questionPage).getFieldType().equals("select_multiple")) {
+        LeadQuestionsListModel question = questionList.get(surveyPage).get(questionPage);
+
+        try {
+            binding.edtAnswer.setFilters(new InputFilter[]{new InputFilter.LengthFilter(question.getMax())});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (question.getFieldType().equals("select_one") || question.getFieldType().equals("select_multiple")) {
 
             binding.tvQuestionToFollow.setVisibility(View.VISIBLE);
             binding.rlSpinner.setVisibility(View.VISIBLE);
 
 
-            spAdapter = new ArrayAdapter(CreateLeadActivity.this, R.layout.spinner_item_view, questionList.get(surveyPage).get(questionPage).getOptions());
+            spAdapter = new ArrayAdapter(CreateLeadActivity.this, R.layout.spinner_item_view, question.getOptions());
             binding.spLabel.setAdapter(spAdapter);
 
-        } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("textfield")) {
+        } else if (question.getFieldType().equals("textfield")) {
+
+            binding.edtAnswer.getText().clear();
+            binding.edtAnswer.setVisibility(View.VISIBLE);
+
+
+            binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
+
+            if (surveyQuestions.containsKey(surveyPage)) {
+                Map<Integer, String> data = surveyQuestions.get(surveyPage);
+                if (data != null) {
+                    if (data.containsKey(questionPage)) {
+                        binding.edtAnswer.setText(data.get(questionPage));
+                    }
+                }
+            } else if (answeredQuestions.containsKey(questionPage)) {
+                binding.edtAnswer.setText(answeredQuestions.get(questionPage));
+            }
+
+        } else if (question.getFieldType().equals("textField")) {
 
             binding.edtAnswer.getText().clear();
             binding.edtAnswer.setVisibility(View.VISIBLE);
@@ -336,7 +367,7 @@ public class CreateLeadActivity extends AppCompatActivity {
                 binding.edtAnswer.setText(answeredQuestions.get(questionPage));
             }
 
-        } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("textArea")) {
+        } else if (question.getFieldType().equals("textArea")) {
 
             binding.edtAnswer.getText().clear();
 
@@ -356,7 +387,7 @@ public class CreateLeadActivity extends AppCompatActivity {
                 binding.edtAnswer.setText(answeredQuestions.get(questionPage));
             }
 
-        } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("number")) {
+        } else if (question.getFieldType().equals("number")) {
 
             binding.edtAnswer.getText().clear();
 
@@ -377,7 +408,7 @@ public class CreateLeadActivity extends AppCompatActivity {
                 binding.edtAnswer.setText(answeredQuestions.get(questionPage));
             }
 
-        } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("decimal")) {
+        } else if (question.getFieldType().equals("decimal")) {
 
             binding.edtAnswer.getText().clear();
 
@@ -398,7 +429,7 @@ public class CreateLeadActivity extends AppCompatActivity {
                 binding.edtAnswer.setText(answeredQuestions.get(questionPage));
             }
 
-        } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("checkbox")) {
+        } else if (question.getFieldType().equals("checkbox")) {
 
 
             binding.radioGroup.setVisibility(View.VISIBLE);
@@ -407,17 +438,17 @@ public class CreateLeadActivity extends AppCompatActivity {
             binding.radioGroup.removeAllViews();
             binding.radioGroup.setOrientation(LinearLayout.HORIZONTAL);
 
-            for (int i = 0; i < questionList.get(surveyPage).get(questionPage).getOptions().size(); i++) {
+            for (int i = 0; i < question.getOptions().size(); i++) {
                 RadioButton rdbtn = new RadioButton(this);
                 rdbtn.setLayoutParams(layoutParams);
                 rdbtn.setTextSize(radioButtonTextSize);
                 rdbtn.setPadding(5, 5, 5, 5);
-                rdbtn.setId(questionList.get(surveyPage).get(questionPage).getOptions().get(i).getId());
-                rdbtn.setText(questionList.get(surveyPage).get(questionPage).getOptions().get(i).getLabel());
+                rdbtn.setId(question.getOptions().get(i).getId());
+                rdbtn.setText(question.getOptions().get(i).getLabel());
                 binding.radioGroup.addView(rdbtn);
             }
 
-        } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("date")) {
+        } else if (question.getFieldType().equals("date")) {
 
             binding.tvDate.setText("");
             binding.tvDate.setVisibility(View.VISIBLE);
@@ -433,7 +464,7 @@ public class CreateLeadActivity extends AppCompatActivity {
             } else if (answeredQuestions.containsKey(questionPage)) {
                 binding.tvDate.setText(answeredQuestions.get(questionPage));
             }
-        } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("geopoint")) {
+        } else if (question.getFieldType().equals("geopoint")) {
 
             binding.tvDate.setText("");
             binding.tvDate.setVisibility(View.VISIBLE);
@@ -450,7 +481,7 @@ public class CreateLeadActivity extends AppCompatActivity {
             } else if (answeredQuestions.containsKey(questionPage)) {
                 binding.tvDate.setText(answeredQuestions.get(questionPage));
             }
-        } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("image")) {
+        } else if (question.getFieldType().equals("image")) {
 
 
             binding.radioGroup.setVisibility(View.GONE);
@@ -472,32 +503,33 @@ public class CreateLeadActivity extends AppCompatActivity {
     }
 
     private void addAnswers() {
-        if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("select_one")
-                || questionList.get(surveyPage).get(questionPage).getFieldType().equals("select_multiple")) {
+        LeadQuestionsListModel question = questionList.get(surveyPage).get(questionPage);
+        if (question.getFieldType().equals("select_one")
+                || question.getFieldType().equals("select_multiple")) {
 
             Log.i("answered", binding.spLabel.getSelectedItem().toString() + "");
             answeredQuestions.put(questionPage, binding.spLabel.getSelectedItem().toString());
 
-        } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("checkbox")) {
+        } else if (question.getFieldType().equals("checkbox")) {
 
             int selectedId = binding.radioGroup.getCheckedRadioButtonId();
             RadioButton selectedRadioButton = findViewById(selectedId);
             Log.i("answered", selectedRadioButton.getText().toString() + "");
             answeredQuestions.put(questionPage, selectedRadioButton.getText().toString());
 
-        } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("date")) {
+        } else if (question.getFieldType().equals("date")) {
 
             Log.i("answered", binding.tvDate.getText().toString() + "");
             answeredQuestions.put(questionPage, binding.tvDate.getText().toString());
 
 
-        } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("geopoint")) {
+        } else if (question.getFieldType().equals("geopoint")) {
 
             Log.i("answered", binding.tvDate.getText().toString() + "");
             answeredQuestions.put(questionPage, binding.tvDate.getText().toString());
 
 
-        } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("image")) {
+        } else if (question.getFieldType().equals("image")) {
 
             Log.i("answered", imagePath + "");
             answeredQuestions.put(questionPage, imagePath);
@@ -537,6 +569,11 @@ public class CreateLeadActivity extends AppCompatActivity {
             binding.spQueToFollow.setAdapter(spAdapter);
 
         } else if (question.getFieldType().equals("textfield")) {
+
+            binding.edtAnswer.setVisibility(View.VISIBLE);
+            binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
+
+        } else if (question.getFieldType().equals("textField")) {
 
             binding.edtAnswer.setVisibility(View.VISIBLE);
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -636,41 +673,107 @@ public class CreateLeadActivity extends AppCompatActivity {
 
     }
 
-    private boolean validateAnswer() {
+    /*private boolean validateAnswer() {
         if (binding.llQuestions.getVisibility() == View.VISIBLE) {
+
+            LeadQuestionsListModel question = questionList.get(surveyPage).get(questionPage);
+
             if (isEmpty(binding.edtAnswer.getText().toString())
-                    && questionList.get(surveyPage).get(questionPage).getFieldType().equals("text")) {
+                    && question.getFieldType().equals("text")) {
+                Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
+                return false;
+            } else if (question.getFieldType().equals("text") && ) {
                 Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
                 return false;
             } else if (isEmpty(binding.edtAnswer.getText().toString())
-                    && questionList.get(surveyPage).get(questionPage).getFieldType().equals("textfield")) {
+                    && question.getFieldType().equals("text")) {
                 Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
                 return false;
             } else if (isEmpty(binding.edtAnswer.getText().toString())
-                    && questionList.get(surveyPage).get(questionPage).getFieldType().equals("textArea")) {
+                    && question.getFieldType().equals("textfield")) {
                 Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
                 return false;
             } else if (isEmpty(binding.edtAnswer.getText().toString())
-                    && questionList.get(surveyPage).get(questionPage).getFieldType().equals("decimal")) {
+                    && question.getFieldType().equals("textArea")) {
                 Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
                 return false;
             } else if (isEmpty(binding.edtAnswer.getText().toString())
-                    && questionList.get(surveyPage).get(questionPage).getFieldType().equals("number")) {
+                    && question.getFieldType().equals("decimal")) {
                 Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
                 return false;
-            } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("checkbox")
+            } else if (isEmpty(binding.edtAnswer.getText().toString())
+                    && question.getFieldType().equals("number")) {
+                Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
+                return false;
+            } else if (question.getFieldType().equals("checkbox")
                     && binding.radioGroup.getCheckedRadioButtonId() == -1) {
                 Toast.makeText(this, "Please select one option", Toast.LENGTH_SHORT).show();
                 return false;
-            } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("date")
+            } else if (question.getFieldType().equals("date")
                     && isEmpty(binding.tvDate.getText().toString())) {
                 Toast.makeText(this, "Please enter date", Toast.LENGTH_SHORT).show();
                 return false;
-            } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("geopoint")
+            } else if (question.getFieldType().equals("geopoint")
                     && isEmpty(binding.tvDate.getText().toString())) {
                 Toast.makeText(this, "Please enter your location coordinates", Toast.LENGTH_SHORT).show();
                 return false;
-            } else if (questionList.get(surveyPage).get(questionPage).getFieldType().equals("image")
+            } else if (question.getFieldType().equals("image")
+                    && isEmpty(imagePath)) {
+                Toast.makeText(this, "Please add image", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        } else if (binding.linearUserDetail.getVisibility() == View.VISIBLE) {
+            if (isEmpty(binding.edtFirstName.getText().toString())) {
+                Toast.makeText(this, "Please enter first name", Toast.LENGTH_SHORT).show();
+                return false;
+            } else if (isEmpty(binding.edtMiddleName.getText().toString())) {
+                Toast.makeText(this, "Please enter middle name", Toast.LENGTH_SHORT).show();
+                return false;
+            } else if (isEmpty(binding.edtLastName.getText().toString())) {
+                Toast.makeText(this, "Please enter last name", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        }
+
+        return true;
+    }*/
+    private boolean validateAnswer() {
+        if (binding.llQuestions.getVisibility() == View.VISIBLE) {
+
+            LeadQuestionsListModel question = questionList.get(surveyPage).get(questionPage);
+
+
+            if (question.getFieldType().equals("text") || question.getFieldType().equals("textfield")
+                    || question.getFieldType().equals("textArea") || question.getFieldType().equals("decimal")
+                    || question.getFieldType().equals("number") || question.getFieldType().equals("textField")) {
+
+                if (isEmpty(binding.edtAnswer.getText().toString())) {
+                    Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
+                    return false;
+                } else if (binding.edtAnswer.getText().toString().length() < question.getMin()) {
+                    Toast.makeText(this, "Please enter minimum " + question.getMin() + " characters", Toast.LENGTH_SHORT).show();
+                    return false;
+                } else if (isEmpty(question.getRegularExpression())) {
+                    return true;
+                } else if (!binding.edtAnswer.getText().toString().matches(question.getRegularExpression())) {
+                    Toast.makeText(this, "Please enter valid details", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+
+
+            } else if (question.getFieldType().equals("checkbox")
+                    && binding.radioGroup.getCheckedRadioButtonId() == -1) {
+                Toast.makeText(this, "Please select one option", Toast.LENGTH_SHORT).show();
+                return false;
+            } else if (question.getFieldType().equals("date")
+                    && isEmpty(binding.tvDate.getText().toString())) {
+                Toast.makeText(this, "Please enter date", Toast.LENGTH_SHORT).show();
+                return false;
+            } else if (question.getFieldType().equals("geopoint")
+                    && isEmpty(binding.tvDate.getText().toString())) {
+                Toast.makeText(this, "Please enter your location coordinates", Toast.LENGTH_SHORT).show();
+                return false;
+            } else if (question.getFieldType().equals("image")
                     && isEmpty(imagePath)) {
                 Toast.makeText(this, "Please add image", Toast.LENGTH_SHORT).show();
                 return false;
@@ -693,26 +796,26 @@ public class CreateLeadActivity extends AppCompatActivity {
 
     private boolean validateQueToFollowAnswer(LeadQuestionToFollowModel questionToFollowList) {
         if (binding.llQuestions.getVisibility() == View.VISIBLE) {
-            if (isEmpty(binding.edtAnswer.getText().toString())
-                    && questionToFollowList.getFieldType().equals("text")) {
-                Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (isEmpty(binding.edtAnswer.getText().toString())
-                    && questionToFollowList.getFieldType().equals("textfield")) {
-                Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (isEmpty(binding.edtAnswer.getText().toString())
-                    && questionToFollowList.getFieldType().equals("textArea")) {
-                Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (isEmpty(binding.edtAnswer.getText().toString())
-                    && questionToFollowList.getFieldType().equals("decimal")) {
-                Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (isEmpty(binding.edtAnswer.getText().toString())
-                    && questionToFollowList.getFieldType().equals("number")) {
-                Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
-                return false;
+
+            if (questionToFollowList.getFieldType().equals("text") || questionToFollowList.getFieldType().equals("textfield")
+                    || questionToFollowList.getFieldType().equals("textArea") || questionToFollowList.getFieldType().equals("decimal")
+                    || questionToFollowList.getFieldType().equals("number") || questionToFollowList.getFieldType().equals("textField")) {
+
+                if (isEmpty(binding.edtAnswer.getText().toString())) {
+                    Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
+                    return false;
+                } else if (isEmpty(questionToFollowList.getRegularExpression())) {
+                    return true;
+                } else {
+                    String answer = binding.edtAnswer.getText().toString();
+                    if (answer.matches(questionToFollowList.getRegularExpression())) {
+                        return true;
+                    } else {
+                        Toast.makeText(this, "Please enter valid details", Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                }
+
             } else if (questionToFollowList.getFieldType().equals("checkbox")
                     && binding.radioGroup.getCheckedRadioButtonId() == -1) {
                 Toast.makeText(this, "Please select one option", Toast.LENGTH_SHORT).show();
