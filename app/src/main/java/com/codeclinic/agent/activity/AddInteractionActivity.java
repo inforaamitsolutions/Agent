@@ -341,7 +341,7 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
                         if (response.getSuccessStatus().equals("success")) {
                             finish();
                         }
-                        Toast.makeText(AddInteractionActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddInteractionActivity.this, "" + response.getMessage(), Toast.LENGTH_LONG).show();
                     }
 
                     @Override

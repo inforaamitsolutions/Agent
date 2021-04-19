@@ -3,6 +3,7 @@ package com.codeclinic.agent.activity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -72,6 +73,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void callCustomerInfoAPI() {
         binding.loadingView.loader.setVisibility(View.VISIBLE);
+        Log.i("customerID", customerID + " ");
         disposable.add(RestClass.getClient().FETCH_CUSTOMER_INFO_MODEL_SINGLE(
                 sessionManager.getTokenDetails().get(SessionManager.AccessToken), customerID)
                 .subscribeOn(Schedulers.io())
@@ -90,6 +92,8 @@ public class ProfileActivity extends AppCompatActivity {
                             binding.tvAge.setText(customerBioData.getCustomerAge() + "");
                             binding.tvGender.setText(customerBioData.getGender() + "");
                             binding.tvDOB.setText(customerBioData.getDateOfBirth() + "");
+                        } else {
+                            Toast.makeText(ProfileActivity.this, "No Customer Bio Data Available", Toast.LENGTH_SHORT).show();
                         }
                         if (response.getCustomerInfo().getCustomerInfoPages().get(0).getCustomerBusinessData() != null) {
                             CustomerBusinessDataModel customerBusinessData = response.getCustomerInfo().getCustomerInfoPages().get(0).getCustomerBusinessData();

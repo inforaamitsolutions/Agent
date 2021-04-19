@@ -23,18 +23,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Due Date"
+                    android:text="Status"
                     android:textColor="@color/black"
                     android:textSize="13dp" />
 
                 <TextView
-                    android:id="@+id/tvDueDate"
+                    android:id="@+id/tvStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:gravity="right"
-                    android:hint="Due Date"
+                    android:hint="Status"
                     android:singleLine="true"
                     android:textColor="@color/black"
                     android:textSize="13dp" />
@@ -55,50 +55,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Expected Amount"
+                    android:text="Start Date"
                     android:textColor="@color/black"
                     android:textSize="13dp" />
 
                 <TextView
-                    android:id="@+id/tvExpectedAmount"
+                    android:id="@+id/tvStartDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:gravity="right"
-                    android:hint="Expected Amount"
-                    android:singleLine="true"
-                    android:textColor="@color/black"
-                    android:textSize="13dp" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginVertical="10dp"
-                android:background="@color/textColor1" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Paid Amount"
-                    android:textColor="@color/black"
-                    android:textSize="13dp" />
-
-                <TextView
-                    android:id="@+id/tvPaidAmount"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:hint="Paid Amount"
+                    android:hint="Start date"
                     android:singleLine="true"
                     android:textColor="@color/black"
                     android:textSize="13dp" />
@@ -120,18 +88,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Status"
+                    android:text="End Date"
                     android:textColor="@color/black"
                     android:textSize="13dp" />
 
                 <TextView
-                    android:id="@+id/tvStatus"
+                    android:id="@+id/tvEndDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:gravity="right"
-                    android:hint="Status"
+                    android:hint="End Date"
                     android:inputType="number"
                     android:singleLine="true"
                     android:textColor="@color/black"
