@@ -74,6 +74,7 @@ public class CreateLeadActivity extends AppCompatActivity {
 
     boolean isSubmitForm = false;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,17 +94,16 @@ public class CreateLeadActivity extends AppCompatActivity {
                 binding.linearUserDetail.setVisibility(View.GONE);
                 isSubmitForm = false;
                 questionPage = surveyPagesList.get(surveyPage).getQuestions().size() - 1;
-                updatePage();
             } else {
                 if (questionPage > 0) {
                     questionPage--;
-                    updatePage();
                 } else if (surveyPage > 0) {
                     surveyPage--;
                     questionPage = surveyPagesList.get(surveyPage).getQuestions().size() - 1;
-                    updatePage();
+
                 }
             }
+            updatePage();
         });
 
         LocationInfo.getLastLocation(this, null);
@@ -310,6 +310,7 @@ public class CreateLeadActivity extends AppCompatActivity {
         binding.imgUser.setVisibility(View.GONE);
         binding.tvQuestionToFollow.setVisibility(View.GONE);
         binding.tvQuestionToFollow.setText("");
+        binding.edtAnswer.getText().clear();
 
         LeadQuestionsListModel question = questionList.get(surveyPage).get(questionPage);
 
@@ -330,10 +331,7 @@ public class CreateLeadActivity extends AppCompatActivity {
 
         } else if (question.getFieldType().equals("textfield")) {
 
-            binding.edtAnswer.getText().clear();
             binding.edtAnswer.setVisibility(View.VISIBLE);
-
-
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
 
             if (surveyQuestions.containsKey(surveyPage)) {
@@ -349,10 +347,7 @@ public class CreateLeadActivity extends AppCompatActivity {
 
         } else if (question.getFieldType().equals("textField")) {
 
-            binding.edtAnswer.getText().clear();
             binding.edtAnswer.setVisibility(View.VISIBLE);
-
-
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
 
 
@@ -369,11 +364,7 @@ public class CreateLeadActivity extends AppCompatActivity {
 
         } else if (question.getFieldType().equals("textArea")) {
 
-            binding.edtAnswer.getText().clear();
-
             binding.edtAnswer.setVisibility(View.VISIBLE);
-
-
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
 
             if (surveyQuestions.containsKey(surveyPage)) {
@@ -389,12 +380,7 @@ public class CreateLeadActivity extends AppCompatActivity {
 
         } else if (question.getFieldType().equals("number")) {
 
-            binding.edtAnswer.getText().clear();
-
-
             binding.edtAnswer.setVisibility(View.VISIBLE);
-
-
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_NUMBER);
 
             if (surveyQuestions.containsKey(surveyPage)) {
@@ -410,12 +396,7 @@ public class CreateLeadActivity extends AppCompatActivity {
 
         } else if (question.getFieldType().equals("decimal")) {
 
-            binding.edtAnswer.getText().clear();
-
-
             binding.edtAnswer.setVisibility(View.VISIBLE);
-
-
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
 
             if (surveyQuestions.containsKey(surveyPage)) {

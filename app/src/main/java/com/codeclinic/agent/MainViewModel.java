@@ -32,6 +32,9 @@ import com.codeclinic.agent.model.TimeLineStatusListModel;
 import com.codeclinic.agent.model.TimeLineStatusModel;
 import com.codeclinic.agent.model.ZoneListModel;
 import com.codeclinic.agent.model.ZonesModel;
+import com.codeclinic.agent.model.businesDataUpdate.BusinessDataSurveyDefinitionPageModel;
+import com.codeclinic.agent.model.businesDataUpdate.FetchBusinessDataFormBodyModel;
+import com.codeclinic.agent.model.businesDataUpdate.FetchBusinessDataFormModel;
 import com.codeclinic.agent.model.customer.CustomerSurveyDefinitionPageModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormBodyModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormModel;
@@ -169,6 +172,52 @@ public class MainViewModel extends AndroidViewModel {
                     @Override
                     public void onError(Throwable e) {
                         Log.i("LeadSurveyForm", "Error  ==  " + e.getMessage());
+                    }
+                }));
+    }
+
+    public void callBusinessDataForm() {
+        disposable.add(RestClass.getClient().FETCH_BUSINESS_DATA_FORM_MODEL_SINGLE(
+                sessionManager.getTokenDetails().get(AccessToken),
+                "business_details_update_form_test")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<FetchBusinessDataFormModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull FetchBusinessDataFormModel response) {
+                        if (response.getBody() != null) {
+                            List<BusinessDataSurveyDefinitionPageModel> surveyPagesList = response.getBody().getSurveyDefinitionPages();
+                            if (surveyPagesList != null) {
+                                addBusinessDataSurveyForm(response.getBody());
+                            }
+
+                        } else {
+                            Log.i("BusinessDataForm", "Server Error " + response.getSuccessStatus());
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("BusinessDataForm", "Server Error " + e.getMessage());
+                    }
+                }));
+    }
+
+    private void addBusinessDataSurveyForm(FetchBusinessDataFormBodyModel entity) {
+        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                .addBusinessDataSurveyForm(entity))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.i("BusinessDateSurveyForm", "added to local");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("BusinessDateSurveyForm", "Error  ==  " + e.getMessage());
                     }
                 }));
     }

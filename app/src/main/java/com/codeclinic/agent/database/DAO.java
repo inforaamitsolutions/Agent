@@ -6,6 +6,7 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import com.codeclinic.agent.model.businesDataUpdate.FetchBusinessDataFormBodyModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormBodyModel;
 import com.codeclinic.agent.model.lead.FetchLeadFormBodyModel;
 
@@ -35,6 +36,17 @@ public interface DAO {
 
     @Delete
     void removeLeadForm(FetchLeadFormBodyModel entity);
+
+    /*****************Lead Survey Form Table Queries*************************/
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void addBusinessDataSurveyForm(FetchBusinessDataFormBodyModel entity);
+
+    @Query("select * from BusinessDataFormBody")
+    Flowable<FetchBusinessDataFormBodyModel> getBusinessDataSurveyFormList();
+
+    @Delete
+    void removeBusinessDataForm(FetchBusinessDataFormBodyModel entity);
 
 
 }

@@ -6,11 +6,12 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import com.codeclinic.agent.model.businesDataUpdate.FetchBusinessDataFormBodyModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormBodyModel;
 import com.codeclinic.agent.model.lead.FetchLeadFormBodyModel;
 
 
-@Database(entities = {FetchCustomerFormBodyModel.class, FetchLeadFormBodyModel.class}, version = 1, exportSchema = false)
+@Database(entities = {FetchCustomerFormBodyModel.class, FetchLeadFormBodyModel.class, FetchBusinessDataFormBodyModel.class}, version = 1, exportSchema = false)
 public abstract class LocalDatabase extends RoomDatabase {
     public abstract DAO getDAO();
 

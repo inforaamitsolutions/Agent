@@ -23,7 +23,9 @@
         android:roundIcon="@mipmap/ic_app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Agent">
-        <activity android:name=".activity.LoanProfileActivity"></activity>
+        <activity android:name=".activity.InteractionFiltersActivity"></activity>
+        <activity android:name=".activity.BusinessDataUpdateActivity" />
+        <activity android:name=".activity.LoanProfileActivity" />
         <activity android:name=".activity.CustomerLoanAccountsActivity" />
         <activity android:name=".activity.SplashActivity">
             <intent-filter>

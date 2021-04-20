@@ -29,21 +29,21 @@
                     android:id="@+id/tvUserName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:text="Victor Gachangi"
                     android:textColor="@color/white"
-                    android:layout_marginTop="10dp"
-                    android:textSize="16dp"
+                    android:textSize="14dp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="5dp"
                     android:alpha="0.5"
                     android:text="vgachangi@mfs.co.ke"
                     android:textColor="@color/white"
-                    android:textSize="15dp" />
+                    android:textSize="12dp" />
 
                 <LinearLayout
                     android:id="@+id/homeLinear"
@@ -73,10 +73,9 @@
 
                 <LinearLayout
                     android:id="@+id/loanLinear"
-
                     android:layout_width="180dp"
                     android:layout_height="60dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
                     android:orientation="horizontal"
                     android:paddingLeft="15dp">
 
@@ -97,38 +96,12 @@
                         android:textSize="16dp" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/defaultsLinear"
-                    android:layout_width="180dp"
-                    android:layout_height="60dp"
-                    android:layout_marginTop="20dp"
-                    android:orientation="horizontal"
-                    android:paddingLeft="15dp">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_nav_alert"
-                        app:tint="@color/white" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="10dp"
-                        android:text="Defaults"
-                        android:textColor="@color/white"
-                        android:textSize="16dp" />
-                </LinearLayout>
-
-
                 <com.skydoves.expandablelayout.ExpandableLayout
                     android:id="@+id/leadExpandLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
                     app:expandable_duration="300"
                     app:expandable_isExpanded="false"
                     app:expandable_parentLayout="@layout/lead_parent_view"
@@ -138,13 +111,12 @@
                     app:expandable_spinner_gravity="start"
                     app:expandable_spinner_size="0dp" />
 
-
                 <com.skydoves.expandablelayout.ExpandableLayout
                     android:id="@+id/customerExpandLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
                     app:expandable_duration="300"
                     app:expandable_isExpanded="false"
                     app:expandable_parentLayout="@layout/customer_parent_view"
@@ -154,11 +126,26 @@
                     app:expandable_spinner_gravity="start"
                     app:expandable_spinner_size="0dp" />
 
+                <com.skydoves.expandablelayout.ExpandableLayout
+                    android:id="@+id/interactionExpandLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="10dp"
+                    app:expandable_duration="300"
+                    app:expandable_isExpanded="false"
+                    app:expandable_parentLayout="@layout/interaction_parent_view"
+                    app:expandable_secondLayout="@layout/interaction_child_view"
+                    app:expandable_showSpinner="false"
+                    app:expandable_spinner_animate="true"
+                    app:expandable_spinner_gravity="start"
+                    app:expandable_spinner_size="0dp" />
+
                 <LinearLayout
                     android:id="@+id/aboutLinear"
                     android:layout_width="180dp"
                     android:layout_height="60dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
                     android:orientation="horizontal"
                     android:paddingLeft="15dp">
 
@@ -183,7 +170,7 @@
                     android:id="@+id/linearLogout"
                     android:layout_width="180dp"
                     android:layout_height="60dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
 
                     android:orientation="horizontal"
                     android:paddingLeft="15dp">

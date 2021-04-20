@@ -17,12 +17,12 @@ import androidx.databinding.DataBindingUtil;
 
 import com.bumptech.glide.Glide;
 import com.codeclinic.agent.R;
-import com.codeclinic.agent.databinding.ActivityCreateCustomerBinding;
-import com.codeclinic.agent.model.customer.CustomerOptionsListModel;
-import com.codeclinic.agent.model.customer.CustomerQuestionToFollowModel;
-import com.codeclinic.agent.model.customer.CustomerQuestionsListModel;
-import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
-import com.codeclinic.agent.model.customer.CustomerSurveyDefinitionPageModel;
+import com.codeclinic.agent.databinding.ActivityBusinessDataUpdateBinding;
+import com.codeclinic.agent.model.businesDataUpdate.BusinessDataOptionsListModel;
+import com.codeclinic.agent.model.businesDataUpdate.BusinessDataQuestionListModel;
+import com.codeclinic.agent.model.businesDataUpdate.BusinessDataQuestionToFollowModel;
+import com.codeclinic.agent.model.businesDataUpdate.BusinessDataSubmitModel;
+import com.codeclinic.agent.model.businesDataUpdate.BusinessDataSurveyDefinitionPageModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.AccessMediaUtil;
 import com.codeclinic.agent.utils.LocationInfo;
@@ -52,33 +52,30 @@ import static com.codeclinic.agent.utils.Constants.ACCESS_CAMERA_GALLERY;
 import static com.codeclinic.agent.utils.Constants.PICTURE_PATH;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
-public class CreateCustomerActivity extends AppCompatActivity {
-    ActivityCreateCustomerBinding binding;
+public class BusinessDataUpdateActivity extends AppCompatActivity {
 
-    CompositeDisposable disposable = new CompositeDisposable();
-
-    String imagePath;
-    int surveyPage = 0, questionPage = 0, questionToFollowPage = 0, radioButtonTextSize;
-    ArrayAdapter spAdapter;
-
-    List<CustomerSurveyDefinitionPageModel> surveyPagesList = new ArrayList<>();
-    Map<Integer, List<CustomerQuestionsListModel>> questionList = new HashMap<>();
-
-    Map<Integer, Map<Integer, String>> surveyQuestions = new HashMap<>();
-    Map<Integer, String> answeredQuestions = new HashMap<>();
-    Map<Integer, Map<Integer, String>> optionQuestions = new HashMap<>();
-    Map<Integer, String> answeredToFollowQuestions = new HashMap<>();
-    LinearLayout.LayoutParams layoutParams;
-
+    private final CompositeDisposable disposable = new CompositeDisposable();
+    private final Map<Integer, List<BusinessDataQuestionListModel>> questionList = new HashMap<>();
+    private final Map<Integer, Map<Integer, String>> surveyQuestions = new HashMap<>();
+    private final Map<Integer, Map<Integer, String>> optionQuestions = new HashMap<>();
     boolean isSubmitForm = false;
+    private ActivityBusinessDataUpdateBinding binding;
+    private String imagePath;
+    private int surveyPage = 0, questionPage = 0, questionToFollowPage = 0, radioButtonTextSize;
+    private ArrayAdapter spAdapter;
+    private List<BusinessDataSurveyDefinitionPageModel> surveyPagesList = new ArrayList<>();
+    private Map<Integer, String> answeredQuestions = new HashMap<>();
+    private Map<Integer, String> answeredToFollowQuestions = new HashMap<>();
+    private LinearLayout.LayoutParams layoutParams;
 
-
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_create_customer);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_business_data_update);
+
         binding.headerLayout.imgBack.setVisibility(View.VISIBLE);
-        binding.headerLayout.txtHeading.setText("Create Customer");
+        binding.headerLayout.txtHeading.setText("Business Data Update");
 
         LocationInfo.getLastLocation(this, null);
 
@@ -113,7 +110,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
         binding.btnNext1.setOnClickListener(view -> {
             if ((questionList.get(surveyPage).get(questionPage).getFieldType().equals("select_one")
                     || questionList.get(surveyPage).get(questionPage).getFieldType().equals("select_multiple"))) {
-                CustomerQuestionToFollowModel questionToFollowList =
+                BusinessDataQuestionToFollowModel questionToFollowList =
                         questionList.get(surveyPage).get(questionPage).getOptions().get(binding.spLabel.getSelectedItemPosition()).getQuestionToFollow();
 
                 if (questionToFollowList != null) {
@@ -145,12 +142,11 @@ public class CreateCustomerActivity extends AppCompatActivity {
         layoutParams.setMargins(5, 5, 5, 5);
 
 
-        //callCustomerForm();
         getSurveyForm();
     }
 
     private void getSurveyForm() {
-        disposable.add(localDatabase.getDAO().getCustomerSurveyForm()
+        disposable.add(localDatabase.getDAO().getBusinessDataSurveyFormList()
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(form -> {
@@ -165,7 +161,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
                         },
                         throwable -> {
                             if (throwable.getMessage() != null)
-                                Log.i("customerSurveyForm", "Error == " + throwable.getMessage());
+                                Log.i("BusinessDataSurveyForm", "Error == " + throwable.getMessage());
                         }
                 )
         );
@@ -181,7 +177,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
             jsonObject.put("middleName", binding.edtMiddleName.getText().toString());
             jsonObject.put("staffId", sessionManager.getUserDetails().get(SessionManager.UserID));
             jsonObject.put("status", "COMPLETED");
-            jsonObject.put("surveyName", "customer_registration_form");
+            jsonObject.put("surveyName", "business_data_update_form");
 
             JSONArray jsonArrayPages = new JSONArray();
             JSONObject jsonObject1 = new JSONObject();
@@ -200,7 +196,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
                     if ((surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_one")
                             || surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_multiple"))) {
-                        List<CustomerOptionsListModel> options = surveyPagesList.get(i).getQuestions().get(entry.getKey()).getOptions();
+                        List<BusinessDataOptionsListModel> options = surveyPagesList.get(i).getQuestions().get(entry.getKey()).getOptions();
                         for (int j = 0; j < options.size(); j++) {
                             if (value.equals(options.get(j).getLabel())) {
                                 if (options.get(j).getQuestionToFollow() != null) {
@@ -229,24 +225,24 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
         Log.i("formReq", jsonObject.toString());
 
-        disposable.add(RestClass.getClient().CUSTOMER_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
+        disposable.add(RestClass.getClient().BUSINESS_DATA_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
                 , jsonObject.toString())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<CustomerSubmitFormModel>() {
+                .subscribeWith(new DisposableSingleObserver<BusinessDataSubmitModel>() {
                     @Override
-                    public void onSuccess(@NonNull CustomerSubmitFormModel response) {
+                    public void onSuccess(@NonNull BusinessDataSubmitModel response) {
                         binding.loadingView.loader.setVisibility(View.GONE);
                         if (response.getSuccessStatus().equals("success")) {
                             finish();
                         }
-                        Toast.makeText(CreateCustomerActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(BusinessDataUpdateActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
                         binding.loadingView.loader.setVisibility(View.GONE);
-                        Toast.makeText(CreateCustomerActivity.this, "Server Error" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(BusinessDataUpdateActivity.this, "Server Error" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }));
     }
@@ -308,7 +304,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
         binding.tvQuestionToFollow.setText("");
         binding.edtAnswer.getText().clear();
 
-        CustomerQuestionsListModel question = questionList.get(surveyPage).get(questionPage);
+        BusinessDataQuestionListModel question = questionList.get(surveyPage).get(questionPage);
 
         try {
             binding.edtAnswer.setFilters(new InputFilter[]{new InputFilter.LengthFilter(question.getMax())});
@@ -322,7 +318,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
             binding.rlSpinner.setVisibility(View.VISIBLE);
 
 
-            spAdapter = new ArrayAdapter(CreateCustomerActivity.this, R.layout.spinner_item_view, question.getOptions());
+            spAdapter = new ArrayAdapter(BusinessDataUpdateActivity.this, R.layout.spinner_item_view, question.getOptions());
             binding.spLabel.setAdapter(spAdapter);
 
         } else if (question.getFieldType().equals("textfield")) {
@@ -465,23 +461,23 @@ public class CreateCustomerActivity extends AppCompatActivity {
             binding.radioGroup.setVisibility(View.GONE);
             binding.imgUser.setVisibility(View.VISIBLE);
 
-            Glide.with(CreateCustomerActivity.this).load("").into(binding.imgUser);
+            Glide.with(BusinessDataUpdateActivity.this).load("").into(binding.imgUser);
 
             if (surveyQuestions.containsKey(surveyPage)) {
                 Map<Integer, String> data = surveyQuestions.get(surveyPage);
                 if (data != null) {
                     if (data.containsKey(questionPage)) {
-                        Glide.with(CreateCustomerActivity.this).load(data.get(questionPage)).into(binding.imgUser);
+                        Glide.with(BusinessDataUpdateActivity.this).load(data.get(questionPage)).into(binding.imgUser);
                     }
                 }
             } else if (answeredQuestions.containsKey(questionPage)) {
-                Glide.with(CreateCustomerActivity.this).load(answeredQuestions.get(questionPage)).into(binding.imgUser);
+                Glide.with(BusinessDataUpdateActivity.this).load(answeredQuestions.get(questionPage)).into(binding.imgUser);
             }
         }
     }
 
     private void addAnswers() {
-        CustomerQuestionsListModel question = questionList.get(surveyPage).get(questionPage);
+        BusinessDataQuestionListModel question = questionList.get(surveyPage).get(questionPage);
 
         if (question.getFieldType().equals("select_one")
                 || question.getFieldType().equals("select_multiple")) {
@@ -526,12 +522,12 @@ public class CreateCustomerActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     private void updateQuestionToFollowPage() {
         int pos = binding.spLabel.getSelectedItemPosition();
-        CustomerQuestionToFollowModel question = questionList.get(surveyPage).get(questionPage).getOptions().get(pos).getQuestionToFollow();
+        BusinessDataQuestionToFollowModel question = questionList.get(surveyPage).get(questionPage).getOptions().get(pos).getQuestionToFollow();
         binding.tvQuestionToFollow.setText(question.getQuestionText());
         binding.tvQuestionToFollow.setVisibility(View.VISIBLE);
         binding.edtAnswer.getText().clear();
         binding.tvDate.setText("");
-        Glide.with(CreateCustomerActivity.this).load("").into(binding.imgUser);
+        Glide.with(BusinessDataUpdateActivity.this).load("").into(binding.imgUser);
 
         binding.rlSpinner.setVisibility(View.GONE);
         binding.rlQueToFollowSpinner.setVisibility(View.GONE);
@@ -544,7 +540,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
             binding.rlQueToFollowSpinner.setVisibility(View.VISIBLE);
 
-            spAdapter = new ArrayAdapter(CreateCustomerActivity.this, R.layout.spinner_item_view, question.getOptions());
+            spAdapter = new ArrayAdapter(BusinessDataUpdateActivity.this, R.layout.spinner_item_view, question.getOptions());
             binding.spQueToFollow.setAdapter(spAdapter);
 
         } else if (question.getFieldType().equals("textfield")) {
@@ -610,7 +606,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
     private void addAnswersToFollowAnswers() {
 
         int pos = binding.spLabel.getSelectedItemPosition();
-        CustomerQuestionToFollowModel question = questionList.get(surveyPage).get(questionPage).getOptions().get(pos).getQuestionToFollow();
+        BusinessDataQuestionToFollowModel question = questionList.get(surveyPage).get(questionPage).getOptions().get(pos).getQuestionToFollow();
 
         if (question.getFieldType().equals("select_one")
                 || question.getFieldType().equals("select_multiple")) {
@@ -655,7 +651,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
     private boolean validateAnswer() {
         if (binding.llQuestions.getVisibility() == View.VISIBLE) {
 
-            CustomerQuestionsListModel question = questionList.get(surveyPage).get(questionPage);
+            BusinessDataQuestionListModel question = questionList.get(surveyPage).get(questionPage);
 
             if (question.getFieldType().equals("text") || question.getFieldType().equals("textfield")
                     || question.getFieldType().equals("textArea") || question.getFieldType().equals("decimal")
@@ -707,7 +703,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
         return true;
     }
 
-    private boolean validateQueToFollowAnswer(CustomerQuestionToFollowModel questionToFollowList) {
+    private boolean validateQueToFollowAnswer(BusinessDataQuestionToFollowModel questionToFollowList) {
         if (binding.llQuestions.getVisibility() == View.VISIBLE) {
             if (questionToFollowList.getFieldType().equals("text") || questionToFollowList.getFieldType().equals("textfield")
                     || questionToFollowList.getFieldType().equals("textArea") || questionToFollowList.getFieldType().equals("decimal")
@@ -793,4 +789,5 @@ public class CreateCustomerActivity extends AppCompatActivity {
         super.onDestroy();
         disposable.clear();
     }
+
 }

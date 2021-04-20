@@ -15,6 +15,8 @@ import com.codeclinic.agent.model.SubmitInteractionRecordModel;
 import com.codeclinic.agent.model.SupplierModel;
 import com.codeclinic.agent.model.TimeLineStatusModel;
 import com.codeclinic.agent.model.ZonesModel;
+import com.codeclinic.agent.model.businesDataUpdate.BusinessDataSubmitModel;
+import com.codeclinic.agent.model.businesDataUpdate.FetchBusinessDataFormModel;
 import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormModel;
 import com.codeclinic.agent.model.customerList.CustomerModel;
@@ -66,10 +68,20 @@ public interface API {
     @GET("customer/customerState/getSurveyBySurveyName")
     Single<FetchLeadFormModel> FETCH_LEAD_FORM_MODEL_SINGLE(@Header("Authorization") String header, @Query("surveyName") String params);
 
-    //Login API
+    //Lead Submit Form API
     @Headers("Content-Type: application/json")
     @POST("customer/customerState/registerLeadCustomer")
     Single<LeadSubmitFormModel> LEAD_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
+
+    //Fetch Business Data Update Form API
+    @Headers("Content-Type: application/json")
+    @GET("customerState/getSurveyBySurveyName")
+    Single<FetchBusinessDataFormModel> FETCH_BUSINESS_DATA_FORM_MODEL_SINGLE(@Header("Authorization") String header, @Query("surveyName") String params);
+
+    //Business data update form API
+    @Headers("Content-Type: application/json")
+    @POST("customer/customerState/kycRefresh")
+    Single<BusinessDataSubmitModel> BUSINESS_DATA_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
 
 
     /****************************************** Filter Loan , Lead  and Customer list *****************************************************/

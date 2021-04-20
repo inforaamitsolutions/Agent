@@ -66,6 +66,10 @@ public class ProfileActivity extends AppCompatActivity {
                     .putExtra(CustomerID, customerID));
         });
 
+        binding.cardBusinessDataUpdate.setOnClickListener(v -> {
+            startActivity(new Intent(this, BusinessDataUpdateActivity.class));
+        });
+
 
         callCustomerInfoAPI();
     }

@@ -59,13 +59,13 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
+
         if (Connection_Detector.isInternetAvailable(this)) {
             viewModel.callCustomerForm();
 
             viewModel.callLeadForm();
 
-            //viewModel.callUserDetailsAPI();
-
+            viewModel.callBusinessDataForm();
         }
 
 
@@ -96,13 +96,14 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             binding.bottomNavigation.setSelectedItemId(R.id.home);
             binding.navigationLayout.aboutLinear.setBackground(null);
             binding.navigationLayout.loanLinear.setBackground(null);
-            binding.navigationLayout.defaultsLinear.setBackground(null);
             binding.navigationLayout.leadExpandLayout.setBackground(null);
             binding.navigationLayout.customerExpandLayout.setBackground(null);
+            binding.navigationLayout.interactionExpandLayout.setBackground(null);
             binding.navigationLayout.homeLinear.setBackground(ContextCompat.getDrawable(this, R.drawable.button_bg));
 
             binding.navigationLayout.leadExpandLayout.collapse();
             binding.navigationLayout.customerExpandLayout.collapse();
+            binding.navigationLayout.interactionExpandLayout.collapse();
             binding.viewpager.setCurrentItem(0);
         });
         binding.navigationLayout.loanLinear.setOnClickListener(view -> {
@@ -110,44 +111,30 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             binding.bottomNavigation.setSelectedItemId(R.id.loan);
             binding.navigationLayout.aboutLinear.setBackground(null);
             binding.navigationLayout.homeLinear.setBackground(null);
-            binding.navigationLayout.defaultsLinear.setBackground(null);
             binding.navigationLayout.leadExpandLayout.setBackground(null);
             binding.navigationLayout.customerExpandLayout.setBackground(null);
+            binding.navigationLayout.interactionExpandLayout.setBackground(null);
             binding.navigationLayout.loanLinear.setBackground(ContextCompat.getDrawable(this, R.drawable.button_bg));
             binding.navigationLayout.leadExpandLayout.collapse();
             binding.navigationLayout.customerExpandLayout.collapse();
+            binding.navigationLayout.interactionExpandLayout.collapse();
 
             binding.viewpager.setCurrentItem(1);
         });
 
-        binding.navigationLayout.defaultsLinear.setOnClickListener(view -> {
-            binding.drawerLayout.closeDrawers();
-            binding.bottomNavigation.setSelectedItemId(R.id.defaults);
-            //loadFragment(new LeadFragment());
-            binding.navigationLayout.aboutLinear.setBackground(null);
-            binding.navigationLayout.homeLinear.setBackground(null);
-            binding.navigationLayout.loanLinear.setBackground(null);
-            binding.navigationLayout.leadExpandLayout.setBackground(null);
-            binding.navigationLayout.customerExpandLayout.setBackground(null);
-            binding.navigationLayout.defaultsLinear.setBackground(ContextCompat.getDrawable(this, R.drawable.button_bg));
-
-            binding.navigationLayout.leadExpandLayout.collapse();
-            binding.navigationLayout.customerExpandLayout.collapse();
-
-
-        });
 
         binding.navigationLayout.leadExpandLayout.setOnClickListener(view -> {
             //binding.drawerLayout.closeDrawers();
             binding.navigationLayout.aboutLinear.setBackground(null);
             binding.navigationLayout.homeLinear.setBackground(null);
             binding.navigationLayout.loanLinear.setBackground(null);
-            binding.navigationLayout.defaultsLinear.setBackground(null);
             binding.navigationLayout.customerExpandLayout.setBackground(null);
+            binding.navigationLayout.interactionExpandLayout.setBackground(null);
             binding.navigationLayout.leadExpandLayout.setBackground(ContextCompat.getDrawable(this, R.drawable.button_bg));
             // Toast.makeText(this, "About", Toast.LENGTH_SHORT).show();
 
             binding.navigationLayout.customerExpandLayout.collapse();
+            binding.navigationLayout.interactionExpandLayout.collapse();
 
             if (binding.navigationLayout.leadExpandLayout.isExpanded()) {
                 binding.navigationLayout.leadExpandLayout.collapse();
@@ -174,11 +161,13 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             binding.navigationLayout.aboutLinear.setBackground(null);
             binding.navigationLayout.homeLinear.setBackground(null);
             binding.navigationLayout.loanLinear.setBackground(null);
-            binding.navigationLayout.defaultsLinear.setBackground(null);
             binding.navigationLayout.leadExpandLayout.setBackground(null);
+            binding.navigationLayout.interactionExpandLayout.setBackground(null);
             binding.navigationLayout.customerExpandLayout.setBackground(ContextCompat.getDrawable(this, R.drawable.button_bg));
 
             binding.navigationLayout.leadExpandLayout.collapse();
+            binding.navigationLayout.interactionExpandLayout.collapse();
+
             if (binding.navigationLayout.customerExpandLayout.isExpanded()) {
                 binding.navigationLayout.customerExpandLayout.collapse();
             } else {
@@ -199,15 +188,56 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
                 });
 
 
+        binding.navigationLayout.interactionExpandLayout.setOnClickListener(view -> {
+            //binding.drawerLayout.closeDrawers();
+            binding.bottomNavigation.setSelectedItemId(R.id.customers);
+            binding.navigationLayout.aboutLinear.setBackground(null);
+            binding.navigationLayout.homeLinear.setBackground(null);
+            binding.navigationLayout.loanLinear.setBackground(null);
+            binding.navigationLayout.leadExpandLayout.setBackground(null);
+            binding.navigationLayout.customerExpandLayout.setBackground(null);
+            binding.navigationLayout.interactionExpandLayout.setBackground(ContextCompat.getDrawable(this, R.drawable.button_bg));
+
+            binding.navigationLayout.leadExpandLayout.collapse();
+            binding.navigationLayout.customerExpandLayout.collapse();
+
+            if (binding.navigationLayout.interactionExpandLayout.isExpanded()) {
+                binding.navigationLayout.interactionExpandLayout.collapse();
+            } else {
+                binding.navigationLayout.interactionExpandLayout.expand();
+            }
+        });
+
+        binding.navigationLayout.interactionExpandLayout.secondLayout.findViewById(R.id.llAllInteraction)
+                .setOnClickListener(v -> {
+                    binding.drawerLayout.closeDrawers();
+                    binding.navigationLayout.interactionExpandLayout.collapse();
+                });
+        binding.navigationLayout.interactionExpandLayout.secondLayout.findViewById(R.id.llFollowupDue)
+                .setOnClickListener(v -> {
+                    binding.drawerLayout.closeDrawers();
+                    binding.navigationLayout.interactionExpandLayout.collapse();
+                    //startActivity(new Intent(this, CreateCustomerActivity.class));
+                });
+
+        binding.navigationLayout.interactionExpandLayout.secondLayout.findViewById(R.id.llPromisePay)
+                .setOnClickListener(v -> {
+                    binding.drawerLayout.closeDrawers();
+                    binding.navigationLayout.interactionExpandLayout.collapse();
+                });
+
+
         binding.navigationLayout.aboutLinear.setOnClickListener(view -> {
             binding.drawerLayout.closeDrawers();
             binding.navigationLayout.homeLinear.setBackground(null);
             binding.navigationLayout.loanLinear.setBackground(null);
-            binding.navigationLayout.defaultsLinear.setBackground(null);
             binding.navigationLayout.leadExpandLayout.setBackground(null);
             binding.navigationLayout.customerExpandLayout.setBackground(null);
+            binding.navigationLayout.interactionExpandLayout.setBackground(null);
             binding.navigationLayout.aboutLinear.setBackground(ContextCompat.getDrawable(this, R.drawable.button_bg));
             binding.navigationLayout.leadExpandLayout.collapse();
+            binding.navigationLayout.customerExpandLayout.collapse();
+            binding.navigationLayout.interactionExpandLayout.collapse();
         });
 
         binding.navigationLayout.linearLogout.setOnClickListener(v -> {
@@ -306,11 +336,14 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             }
         }
 
-        viewModel.getStaffAPI();
-        viewModel.getZonesAPI();
-        viewModel.getLoanProductAPI();
-        viewModel.getSuppliersAPI();
-        viewModel.getLoanStatusAPI();
+        if (Connection_Detector.isInternetAvailable(this)) {
+
+            viewModel.getStaffAPI();
+            viewModel.getZonesAPI();
+            viewModel.getLoanProductAPI();
+            viewModel.getSuppliersAPI();
+            viewModel.getLoanStatusAPI();
+        }
 
 
         binding.tabLayout.addOnTabSelectedListener(this);
