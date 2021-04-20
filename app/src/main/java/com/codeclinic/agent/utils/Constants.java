@@ -17,4 +17,7 @@ public class Constants {
     /*Intent Claus*/
     public static String CustomerID = "customerId";
     public static String LoanNumber = "loanNumber";
+    public static String AllInteraction = "allInteraction";
+    public static String DueFollowUp = "dueFollowUp";
+    public static String PromiseToPays = "promiseToPays";
 }

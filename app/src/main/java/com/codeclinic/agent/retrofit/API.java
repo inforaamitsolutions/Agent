@@ -2,6 +2,7 @@ package com.codeclinic.agent.retrofit;
 
 
 import com.codeclinic.agent.model.InteractionCategoryModel;
+import com.codeclinic.agent.model.InteractionModel;
 import com.codeclinic.agent.model.LoanAccountsByNoModel;
 import com.codeclinic.agent.model.LoanAccountsModel;
 import com.codeclinic.agent.model.LoanProductsModel;
@@ -84,7 +85,7 @@ public interface API {
     Single<BusinessDataSubmitModel> BUSINESS_DATA_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
 
 
-    /****************************************** Filter Loan , Lead  and Customer list *****************************************************/
+    /****************************************** Filters Loan , Lead  and Customer list *****************************************************/
 
     //Fetch Staff List API
     @Headers("Content-Type: application/json")
@@ -192,6 +193,18 @@ public interface API {
                                                                         @Path("CustomerId") String CustomerID,
                                                                         @Query("startDate") String startDate,
                                                                         @Query("endDate") String endDateDate);
+
+    /******************************************  Interactions Filters , DueFollowUp and PromiseToPay *****************************************************/
+
+    //Fetch Due Followup Interactions API
+    @Headers("Content-Type: application/json")
+    @GET("customer/customers/interactions/getDueFollowUp")
+    Single<InteractionModel> FETCH_DUE_FOLLOWUP_MODEL_SINGLE(@Header("Authorization") String header, @Query("followUpDate") String params);
+
+    //Fetch Promise to pay Interactions API
+    @Headers("Content-Type: application/json")
+    @GET("customer/customers/interactions/getDuePtp")
+    Single<InteractionModel> FETCH_PROMISE_TO_PAY_MODEL_SINGLE(@Header("Authorization") String header, @Query("dateToPay") String params);
 
 
 }
