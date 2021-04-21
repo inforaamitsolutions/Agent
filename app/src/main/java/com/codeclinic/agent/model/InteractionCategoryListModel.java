@@ -105,4 +105,9 @@ public class InteractionCategoryListModel {
     public void setInteractionCategoryFieldList(List<InteractionCategoryFieldListModel> interactionCategoryFieldList) {
         this.interactionCategoryFieldList = interactionCategoryFieldList;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

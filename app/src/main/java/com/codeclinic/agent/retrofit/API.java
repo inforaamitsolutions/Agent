@@ -28,6 +28,8 @@ import com.codeclinic.agent.model.leadInfo.LeadInteractionHistoryModel;
 import com.codeclinic.agent.model.leadList.LeadModel;
 import com.codeclinic.agent.model.user.UserModel;
 
+import java.util.Map;
+
 import io.reactivex.Single;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -36,6 +38,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 public interface API {
 
@@ -130,7 +133,7 @@ public interface API {
 
     //Fetch Markets List API
     @Headers("Content-Type: application/json")
-    @GET("customer/customers/getSubGroupsByParent/{parentId}")
+    @GET("customer/customers/getSubGroupsByParent")
     Single<MarketModel> FETCH_MARKETS_MODEL_SINGLE(@Header("Authorization") String header, @Query("parentId") String params);
 
     //Lead List API
@@ -189,10 +192,7 @@ public interface API {
     //Fetch Customer Loan Accounts API
     @Headers("Content-Type: application/json")
     @GET("baseapi/loansummary/findAllAccountsByCustomerId/{CustomerId}")
-    Single<LoanAccountsModel> FETCH_CUSTOMER_LOAN_ACCOUNTS_MODEL_SINGLE(@Header("Authorization") String header,
-                                                                        @Path("CustomerId") String CustomerID,
-                                                                        @Query("startDate") String startDate,
-                                                                        @Query("endDate") String endDateDate);
+    Single<LoanAccountsModel> FETCH_CUSTOMER_LOAN_ACCOUNTS_MODEL_SINGLE(@Header("Authorization") String header, @Path("CustomerId") String CustomerID, @Query("startDate") String startDate, @Query("endDate") String endDateDate);
 
     /******************************************  Interactions Filters , DueFollowUp and PromiseToPay *****************************************************/
 
@@ -205,6 +205,11 @@ public interface API {
     @Headers("Content-Type: application/json")
     @GET("customer/customers/interactions/getDuePtp")
     Single<InteractionModel> FETCH_PROMISE_TO_PAY_MODEL_SINGLE(@Header("Authorization") String header, @Query("dateToPay") String params);
+
+    //Fetch All Filters Interactions API
+    @Headers("Content-Type: application/json")
+    @GET("customer/customers/interactions/getInteractions")
+    Single<InteractionModel> FETCH_FILTERS_INTERACTIONS_MODEL_SINGLE(@Header("Authorization") String header, @QueryMap Map<String, String> paramsMap);
 
 
 }

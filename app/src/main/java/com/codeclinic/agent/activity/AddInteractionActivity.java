@@ -277,22 +277,21 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
     }
 
     private boolean validateAnswer() {
+        if (fieldList.get(fieldQuestionPosition).getFieldType().equals("text") || fieldList.get(fieldQuestionPosition).getFieldType().equals("textfield")
+                || fieldList.get(fieldQuestionPosition).getFieldType().equals("textArea") || fieldList.get(fieldQuestionPosition).getFieldType().equals("decimal")
+                || fieldList.get(fieldQuestionPosition).getFieldType().equals("number") || fieldList.get(fieldQuestionPosition).getFieldType().equals("textField")) {
 
-        if (isEmpty(binding.edtAnswer.getText().toString()) && fieldList.get(fieldQuestionPosition).getFieldType().equals("text")) {
-            Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
-            return false;
-        } else if (isEmpty(binding.edtAnswer.getText().toString()) && fieldList.get(fieldQuestionPosition).getFieldType().equals("textField")) {
-            Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
-            return false;
-        } else if (isEmpty(binding.edtAnswer.getText().toString()) && fieldList.get(fieldQuestionPosition).getFieldType().equals("textArea")) {
-            Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
-            return false;
-        } else if (isEmpty(binding.edtAnswer.getText().toString()) && fieldList.get(fieldQuestionPosition).getFieldType().equals("decimal")) {
-            Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
-            return false;
-        } else if (isEmpty(binding.edtAnswer.getText().toString()) && fieldList.get(fieldQuestionPosition).getFieldType().equals("number")) {
-            Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
-            return false;
+            if (isEmpty(binding.edtAnswer.getText().toString())) {
+                Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
+                return false;
+            } else if (isEmpty(fieldList.get(fieldQuestionPosition).getValidationRegex())) {
+                return true;
+            } else if (!binding.edtAnswer.getText().toString().matches(fieldList.get(fieldQuestionPosition).getValidationRegex())) {
+                Toast.makeText(this, "Please enter valid details", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+
         } else if (fieldList.get(fieldQuestionPosition).getFieldType().equals("checkbox") && binding.radioGroup.getCheckedRadioButtonId() == -1) {
             Toast.makeText(this, "Please select one option", Toast.LENGTH_SHORT).show();
             return false;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <include
                     android:id="@+id/searchParentView"
@@ -33,7 +33,7 @@
 
                 <include
                     android:id="@+id/searchChildView"
-                    layout="@layout/loan_search_child_view"
+                    layout="@layout/interaction_search_child_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
@@ -72,84 +72,66 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/llQuestions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="10dp">
+                android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:hint="Name"
-                    android:maxLines="2"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="CustomerID"
                     android:textColor="@color/black"
-                    android:textSize="12dp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.1"
+                    android:layout_weight="1"
+                    android:text="Type"
                     android:gravity="center"
-                    android:hint="Status"
                     android:textColor="@color/black"
-                    android:textSize="12dp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.3"
+                    android:layout_weight="1"
                     android:gravity="center"
-                    android:hint="Balance"
+                    android:text="CategoryName"
                     android:textColor="@color/black"
-                    android:textSize="12dp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
-                <LinearLayout
-                    android:layout_width="75dp"
-                    android:layout_height="25dp"
-                    android:background="@drawable/bg_orange_circle"
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_weight="1"
                     android:gravity="center"
-                    android:orientation="horizontal"
-                    android:visibility="invisible">
-
-                    <TextView
-                        android:id="@+id/tvView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="View"
-                        android:textColor="@color/white"
-                        android:textSize="12dp"
-                        android:textStyle="bold" />
-
-                    <ImageView
-                        android:id="@+id/imgView"
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_marginStart="5dp"
-                        android:src="@drawable/ic_add_circle"
-                        app:tint="@color/white" />
-
-                </LinearLayout>
-
+                    android:text="Active"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <View
+                android:id="@+id/view"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/editTextColor" />
+                android:layout_height="2dp"
+                android:layout_marginTop="10sp"
+                android:background="@color/colorPrimary" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="5dp"
-                android:layout_marginTop="10dp" />
+                android:layout_marginHorizontal="5dp" />
 
         </LinearLayout>
 

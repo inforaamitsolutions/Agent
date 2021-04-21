@@ -53,7 +53,7 @@ public class InteractionCategoryFieldListModel {
     private Boolean required;
     @SerializedName("validationRegex")
     @Expose
-    private Object validationRegex;
+    private String validationRegex;
     @SerializedName("fieldType")
     @Expose
     private String fieldType;
@@ -181,11 +181,11 @@ public class InteractionCategoryFieldListModel {
         this.required = required;
     }
 
-    public Object getValidationRegex() {
+    public String getValidationRegex() {
         return validationRegex;
     }
 
-    public void setValidationRegex(Object validationRegex) {
+    public void setValidationRegex(String validationRegex) {
         this.validationRegex = validationRegex;
     }
 

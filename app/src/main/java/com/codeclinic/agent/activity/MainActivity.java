@@ -31,10 +31,13 @@ import com.codeclinic.agent.utils.Connection_Detector;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.android.material.tabs.TabLayout;
 
+import static com.codeclinic.agent.utils.Constants.AllInteraction;
 import static com.codeclinic.agent.utils.Constants.CUSTOMER_FRAGMENT;
+import static com.codeclinic.agent.utils.Constants.DueFollowUp;
 import static com.codeclinic.agent.utils.Constants.HOME_FRAGMENT;
 import static com.codeclinic.agent.utils.Constants.LEAD_FRAGMENT;
 import static com.codeclinic.agent.utils.Constants.LOAN_FRAGMENT;
+import static com.codeclinic.agent.utils.Constants.PromiseToPays;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
@@ -46,12 +49,12 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     private final int[] tabImageResId = {R.drawable.ic_home, R.drawable.ic_loan, R.drawable.ic_lead, R.drawable.ic_customer};
     private ViewPagerAdapter adapter;
 
+
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         setSupportActionBar(binding.layoutHeader.toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -212,18 +215,23 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
                 .setOnClickListener(v -> {
                     binding.drawerLayout.closeDrawers();
                     binding.navigationLayout.interactionExpandLayout.collapse();
+                    startActivity(new Intent(this, InteractionFiltersActivity.class)
+                            .putExtra(AllInteraction, "1"));
                 });
         binding.navigationLayout.interactionExpandLayout.secondLayout.findViewById(R.id.llFollowupDue)
                 .setOnClickListener(v -> {
                     binding.drawerLayout.closeDrawers();
                     binding.navigationLayout.interactionExpandLayout.collapse();
-                    //startActivity(new Intent(this, CreateCustomerActivity.class));
+                    startActivity(new Intent(this, InteractionFiltersActivity.class)
+                            .putExtra(DueFollowUp, "1"));
                 });
 
         binding.navigationLayout.interactionExpandLayout.secondLayout.findViewById(R.id.llPromisePay)
                 .setOnClickListener(v -> {
                     binding.drawerLayout.closeDrawers();
                     binding.navigationLayout.interactionExpandLayout.collapse();
+                    startActivity(new Intent(this, InteractionFiltersActivity.class)
+                            .putExtra(PromiseToPays, "1"));
                 });
 
 
@@ -280,6 +288,14 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
         });
 
         setupViewPager();
+
+        viewModel.isSessionClear.observe(this, isClear -> {
+            if (isClear != null) {
+                sessionManager.logoutUser();
+                finishAffinity();
+                startActivity(new Intent(this, LoginActivity.class));
+            }
+        });
 
     }
 

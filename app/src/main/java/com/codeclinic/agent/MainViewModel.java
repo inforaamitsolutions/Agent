@@ -77,6 +77,8 @@ public class MainViewModel extends AndroidViewModel {
     private final LeadFragment leadFragment = new LeadFragment();
     private final LoanFragment loanFragment = new LoanFragment();
 
+    public MutableLiveData<Boolean> isSessionClear = new MutableLiveData<>();
+
     public MainViewModel(@NonNull Application application) {
         super(application);
         this.application = application;
@@ -108,6 +110,9 @@ public class MainViewModel extends AndroidViewModel {
                     @Override
                     public void onError(@io.reactivex.annotations.NonNull Throwable e) {
                         Log.i("customerForm", "Server Error " + e.getMessage());
+                        if (e.getMessage().contains("401")) {
+                            isSessionClear.postValue(true);
+                        }
                     }
                 }));
     }

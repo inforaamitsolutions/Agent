@@ -14,7 +14,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginStart="5dp"
-            android:src="@drawable/ic_lead"
+            android:src="@drawable/lead_icon"
 
             app:tint="@color/white" />
 
