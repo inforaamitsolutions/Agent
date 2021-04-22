@@ -191,6 +191,7 @@
                                 android:backgroundTint="#F4F4F4"
                                 android:hint="Enter the details"
                                 android:padding="10dp"
+                                android:gravity="top"
                                 android:visibility="gone" />
 
                             <TextView
@@ -201,6 +202,18 @@
                                 android:backgroundTint="#F4F4F4"
                                 android:gravity="center_vertical"
                                 android:hint="Select Date"
+                                android:padding="10dp"
+                                android:textSize="16dp"
+                                android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/tvTime"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:background="@drawable/button_bg"
+                                android:backgroundTint="#F4F4F4"
+                                android:gravity="center_vertical"
+                                android:hint="Select Time"
                                 android:padding="10dp"
                                 android:textSize="16dp"
                                 android:visibility="gone" />

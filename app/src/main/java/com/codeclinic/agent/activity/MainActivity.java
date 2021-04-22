@@ -313,7 +313,8 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
         int id = item.getItemId();
         switch (id) {
             case R.id.profile:
-                //startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+                /*startActivity(new Intent(this, ProfileActivity.class)
+                        .putExtra(CustomerID, "MFS000317"));*/
                 return true;
             case R.id.notification:
                 startActivity(new Intent(MainActivity.this, NotificationActivity.class));

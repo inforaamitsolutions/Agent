@@ -2,6 +2,7 @@ package com.codeclinic.agent.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,13 +25,14 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
+import static android.text.TextUtils.isEmpty;
 import static com.codeclinic.agent.utils.Constants.CustomerID;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 public class ProfileActivity extends AppCompatActivity {
     ActivityProfileBinding binding;
     CompositeDisposable disposable = new CompositeDisposable();
-    String customerID;
+    String customerID, phoneNo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,16 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(new Intent(this, BusinessDataUpdateActivity.class));
         });
 
+        binding.llCall.setOnClickListener(v -> {
+            if (!isEmpty(phoneNo)) {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + phoneNo));
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "No phone number available", Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
         callCustomerInfoAPI();
     }
@@ -92,6 +104,7 @@ public class ProfileActivity extends AppCompatActivity {
                             binding.tvName.setText(customerBioData.getCustomerName() + "");
                             binding.tvPhone.setText(customerBioData.getMobileNumber() + "");
                             binding.tvCallNumber.setText(customerBioData.getMobileNumber() + "");
+                            phoneNo = customerBioData.getMobileNumber() + "";
                             binding.tvIdNumber.setText(customerBioData.getIdNumber() + "");
                             binding.tvAge.setText(customerBioData.getCustomerAge() + "");
                             binding.tvGender.setText(customerBioData.getGender() + "");

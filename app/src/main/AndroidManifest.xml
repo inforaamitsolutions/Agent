@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -23,7 +24,7 @@
         android:roundIcon="@mipmap/ic_app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Agent">
-        <activity android:name=".activity.InteractionFiltersActivity"></activity>
+        <activity android:name=".activity.InteractionFiltersActivity" />
         <activity android:name=".activity.BusinessDataUpdateActivity" />
         <activity android:name=".activity.LoanProfileActivity" />
         <activity android:name=".activity.CustomerLoanAccountsActivity" />

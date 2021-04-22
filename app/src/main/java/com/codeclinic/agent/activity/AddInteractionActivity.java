@@ -7,10 +7,11 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.TimePicker;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -54,7 +55,7 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
     String[] type = {"CALL", "VISIT", "SMS"};
     String[] channel = {"USD"};
 
-    int fieldQuestionPosition = 0, radioButtonTextSize;
+    int fieldQuestionPosition = 0, radioButtonTextSize, edtHeight;
 
     CompositeDisposable disposable = new CompositeDisposable();
     InteractionCategoryListModel selectedInteractionCategory;
@@ -65,6 +66,7 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
     String customerID;
     LinearLayout.LayoutParams layoutParams;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +83,7 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
             finish();
         });
 
-        ArrayAdapter ad = new ArrayAdapter(this, android.R.layout.simple_spinner_item, type);
+        ArrayAdapter ad = new ArrayAdapter(this, R.layout.spinner_item_view, type);
         binding.typeSpinner.setAdapter(ad);
 
         binding.tvDate.setOnClickListener(v -> {
@@ -92,13 +94,9 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
                 int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
                 int minute = mcurrentTime.get(Calendar.MINUTE);
                 TimePickerDialog mTimePicker;
-                mTimePicker = new TimePickerDialog(AddInteractionActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                    @SuppressLint("SetTextI18n")
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        //eReminderTime.setText( selectedHour + ":" + selectedMinute);
-                        binding.tvDate.setText(selectedHour + " : " + selectedMinute);
-                    }
+                mTimePicker = new TimePickerDialog(AddInteractionActivity.this, (timePicker, selectedHour, selectedMinute) -> {
+                    //eReminderTime.setText( selectedHour + ":" + selectedMinute);
+                    binding.tvDate.setText(selectedHour + " : " + selectedMinute);
                 }, hour, minute, true);//Yes 24 hour time
                 mTimePicker.setTitle("Select Time");
                 mTimePicker.show();
@@ -108,6 +106,8 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
 
         final float scale = getResources().getDisplayMetrics().density;
         radioButtonTextSize = (int) (14 * scale + 0.5f);
+        edtHeight = (int) (100 * scale + 0.5f);
+
         layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.setMargins(5, 5, 5, 5);
 
@@ -123,6 +123,7 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
                 }
             }
         });
+
 
         getInteractionCategoriesAPI();
 
@@ -167,11 +168,19 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
         binding.radioGroup.setVisibility(View.GONE);
         binding.tvQuestionToFollow.setVisibility(View.GONE);
         binding.tvQuestionToFollow.setText("");
+        binding.tvDate.setText("");
+
+        RelativeLayout.LayoutParams lp;
+        if (fieldList.get(fieldQuestionPosition).getFieldType().equals("textArea")) {
+            lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, edtHeight);
+        } else {
+            lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+        binding.edtAnswer.setLayoutParams(lp);
 
         if (fieldList.get(fieldQuestionPosition).getFieldType().equals("select")) {
 
             binding.rlSpinner.setVisibility(View.VISIBLE);
-
 
             spAdapter = new ArrayAdapter(AddInteractionActivity.this, R.layout.spinner_item_view, fieldList.get(fieldQuestionPosition).getInteractionFieldOptionList());
             binding.spLabel.setAdapter(spAdapter);
@@ -243,7 +252,6 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
                 binding.tvDate.setHint("Select Time");
             }
 
-            binding.tvDate.setText("");
             binding.tvDate.setVisibility(View.VISIBLE);
 
         }

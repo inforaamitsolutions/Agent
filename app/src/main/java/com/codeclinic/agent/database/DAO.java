@@ -8,6 +8,7 @@ import androidx.room.Query;
 
 import com.codeclinic.agent.model.businesDataUpdate.FetchBusinessDataFormBodyModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormBodyModel;
+import com.codeclinic.agent.model.customer.SaveCustomerFormEntries;
 import com.codeclinic.agent.model.lead.FetchLeadFormBodyModel;
 
 import io.reactivex.Flowable;
@@ -22,6 +23,9 @@ public interface DAO {
 
     @Query("select * from CustomerFormBody")
     Flowable<FetchCustomerFormBodyModel> getCustomerSurveyForm();
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void saveCustomerEntries(SaveCustomerFormEntries entity);
 
     @Delete
     void removeCustomerForm(FetchCustomerFormBodyModel entity);

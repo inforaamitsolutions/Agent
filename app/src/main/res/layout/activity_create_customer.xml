@@ -96,8 +96,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:id="@+id/llQuestions"
@@ -182,6 +182,7 @@
                             android:background="@drawable/button_bg"
                             android:backgroundTint="#F4F4F4"
                             android:hint="Enter the details"
+                            android:gravity="top"
                             android:padding="10dp"
                             android:visibility="gone" />
 
@@ -193,6 +194,18 @@
                             android:backgroundTint="#F4F4F4"
                             android:gravity="center_vertical"
                             android:hint="Select Date"
+                            android:padding="10dp"
+                            android:textSize="16dp"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/tvTime"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:background="@drawable/button_bg"
+                            android:backgroundTint="#F4F4F4"
+                            android:gravity="center_vertical"
+                            android:hint="Select Time"
                             android:padding="10dp"
                             android:textSize="16dp"
                             android:visibility="gone" />
@@ -217,7 +230,6 @@
                     </RelativeLayout>
 
 
-
                 </LinearLayout>
 
                 <LinearLayout
@@ -227,8 +239,8 @@
                     android:layout_gravity="center"
                     android:layout_marginHorizontal="20dp"
                     android:gravity="center"
-                    android:visibility="gone"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <TextView
 
@@ -253,8 +265,8 @@
                             android:layout_height="wrap_content"
                             android:background="@drawable/button_bg"
                             android:backgroundTint="#F4F4F4"
-                            android:inputType="text"
                             android:hint="Enter First Name"
+                            android:inputType="text"
                             android:padding="10dp"
                             android:visibility="visible" />
 
@@ -262,11 +274,11 @@
                             android:id="@+id/edtMiddleName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
                             android:background="@drawable/button_bg"
                             android:backgroundTint="#F4F4F4"
-                            android:inputType="text"
-                            android:layout_marginTop="20dp"
                             android:hint="Enter Middle Name"
+                            android:inputType="text"
                             android:padding="10dp"
                             android:visibility="visible" />
 
@@ -274,11 +286,11 @@
                             android:id="@+id/edtLastName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
                             android:background="@drawable/button_bg"
                             android:backgroundTint="#F4F4F4"
-                            android:inputType="text"
-                            android:layout_marginTop="20dp"
                             android:hint="Enter Last Name"
+                            android:inputType="text"
                             android:padding="10dp"
                             android:visibility="visible" />
 

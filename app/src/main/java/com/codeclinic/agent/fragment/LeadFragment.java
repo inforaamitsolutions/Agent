@@ -106,7 +106,7 @@ public class LeadFragment extends Fragment {
                         } else {
                             zoneIds.add(list.get(i).getId() + "");
                         }
-                        viewModel.getMarketsAPI(list.get(i).getParentId() + "");
+                        viewModel.getMarketsAPI(list.get(i).getId() + "");
                     }
 
                     @Override
@@ -326,7 +326,7 @@ public class LeadFragment extends Fragment {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     Log.i("parentId", "" + viewModel.zoneList.getValue().get(i).getId());
-                    viewModel.getMarketsAPI(viewModel.zoneList.getValue().get(i).getParentId() + "");
+                    viewModel.getMarketsAPI(viewModel.zoneList.getValue().get(i).getId() + "");
                 }
 
                 @Override

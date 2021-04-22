@@ -2,6 +2,7 @@ package com.codeclinic.agent.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -24,12 +25,13 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
+import static android.text.TextUtils.isEmpty;
 import static com.codeclinic.agent.utils.Constants.CustomerID;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 public class LeadInfoActivity extends AppCompatActivity {
     CompositeDisposable disposable = new CompositeDisposable();
-    String customerID;
+    String customerID, phoneNo;
     private ActivityLeadInfoBinding binding;
 
     @Override
@@ -52,6 +54,16 @@ public class LeadInfoActivity extends AppCompatActivity {
                     .putExtra(CustomerID, customerID));
         });
 
+        binding.llCall.setOnClickListener(v -> {
+            if (!isEmpty(phoneNo)) {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + phoneNo));
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "No phone number available", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         callLeadInfoAPI();
 
     }
@@ -72,6 +84,8 @@ public class LeadInfoActivity extends AppCompatActivity {
                             binding.tvStatus.setText("Customer Status - " + response.getLeadInfo().getCustomerStatuses().get(0).getStatusName());
                             binding.tvCustomerName.setText(response.getLeadInfo().getFullName());
                             binding.tvPhone.setText(response.getLeadInfo().getPhoneNumber());
+                            binding.tvNumber.setText(response.getLeadInfo().getPhoneNumber() + "");
+                            phoneNo = response.getLeadInfo().getPhoneNumber() + "";
                             if (response.getLeadInfo().getDocumentNumber() != null) {
                                 binding.tvDocNumber.setText(response.getLeadInfo().getDocumentNumber());
                             } else {

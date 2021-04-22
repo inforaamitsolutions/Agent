@@ -189,9 +189,10 @@
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/button_bg"
                                 android:backgroundTint="#F4F4F4"
+                                android:gravity="top"
                                 android:hint="Enter the details"
                                 android:padding="10dp"
-                                android:visibility="gone" />
+                                android:visibility="visible" />
 
                             <TextView
                                 android:id="@+id/tvDate"
@@ -201,6 +202,18 @@
                                 android:backgroundTint="#F4F4F4"
                                 android:gravity="center_vertical"
                                 android:hint="Select Date"
+                                android:padding="10dp"
+                                android:textSize="16dp"
+                                android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/tvTime"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:background="@drawable/button_bg"
+                                android:backgroundTint="#F4F4F4"
+                                android:gravity="center_vertical"
+                                android:hint="Select Time"
                                 android:padding="10dp"
                                 android:textSize="16dp"
                                 android:visibility="gone" />
