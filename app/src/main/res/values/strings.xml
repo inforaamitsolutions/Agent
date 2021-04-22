@@ -3,6 +3,7 @@
     <string name="forget_password"><u>Forgot Password?</u></string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="fileChooser">Choose File</string>
     <array name="type_array">
         <item>Promise to Pay</item>
         <item>Visit</item>

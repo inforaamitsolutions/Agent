@@ -31,6 +31,7 @@ import com.codeclinic.agent.utils.AccessMediaUtil;
 import com.codeclinic.agent.utils.LocationInfo;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.gson.Gson;
+import com.obsez.android.lib.filechooser.ChooserDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,7 +62,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
     CompositeDisposable disposable = new CompositeDisposable();
 
-    String imagePath;
+    String imagePath, filePath;
     int surveyPage = 0, questionPage = 0, questionToFollowPage = 0, radioButtonTextSize, edtHeight;
     ArrayAdapter spAdapter;
 
@@ -75,6 +76,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
     LinearLayout.LayoutParams layoutParams;
 
     boolean isSubmitForm = false;
+    private ChooserDialog chooserDialog;
 
 
     @SuppressLint("SetTextI18n")
@@ -832,6 +834,30 @@ public class CreateCustomerActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    private void chooseFile() {
+
+        chooserDialog = new ChooserDialog(this, R.style.FileChooserStyle);
+
+        chooserDialog
+                .withResources(
+                        R.string.fileChooser,
+                        R.string.title_choose, R.string.dialog_cancel)
+                .withOptionResources(R.string.option_create_folder, R.string.options_delete,
+                        R.string.new_folder_cancel, R.string.new_folder_ok)
+                .disableTitle(false)
+                .enableOptions(false)
+                .titleFollowsDir(false)
+                .displayPath(true)
+                .enableDpad(true);
+
+        chooserDialog.withFilter(false, true);
+        chooserDialog.withChosenListener((dir, dirFile) -> {
+            Toast.makeText(this, (dirFile.isDirectory() ? "FOLDER: " : "FILE: ") + dir, Toast.LENGTH_SHORT).show();
+            /*if (dirFile.isFile()) _iv.setImageBitmap(decodeFile(dirFile));*/
+        });
+        chooserDialog.withOnBackPressedListener(dialog -> chooserDialog.goBack());
     }
 
     @Override

@@ -52,10 +52,12 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 callLoginAPI();
             }
+
         });
 
 
     }
+
 
     private void callLoginAPI() {
         binding.loadingView.loader.setVisibility(View.VISIBLE);
