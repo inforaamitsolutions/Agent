@@ -97,6 +97,11 @@ public class CreateCustomerActivity extends AppCompatActivity {
             selectImage();
         });
 
+        chooseFile();
+        binding.llFile.setOnClickListener(v -> {
+            chooserDialog.show();
+        });
+
         binding.btnPrevious.setOnClickListener(v -> {
             questionToFollowPage = 0;
             if (binding.llQuestions.getVisibility() == View.GONE) {
@@ -325,10 +330,12 @@ public class CreateCustomerActivity extends AppCompatActivity {
         binding.tvTime.setVisibility(View.GONE);
         binding.radioGroup.setVisibility(View.GONE);
         binding.imgUser.setVisibility(View.GONE);
+        binding.llFile.setVisibility(View.GONE);
         binding.tvQuestionToFollow.setVisibility(View.GONE);
         binding.tvQuestionToFollow.setText("");
         binding.tvDate.setText("");
         binding.tvTime.setText("");
+        binding.tvFileName.setText("");
         binding.edtAnswer.getText().clear();
 
         CustomerQuestionsListModel question = questionList.get(surveyPage).get(questionPage);
@@ -518,6 +525,20 @@ public class CreateCustomerActivity extends AppCompatActivity {
             } else if (answeredQuestions.containsKey(questionPage)) {
                 Glide.with(CreateCustomerActivity.this).load(answeredQuestions.get(questionPage)).into(binding.imgUser);
             }
+        } else if (question.getFieldType().equals("file")) {
+
+            binding.llFile.setVisibility(View.VISIBLE);
+
+            if (surveyQuestions.containsKey(surveyPage)) {
+                Map<Integer, String> data = surveyQuestions.get(surveyPage);
+                if (data != null) {
+                    if (data.containsKey(questionPage)) {
+                        binding.tvFileName.setText(data.get(questionPage) + "");
+                    }
+                }
+            } else if (answeredQuestions.containsKey(questionPage)) {
+                binding.tvFileName.setText(answeredQuestions.get(questionPage) + "");
+            }
         }
     }
 
@@ -562,6 +583,13 @@ public class CreateCustomerActivity extends AppCompatActivity {
             imagePath = "";
 
 
+        } else if (question.getFieldType().equals("file")) {
+
+            Log.i("answered", filePath + "");
+            answeredQuestions.put(questionPage, filePath);
+            filePath = "";
+
+
         } else {
             Log.i("answered", binding.edtAnswer.getText().toString() + "");
             answeredQuestions.put(questionPage, binding.edtAnswer.getText().toString());
@@ -573,14 +601,12 @@ public class CreateCustomerActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     private void updateQuestionToFollowPage() {
         int pos = binding.spLabel.getSelectedItemPosition();
+
         CustomerQuestionToFollowModel question = questionList.get(surveyPage).get(questionPage).getOptions().get(pos).getQuestionToFollow();
         binding.tvQuestionToFollow.setText(question.getQuestionText());
-        binding.tvQuestionToFollow.setVisibility(View.VISIBLE);
-        binding.edtAnswer.getText().clear();
-        binding.tvDate.setText("");
-        binding.tvTime.setText("");
-        Glide.with(CreateCustomerActivity.this).load("").into(binding.imgUser);
 
+
+        binding.tvQuestionToFollow.setVisibility(View.VISIBLE);
         binding.rlSpinner.setVisibility(View.GONE);
         binding.rlQueToFollowSpinner.setVisibility(View.GONE);
         binding.edtAnswer.setVisibility(View.GONE);
@@ -588,6 +614,13 @@ public class CreateCustomerActivity extends AppCompatActivity {
         binding.tvTime.setVisibility(View.GONE);
         binding.radioGroup.setVisibility(View.GONE);
         binding.imgUser.setVisibility(View.GONE);
+        binding.llFile.setVisibility(View.GONE);
+        binding.edtAnswer.getText().clear();
+        binding.tvFileName.setText("");
+        binding.tvDate.setText("");
+        binding.tvTime.setText("");
+        Glide.with(CreateCustomerActivity.this).load("").into(binding.imgUser);
+
 
         RelativeLayout.LayoutParams lp;
         if (question.getFieldType().equals("textArea")) {
@@ -666,6 +699,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
         } else if (question.getFieldType().equals("image")) {
             binding.imgUser.setVisibility(View.VISIBLE);
+        } else if (question.getFieldType().equals("file")) {
+            binding.llFile.setVisibility(View.VISIBLE);
         }
     }
 
@@ -711,6 +746,12 @@ public class CreateCustomerActivity extends AppCompatActivity {
             Log.i("followUpAnswered", imagePath + "");
             answeredToFollowQuestions.put(0, imagePath);
             imagePath = "";
+
+        } else if (question.getFieldType().equals("file")) {
+
+            Log.i("followUpAnswered", filePath + "");
+            answeredToFollowQuestions.put(0, filePath);
+            filePath = "";
 
         } else {
             Log.i("followUpAnswered", binding.edtAnswer.getText().toString() + "");
@@ -761,6 +802,10 @@ public class CreateCustomerActivity extends AppCompatActivity {
             } else if (question.getFieldType().equals("image")
                     && isEmpty(imagePath)) {
                 Toast.makeText(this, "Please add image", Toast.LENGTH_SHORT).show();
+                return false;
+            } else if (question.getFieldType().equals("file")
+                    && isEmpty(filePath)) {
+                Toast.makeText(this, "Please attach file", Toast.LENGTH_SHORT).show();
                 return false;
             }
         } else if (binding.linearUserDetail.getVisibility() == View.VISIBLE) {
@@ -819,6 +864,10 @@ public class CreateCustomerActivity extends AppCompatActivity {
                     && isEmpty(imagePath)) {
                 Toast.makeText(this, "Please add image", Toast.LENGTH_SHORT).show();
                 return false;
+            } else if (questionToFollowList.getFieldType().equals("file")
+                    && isEmpty(filePath)) {
+                Toast.makeText(this, "Please attach file", Toast.LENGTH_SHORT).show();
+                return false;
             }
         } else if (binding.linearUserDetail.getVisibility() == View.VISIBLE) {
             if (isEmpty(binding.edtFirstName.getText().toString())) {
@@ -856,6 +905,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
         chooserDialog.withChosenListener((dir, dirFile) -> {
             Toast.makeText(this, (dirFile.isDirectory() ? "FOLDER: " : "FILE: ") + dir, Toast.LENGTH_SHORT).show();
             /*if (dirFile.isFile()) _iv.setImageBitmap(decodeFile(dirFile));*/
+            filePath = dirFile.getPath();
         });
         chooserDialog.withOnBackPressedListener(dialog -> chooserDialog.goBack());
     }

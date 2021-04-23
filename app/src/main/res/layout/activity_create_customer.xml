@@ -181,8 +181,8 @@
                             android:layout_height="wrap_content"
                             android:background="@drawable/button_bg"
                             android:backgroundTint="#F4F4F4"
-                            android:hint="Enter the details"
                             android:gravity="top"
+                            android:hint="Enter the details"
                             android:padding="10dp"
                             android:visibility="gone" />
 
@@ -226,6 +226,32 @@
                             android:background="@drawable/avatar"
                             android:scaleType="centerCrop"
                             android:visibility="gone" />
+
+                        <LinearLayout
+                            android:id="@+id/llFile"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_centerHorizontal="true"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <ImageView
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                android:src="@drawable/file_icon" />
+
+                            <TextView
+                                android:id="@+id/tvFileName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:hint="file name"
+                                android:textColor="@color/black"
+                                android:textSize="12dp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
 
                     </RelativeLayout>
 
