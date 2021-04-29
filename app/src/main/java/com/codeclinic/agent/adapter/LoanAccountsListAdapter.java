@@ -81,13 +81,13 @@ public class LoanAccountsListAdapter extends RecyclerView.Adapter<LoanAccountsLi
             binding.expandedDetail.setInterpolator(new OvershootInterpolator());
             binding.expandedDetail.setOnExpansionUpdateListener(this);
             binding.llLoanDetails.setOnClickListener(view -> {
-                RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(selectedItem);
+                Holder holder = (Holder) recyclerView.findViewHolderForAdapterPosition(selectedItem);
                 if (holder != null) {
-                    binding.llLoanDetails.setSelected(false);
-                    binding.expandedDetail.collapse();
-                    binding.llLoanDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorPrimary)));
-                    binding.tvView.setText("View");
-                    binding.imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_add_circle));
+                    holder.binding.llLoanDetails.setSelected(false);
+                    holder.binding.expandedDetail.collapse();
+                    holder.binding.llLoanDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorPrimary)));
+                    holder.binding.tvView.setText("View");
+                    holder.binding.imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_add_circle));
                 }
 
                 int position = getAdapterPosition();

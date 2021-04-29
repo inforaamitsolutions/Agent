@@ -125,8 +125,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
         binding.btnNext1.setOnClickListener(view -> {
             if ((questionList.get(surveyPage).get(questionPage).getFieldType().equals("select_one")
                     || questionList.get(surveyPage).get(questionPage).getFieldType().equals("select_multiple"))) {
-                CustomerQuestionToFollowModel questionToFollowList =
-                        questionList.get(surveyPage).get(questionPage).getOptions().get(binding.spLabel.getSelectedItemPosition()).getQuestionToFollow();
+                CustomerQuestionToFollowModel questionToFollowList = questionList.get(surveyPage).get(questionPage).getOptions().get(binding.spLabel.getSelectedItemPosition()).getQuestionToFollow();
 
                 if (questionToFollowList != null) {
                     if (questionToFollowPage == 0) {

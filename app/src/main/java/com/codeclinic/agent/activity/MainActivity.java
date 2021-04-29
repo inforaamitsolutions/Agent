@@ -14,6 +14,7 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
@@ -61,15 +62,6 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
 
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-
-
-        if (Connection_Detector.isInternetAvailable(this)) {
-            viewModel.callCustomerForm();
-
-            viewModel.callLeadForm();
-
-            viewModel.callBusinessDataForm();
-        }
 
 
         binding.navigationLayout.tvUserName.setText(
@@ -303,8 +295,8 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     public boolean onCreateOptionsMenu(Menu menu) {
 // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.search_menu, menu);
-        getMenuInflater().inflate(R.menu.notification_menu, menu);
-        getMenuInflater().inflate(R.menu.profile_menu, menu);
+        //getMenuInflater().inflate(R.menu.notification_menu, menu);
+        //getMenuInflater().inflate(R.menu.profile_menu, menu);
         return true;
     }
 
@@ -319,8 +311,20 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             case R.id.notification:
                 startActivity(new Intent(MainActivity.this, NotificationActivity.class));
                 return true;
-            case R.id.search:
-                startActivity(new Intent(MainActivity.this, SearchActivity.class));
+            case R.id.syncData:
+                //startActivity(new Intent(MainActivity.this, SearchActivity.class));
+
+                if (Connection_Detector.isInternetAvailable(this)) {
+
+                    viewModel.callCustomerForm();
+
+                    viewModel.callLeadForm();
+
+                    viewModel.callBusinessDataForm();
+                } else {
+                    Toast.makeText(this, "please check your internet connection", Toast.LENGTH_SHORT).show();
+                }
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
