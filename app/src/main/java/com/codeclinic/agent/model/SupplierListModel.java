@@ -35,7 +35,7 @@ public class SupplierListModel {
     private List<CustomerAttributesListModel> attributeValues = null;
     @SerializedName("customerRole")
     @Expose
-    private String customerRole;
+    private CustomerRoleModel customerRole;
     @SerializedName("externalId")
     @Expose
     private Object externalId;
@@ -131,11 +131,11 @@ public class SupplierListModel {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getCustomerRole() {
+    public CustomerRoleModel getCustomerRole() {
         return customerRole;
     }
 
-    public void setCustomerRole(String customerRole) {
+    public void setCustomerRole(CustomerRoleModel customerRole) {
         this.customerRole = customerRole;
     }
 
