@@ -9,6 +9,7 @@ import com.codeclinic.agent.model.LoanProductsModel;
 import com.codeclinic.agent.model.LoanStatusModel;
 import com.codeclinic.agent.model.LoginModel;
 import com.codeclinic.agent.model.MarketModel;
+import com.codeclinic.agent.model.PerformanceModel;
 import com.codeclinic.agent.model.ProductSegmentModel;
 import com.codeclinic.agent.model.StaffModel;
 import com.codeclinic.agent.model.StatusModel;
@@ -55,6 +56,14 @@ public interface API {
     Single<UserModel> USER_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Query("userName") String params);
 
 
+    /****************************************** Performance Data Forms  *****************************************************/
+
+
+    //Fetch All Filters Interactions API
+    @Headers("Content-Type: application/json")
+    @GET("baseapi/staffservice/staff-performance/getPerformanceSummary")
+    Single<PerformanceModel> PERFORMANCE_MODEL_SINGLE(@Header("Authorization") String header, @QueryMap Map<String, String> paramsMap);
+
     /****************************************** Dynamic Lead Customer Forms  *****************************************************/
 
     //Fetch CustomRegistration Form API
@@ -79,7 +88,7 @@ public interface API {
 
     //Fetch Business Data Update Form API
     @Headers("Content-Type: application/json")
-    @GET("customerState/getSurveyBySurveyName")
+    @GET("customer/customerState/getSurveyBySurveyName")
     Single<FetchBusinessDataFormModel> FETCH_BUSINESS_DATA_FORM_MODEL_SINGLE(@Header("Authorization") String header, @Query("surveyName") String params);
 
     //Business data update form API

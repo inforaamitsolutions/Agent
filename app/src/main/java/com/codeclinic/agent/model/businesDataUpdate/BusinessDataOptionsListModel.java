@@ -9,6 +9,8 @@ import com.codeclinic.agent.typeConverters.BusinessDataQuestionToFollowConverter
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 @Entity(tableName = "BusinessDataQuestionsOptions")
 public class BusinessDataOptionsListModel {
 
@@ -46,7 +48,7 @@ public class BusinessDataOptionsListModel {
     @SerializedName("questionToFollow")
     @Expose
     @TypeConverters(BusinessDataQuestionToFollowConverter.class)
-    private BusinessDataQuestionToFollowModel questionToFollow = null;
+    private List<BusinessDataQuestionToFollowModel> questionToFollow = null;
 
     public long getMainId() {
         return mainId;
@@ -96,11 +98,11 @@ public class BusinessDataOptionsListModel {
         this.active = active;
     }
 
-    public BusinessDataQuestionToFollowModel getQuestionToFollow() {
+    public List<BusinessDataQuestionToFollowModel> getQuestionToFollow() {
         return questionToFollow;
     }
 
-    public void setQuestionToFollow(BusinessDataQuestionToFollowModel questionToFollow) {
+    public void setQuestionToFollow(List<BusinessDataQuestionToFollowModel> questionToFollow) {
         this.questionToFollow = questionToFollow;
     }
 

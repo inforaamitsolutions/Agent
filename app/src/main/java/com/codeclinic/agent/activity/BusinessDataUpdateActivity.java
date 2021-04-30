@@ -65,7 +65,7 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
     boolean isSubmitForm = false;
     private ActivityBusinessDataUpdateBinding binding;
     private String imagePath;
-    private int surveyPage = 0, questionPage = 0, questionToFollowPage = 0, radioButtonTextSize, edtHeight;
+    private int surveyPage = 0, questionPage = 0, questionToFollowPage = -1, radioButtonTextSize, edtHeight;
     private ArrayAdapter spAdapter;
     private List<BusinessDataSurveyDefinitionPageModel> surveyPagesList = new ArrayList<>();
     private Map<Integer, String> answeredQuestions = new HashMap<>();
@@ -92,7 +92,7 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
         });
 
         binding.btnPrevious.setOnClickListener(v -> {
-            questionToFollowPage = 0;
+            questionToFollowPage = -1;
             if (binding.llQuestions.getVisibility() == View.GONE) {
                 binding.llQuestions.setVisibility(View.VISIBLE);
                 binding.linearUserDetail.setVisibility(View.GONE);
@@ -114,19 +114,29 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
         binding.btnNext1.setOnClickListener(view -> {
             if ((questionList.get(surveyPage).get(questionPage).getFieldType().equals("select_one")
                     || questionList.get(surveyPage).get(questionPage).getFieldType().equals("select_multiple"))) {
-                BusinessDataQuestionToFollowModel questionToFollowList =
+                List<BusinessDataQuestionToFollowModel> questionToFollowList =
                         questionList.get(surveyPage).get(questionPage).getOptions().get(binding.spLabel.getSelectedItemPosition()).getQuestionToFollow();
 
-                if (questionToFollowList != null) {
-                    if (questionToFollowPage == 0) {
-                        questionToFollowPage++;
-                        updateQuestionToFollowPage();
-                    } else if (validateQueToFollowAnswer(questionToFollowList)) {
-                        addAnswersToFollowAnswers();
-                        optionQuestions.put(questionPage, answeredToFollowQuestions);
-                        Log.i("optionsQuestions", new Gson().toJson(optionQuestions));
-                        answeredToFollowQuestions = new HashMap<>();
-                        questionToFollowPage = 0;
+                if (questionToFollowList != null && binding.llQuestions.getVisibility() == View.VISIBLE) {
+                    if (questionToFollowList.size() != 0) {
+                        if (questionToFollowPage == -1) {
+                            questionToFollowPage = questionToFollowPage + 1;
+                            updateQuestionToFollowPage();
+                        } else if (questionToFollowList.size() > (questionToFollowPage + 1)) {
+                            if (validateQueToFollowAnswer(questionToFollowList)) {
+                                addAnswersToFollowAnswers();
+                                questionToFollowPage = questionToFollowPage + 1;
+                                updateQuestionToFollowPage();
+                            }
+                        } else if (validateQueToFollowAnswer(questionToFollowList)) {
+                            addAnswersToFollowAnswers();
+                            optionQuestions.put(questionPage, answeredToFollowQuestions);
+                            Log.i("optionsQuestions", new Gson().toJson(optionQuestions));
+                            answeredToFollowQuestions = new HashMap<>();
+                            questionToFollowPage = -1;
+                            moveToNextQuestion();
+                        }
+                    } else {
                         moveToNextQuestion();
                     }
                 } else {
@@ -217,12 +227,17 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
                         for (int j = 0; j < options.size(); j++) {
                             if (value.equals(options.get(j).getLabel())) {
                                 if (options.get(j).getQuestionToFollow() != null) {
-                                    JSONObject jObject = new JSONObject();
-                                    jObject.put("fieldName", options.get(j).getQuestionToFollow().getFieldName());
-                                    Map<Integer, String> answer = optionQuestions.get(entry.getKey());
-                                    jObject.put("responseText", answer.get(0));
-                                    jsonArray.put(jObject);
-                                    break;
+
+                                    Map<Integer, String> questionToFollowAnswered = optionQuestions.get(entry.getKey());
+
+                                    if (questionToFollowAnswered != null) {
+                                        for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
+                                            JSONObject jObject = new JSONObject();
+                                            jObject.put("fieldName", options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName());
+                                            jObject.put("responseText", item.getValue());
+                                            jsonArray.put(jObject);
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -567,7 +582,7 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     private void updateQuestionToFollowPage() {
         int pos = binding.spLabel.getSelectedItemPosition();
-        BusinessDataQuestionToFollowModel question = questionList.get(surveyPage).get(questionPage).getOptions().get(pos).getQuestionToFollow();
+        BusinessDataQuestionToFollowModel question = questionList.get(surveyPage).get(questionPage).getOptions().get(pos).getQuestionToFollow().get(questionToFollowPage);
         binding.tvQuestionToFollow.setText(question.getQuestionText());
         binding.tvQuestionToFollow.setVisibility(View.VISIBLE);
         binding.edtAnswer.getText().clear();
@@ -657,13 +672,13 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
     private void addAnswersToFollowAnswers() {
 
         int pos = binding.spLabel.getSelectedItemPosition();
-        BusinessDataQuestionToFollowModel question = questionList.get(surveyPage).get(questionPage).getOptions().get(pos).getQuestionToFollow();
+        BusinessDataQuestionToFollowModel question = questionList.get(surveyPage).get(questionPage).getOptions().get(pos).getQuestionToFollow().get(questionToFollowPage);
 
         if (question.getFieldType().equals("select_one")
                 || question.getFieldType().equals("select_multiple")) {
 
             Log.i("followUpAnswered", binding.spQueToFollow.getSelectedItem().toString() + "");
-            answeredToFollowQuestions.put(0, binding.spQueToFollow.getSelectedItem().toString());
+            answeredToFollowQuestions.put(questionToFollowPage, binding.spQueToFollow.getSelectedItem().toString());
 
         } else if (question.getFieldType().equals("checkbox")) {
 
@@ -671,35 +686,35 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
             RadioButton selectedRadioButton = findViewById(selectedId);
 
             Log.i("followUpAnswered", selectedRadioButton.getText().toString() + "");
-            answeredToFollowQuestions.put(0, selectedRadioButton.getText().toString());
+            answeredToFollowQuestions.put(questionToFollowPage, selectedRadioButton.getText().toString());
 
         } else if (question.getFieldType().equals("date")) {
 
             Log.i("followUpAnswered", binding.tvDate.getText().toString() + "");
-            answeredToFollowQuestions.put(0, binding.tvDate.getText().toString());
+            answeredToFollowQuestions.put(questionToFollowPage, binding.tvDate.getText().toString());
 
 
         } else if (question.getFieldType().equals("time")) {
 
             Log.i("followUpAnswered", binding.tvTime.getText().toString() + "");
-            answeredToFollowQuestions.put(0, binding.tvTime.getText().toString());
+            answeredToFollowQuestions.put(questionToFollowPage, binding.tvTime.getText().toString());
 
 
         } else if (question.getFieldType().equals("geopoint")) {
 
             Log.i("followUpAnswered", binding.tvDate.getText().toString() + "");
-            answeredToFollowQuestions.put(0, binding.tvDate.getText().toString());
+            answeredToFollowQuestions.put(questionToFollowPage, binding.tvDate.getText().toString());
 
 
         } else if (question.getFieldType().equals("image")) {
 
             Log.i("followUpAnswered", imagePath + "");
-            answeredToFollowQuestions.put(0, imagePath);
+            answeredToFollowQuestions.put(questionToFollowPage, imagePath);
             imagePath = "";
 
         } else {
             Log.i("followUpAnswered", binding.edtAnswer.getText().toString() + "");
-            answeredToFollowQuestions.put(0, binding.edtAnswer.getText().toString());
+            answeredToFollowQuestions.put(questionToFollowPage, binding.edtAnswer.getText().toString());
         }
 
 
@@ -764,7 +779,8 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
         return true;
     }
 
-    private boolean validateQueToFollowAnswer(BusinessDataQuestionToFollowModel questionToFollowList) {
+    private boolean validateQueToFollowAnswer(List<BusinessDataQuestionToFollowModel> questionToFollow) {
+        BusinessDataQuestionToFollowModel questionToFollowList = questionToFollow.get(questionToFollowPage);
         if (binding.llQuestions.getVisibility() == View.VISIBLE) {
             if (questionToFollowList.getFieldType().equals("text") || questionToFollowList.getFieldType().equals("textfield")
                     || questionToFollowList.getFieldType().equals("textArea") || questionToFollowList.getFieldType().equals("decimal")

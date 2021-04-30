@@ -12,6 +12,7 @@ import com.codeclinic.agent.fragment.CustomerFragment;
 import com.codeclinic.agent.fragment.HomeFragment;
 import com.codeclinic.agent.fragment.LeadFragment;
 import com.codeclinic.agent.fragment.LoanFragment;
+import com.codeclinic.agent.model.LoadingResult;
 import com.codeclinic.agent.model.LoanAccountsByNoModel;
 import com.codeclinic.agent.model.LoanAccountsModel;
 import com.codeclinic.agent.model.LoanProductListModel;
@@ -20,6 +21,7 @@ import com.codeclinic.agent.model.LoanStatusListModel;
 import com.codeclinic.agent.model.LoanStatusModel;
 import com.codeclinic.agent.model.MarketListModel;
 import com.codeclinic.agent.model.MarketModel;
+import com.codeclinic.agent.model.PerformanceModel;
 import com.codeclinic.agent.model.ProductSegmentListModel;
 import com.codeclinic.agent.model.ProductSegmentModel;
 import com.codeclinic.agent.model.StaffListModel;
@@ -50,6 +52,7 @@ import com.google.gson.Gson;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -77,6 +80,8 @@ public class MainViewModel extends AndroidViewModel {
     private final LeadFragment leadFragment = new LeadFragment();
     private final LoanFragment loanFragment = new LoanFragment();
 
+    public final MutableLiveData<LoadingResult> formFetchingComplete = new MutableLiveData<>();
+
     public MutableLiveData<Boolean> isSessionClear = new MutableLiveData<>();
 
     public MainViewModel(@NonNull Application application) {
@@ -84,6 +89,10 @@ public class MainViewModel extends AndroidViewModel {
         this.application = application;
     }
 
+    /****************************** Home Screen Data Section *********************************************/
+
+
+    public MutableLiveData<PerformanceModel> performanceData = new MutableLiveData<>();
 
     public void callCustomerForm() {
         /*"Customer Registration Form"*/
@@ -103,6 +112,7 @@ public class MainViewModel extends AndroidViewModel {
 
                         } else {
                             Log.i("customerForm", "Response Error " + response.getSuccessStatus());
+                            formFetchingComplete.postValue(new LoadingResult("Response Error " + response.getSuccessStatus() + " ", true));
                         }
 
                     }
@@ -113,6 +123,7 @@ public class MainViewModel extends AndroidViewModel {
                         if (e.getMessage().contains("401")) {
                             isSessionClear.postValue(true);
                         }
+                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", true));
                     }
                 }));
     }
@@ -126,11 +137,13 @@ public class MainViewModel extends AndroidViewModel {
                     @Override
                     public void onComplete() {
                         Log.i("customerForm", "added to local");
+                        callLeadForm();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.i("customerForm", "Error  ==  " + e.getMessage());
+                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", true));
                     }
                 }));
     }
@@ -152,6 +165,7 @@ public class MainViewModel extends AndroidViewModel {
 
                         } else {
                             Log.i("leadForm", "Server Error " + response.getSuccessStatus());
+                            formFetchingComplete.postValue(new LoadingResult("Response Error " + response.getSuccessStatus() + " ", true));
                         }
 
                     }
@@ -159,6 +173,7 @@ public class MainViewModel extends AndroidViewModel {
                     @Override
                     public void onError(@io.reactivex.annotations.NonNull Throwable e) {
                         Log.i("leadForm", "Server Error " + e.getMessage());
+                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", true));
                     }
                 }));
     }
@@ -172,11 +187,13 @@ public class MainViewModel extends AndroidViewModel {
                     @Override
                     public void onComplete() {
                         Log.i("LeadSurveyForm", "added to local");
+                        callBusinessDataForm();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.i("LeadSurveyForm", "Error  ==  " + e.getMessage());
+                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", true));
                     }
                 }));
     }
@@ -198,6 +215,7 @@ public class MainViewModel extends AndroidViewModel {
 
                         } else {
                             Log.i("BusinessDataForm", "Server Error " + response.getSuccessStatus());
+                            formFetchingComplete.postValue(new LoadingResult("Response Error " + response.getSuccessStatus() + " ", true));
                         }
 
                     }
@@ -205,6 +223,7 @@ public class MainViewModel extends AndroidViewModel {
                     @Override
                     public void onError(@io.reactivex.annotations.NonNull Throwable e) {
                         Log.i("BusinessDataForm", "Server Error " + e.getMessage());
+                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", true));
                     }
                 }));
     }
@@ -218,11 +237,33 @@ public class MainViewModel extends AndroidViewModel {
                     @Override
                     public void onComplete() {
                         Log.i("BusinessDateSurveyForm", "added to local");
+                        formFetchingComplete.postValue(new LoadingResult(" All Forms are fetched and saved", true));
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.i("BusinessDateSurveyForm", "Error  ==  " + e.getMessage());
+                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", true));
+                    }
+                }));
+    }
+
+    public void getPerformanceDataAPI(Map<String, String> params) {
+        disposable.add(RestClass.getClient().PERFORMANCE_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken), params)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<PerformanceModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull PerformanceModel response) {
+
+                        performanceData.postValue(response);
+
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("performance", "" + e.getMessage());
+                        performanceData.postValue(null);
                     }
                 }));
     }

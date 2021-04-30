@@ -29,6 +29,7 @@ import com.codeclinic.agent.R;
 import com.codeclinic.agent.adapter.ViewPagerAdapter;
 import com.codeclinic.agent.databinding.ActivityMainBinding;
 import com.codeclinic.agent.utils.Connection_Detector;
+import com.codeclinic.agent.utils.LoadingDialog;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.android.material.tabs.TabLayout;
 
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     private final String[] tabTitles = new String[]{"Home", "Loan", "Lead", "Customer"};
     private final int[] tabImageResId = {R.drawable.ic_home, R.drawable.ic_loan, R.drawable.ic_lead, R.drawable.ic_customer};
     private ViewPagerAdapter adapter;
+    LoadingDialog loadingDialog;
 
 
     @SuppressLint("SetTextI18n")
@@ -62,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
 
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+
+        loadingDialog = new LoadingDialog(this);
 
 
         binding.navigationLayout.tvUserName.setText(
@@ -289,6 +293,14 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             }
         });
 
+        viewModel.formFetchingComplete.observe(this, isComplete -> {
+            loadingDialog.hideProgressDialog();
+            if (isComplete != null) {
+                Toast.makeText(this, " " + isComplete.getMessage(), Toast.LENGTH_LONG).show();
+            }
+
+        });
+
     }
 
     @Override
@@ -315,12 +327,10 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
                 //startActivity(new Intent(MainActivity.this, SearchActivity.class));
 
                 if (Connection_Detector.isInternetAvailable(this)) {
-
+                    loadingDialog.showProgressDialog("Please wait we are fetching new forms");
+                    Toast.makeText(this, "Please wait we are fetching new forms", Toast.LENGTH_LONG).show();
                     viewModel.callCustomerForm();
 
-                    viewModel.callLeadForm();
-
-                    viewModel.callBusinessDataForm();
                 } else {
                     Toast.makeText(this, "please check your internet connection", Toast.LENGTH_SHORT).show();
                 }

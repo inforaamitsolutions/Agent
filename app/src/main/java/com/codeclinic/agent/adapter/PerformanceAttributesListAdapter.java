@@ -1,5 +1,6 @@
 package com.codeclinic.agent.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,17 +14,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.codeclinic.agent.R;
 import com.codeclinic.agent.databinding.CustomPerformaceAttributesListViewBinding;
+import com.codeclinic.agent.model.PerformanceAttributesListModel;
 
 import net.cachapa.expandablelayout.ExpandableLayout;
 
+import java.util.List;
+
 public class PerformanceAttributesListAdapter extends RecyclerView.Adapter<PerformanceAttributesListAdapter.Holder> {
+    private final List<PerformanceAttributesListModel> arrayList;
     private final Context context;
     private final RecyclerView recyclerView;
     private final int UNSELECTED = -1;
     private CustomPerformaceAttributesListViewBinding binding;
     private int selectedItem = UNSELECTED;
 
-    public PerformanceAttributesListAdapter(Context context, RecyclerView recyclerView) {
+    public PerformanceAttributesListAdapter(List<PerformanceAttributesListModel> arrayList, Context context, RecyclerView recyclerView) {
+        this.arrayList = arrayList;
         this.context = context;
         this.recyclerView = recyclerView;
     }
@@ -32,7 +38,7 @@ public class PerformanceAttributesListAdapter extends RecyclerView.Adapter<Perfo
     @Override
     public PerformanceAttributesListAdapter.Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.custom_performace_attributes_list_view, parent, false);
-        return new Holder(binding);
+        return new Holder(binding, viewType);
     }
 
     @Override
@@ -42,7 +48,7 @@ public class PerformanceAttributesListAdapter extends RecyclerView.Adapter<Perfo
 
     @Override
     public int getItemCount() {
-        return 3;
+        return arrayList.size();
     }
 
     @Override
@@ -53,9 +59,22 @@ public class PerformanceAttributesListAdapter extends RecyclerView.Adapter<Perfo
     public class Holder extends RecyclerView.ViewHolder implements ExpandableLayout.OnExpansionUpdateListener {
         CustomPerformaceAttributesListViewBinding binding;
 
-        public Holder(@NonNull CustomPerformaceAttributesListViewBinding binding) {
+        @SuppressLint("SetTextI18n")
+        public Holder(@NonNull CustomPerformaceAttributesListViewBinding binding, int pos) {
             super(binding.getRoot());
             this.binding = binding;
+
+            binding.tvAttributeName.setText(arrayList.get(pos).getAttibuteLabel());
+
+            binding.tvTarget.setText(arrayList.get(pos).getTarget() + "");
+            binding.tvActualPerformance.setText(arrayList.get(pos).getActual() + "");
+            if (arrayList.get(pos).getPerformance() != null) {
+                binding.progressBar.setProgress(arrayList.get(pos).getPerformance());
+                binding.tvProgressPercentage.setText(arrayList.get(pos).getPerformance() + "%");
+            } else {
+                binding.progressBar.setProgress(0);
+                binding.tvProgressPercentage.setText("0%");
+            }
 
             binding.expandedDetail.setInterpolator(new OvershootInterpolator());
             binding.expandedDetail.setOnExpansionUpdateListener(this);
