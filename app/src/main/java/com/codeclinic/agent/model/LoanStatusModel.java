@@ -9,15 +9,9 @@ public class LoanStatusModel {
     @SerializedName("successStatus")
     @Expose
     private String successStatus;
-    @SerializedName("message")
-    @Expose
-    private String message;
     @SerializedName("body")
     @Expose
-    private List<LoanStatusListModel> body = null;
-    @SerializedName("responseCode")
-    @Expose
-    private Integer responseCode;
+    private List<String> loanStatuses = null;
     @SerializedName("errors")
     @Expose
     private List<Object> errors = null;
@@ -33,28 +27,12 @@ public class LoanStatusModel {
         this.successStatus = successStatus;
     }
 
-    public String getMessage() {
-        return message;
+    public List<String> getLoanStatuses() {
+        return loanStatuses;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public List<LoanStatusListModel> getBody() {
-        return body;
-    }
-
-    public void setBody(List<LoanStatusListModel> body) {
-        this.body = body;
-    }
-
-    public Integer getResponseCode() {
-        return responseCode;
-    }
-
-    public void setResponseCode(Integer responseCode) {
-        this.responseCode = responseCode;
+    public void setLoanStatuses(List<String> loanStatuses) {
+        this.loanStatuses = loanStatuses;
     }
 
     public List<Object> getErrors() {
@@ -72,5 +50,6 @@ public class LoanStatusModel {
     public void setHttpStatus(String httpStatus) {
         this.httpStatus = httpStatus;
     }
+
 
 }

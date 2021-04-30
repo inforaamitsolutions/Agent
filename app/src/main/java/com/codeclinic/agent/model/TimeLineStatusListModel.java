@@ -5,6 +5,13 @@ import com.google.gson.annotations.SerializedName;
 
 public class TimeLineStatusListModel {
 
+    public TimeLineStatusListModel(String timelineState) {
+        this.timelineState = timelineState;
+    }
+
+    public TimeLineStatusListModel() {
+    }
+
     @SerializedName("dateTimeCreated")
     @Expose
     private String dateTimeCreated;

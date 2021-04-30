@@ -27,7 +27,6 @@ import com.codeclinic.agent.model.StaffListModel;
 import com.codeclinic.agent.model.StatusListModel;
 import com.codeclinic.agent.model.ZoneListModel;
 import com.codeclinic.agent.utils.CommonMethods;
-import com.codeclinic.agent.utils.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
-import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 
 public class CustomerFragment extends Fragment {
@@ -48,6 +46,11 @@ public class CustomerFragment extends Fragment {
 
     private final List<String> zoneIds = new ArrayList<>();
     private final List<String> marketIds = new ArrayList<>();
+
+    List<StatusListModel> statusList = new ArrayList<>();
+    List<ProductSegmentListModel> productSegmentList = new ArrayList<>();
+    List<ZoneListModel> zoneList = new ArrayList<>();
+    List<MarketListModel> marketList = new ArrayList<>();
 
     public CustomerFragment() {
         // Required empty public constructor
@@ -98,18 +101,25 @@ public class CustomerFragment extends Fragment {
 
         viewModel.zoneList.observe(getActivity(), list -> {
             if (list != null) {
-                ArrayAdapter<ZoneListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, list);
+                zoneList.clear();
+                zoneList.addAll(list);
+                zoneList.add(0, new ZoneListModel("--Select--"));
+                ArrayAdapter<ZoneListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, zoneList);
                 binding.searchChildView.spZone.setAdapter(adapter);
                 binding.searchChildView.spZone.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        Log.i("parentId", "" + list.get(i).getId());
-                        if (zoneIds.contains(list.get(i).getId() + "")) {
-                            zoneIds.remove(list.get(i).getId() + "");
+                        if (i != 0) {
+                            Log.i("parentId", "" + list.get(i).getId());
+                            if (zoneIds.contains(list.get(i).getId() + "")) {
+                                zoneIds.remove(list.get(i).getId() + "");
+                            } else {
+                                zoneIds.add(list.get(i).getId() + "");
+                            }
+                            viewModel.getMarketsAPI(list.get(i).getId() + "");
                         } else {
-                            zoneIds.add(list.get(i).getId() + "");
+                            zoneIds.clear();
                         }
-                        viewModel.getMarketsAPI(list.get(i).getId() + "");
                     }
 
                     @Override
@@ -122,16 +132,23 @@ public class CustomerFragment extends Fragment {
 
         viewModel.marketList.observe(getActivity(), list -> {
             if (list != null) {
-                ArrayAdapter<MarketListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, list);
+                marketList.clear();
+                marketList.addAll(list);
+                marketList.add(0, new MarketListModel("--Select--"));
+                ArrayAdapter<MarketListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, marketList);
                 binding.searchChildView.spMarket.setAdapter(adapter);
                 binding.searchChildView.spMarket.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        Log.i("marketId", "" + list.get(i).getId());
-                        if (marketIds.contains(list.get(i).getId() + "")) {
-                            marketIds.remove(list.get(i).getId() + "");
+                        if (i != 0) {
+                            Log.i("marketId", "" + list.get(i).getId());
+                            if (marketIds.contains(list.get(i).getId() + "")) {
+                                marketIds.remove(list.get(i).getId() + "");
+                            } else {
+                                marketIds.add(list.get(i).getId() + "");
+                            }
                         } else {
-                            marketIds.add(list.get(i).getId() + "");
+                            marketIds.clear();
                         }
                     }
 
@@ -146,15 +163,22 @@ public class CustomerFragment extends Fragment {
         viewModel.getStatusAPI();
         viewModel.statusesList.observe(getActivity(), list -> {
             if (list != null) {
-                ArrayAdapter<StatusListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, list);
+                statusList.clear();
+                statusList.addAll(list);
+                statusList.add(0, new StatusListModel("--Select--"));
+                ArrayAdapter<StatusListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, statusList);
                 binding.searchChildView.spStatus.setAdapter(adapter);
                 binding.searchChildView.spStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        if (statuses.contains(list.get(i).getName())) {
-                            statuses.remove(list.get(i).getName());
-                        } else {
-                            statuses.add(list.get(i).getName());
+                        if (i != 0)
+                            if (statuses.contains(list.get(i).getName())) {
+                                statuses.remove(list.get(i).getName());
+                            } else {
+                                statuses.add(list.get(i).getName());
+                            }
+                        else {
+                            statuses.clear();
                         }
                     }
 
@@ -169,7 +193,10 @@ public class CustomerFragment extends Fragment {
         viewModel.getSegmentsAPI();
         viewModel.productSegmentList.observe(getActivity(), list -> {
             if (list != null) {
-                ArrayAdapter<ProductSegmentListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, list);
+                productSegmentList.clear();
+                productSegmentList.addAll(list);
+                productSegmentList.add(0, new ProductSegmentListModel("--Select--"));
+                ArrayAdapter<ProductSegmentListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, productSegmentList);
                 binding.searchChildView.spSegment.setAdapter(adapter);
             }
         });
@@ -287,34 +314,38 @@ public class CustomerFragment extends Fragment {
                         jsonObject.put("staffId", viewModel.staffList.getValue().get(binding.searchChildView.spStaff.getSelectedItemPosition()).getId());
                         jsonObject.put("fromDate", binding.searchChildView.tvFromDate.getText().toString());
                         jsonObject.put("toDate", binding.searchChildView.tvToDate.getText().toString());
-                        jsonObject.put("segment", binding.searchChildView.spSegment.getSelectedItem().toString());
+                        if (binding.searchChildView.spSegment.getSelectedItemPosition() != 0) {
+                            jsonObject.put("segment", binding.searchChildView.spSegment.getSelectedItem().toString());
+                        }
                         jsonObject.put("customerRole", "MYMOBI_BUSINESS_CUSTOMER");
                         jsonObject.put("customerType", "BUSINESS");
 
-                        JSONArray jsonArray = new JSONArray();
-                        for (int i = 0; i < statuses.size(); i++) {
-                            jsonArray.put(statuses.get(i));
+                        if (!statusList.isEmpty()) {
+                            JSONArray jsonArray = new JSONArray();
+                            for (int i = 0; i < statuses.size(); i++) {
+                                jsonArray.put(statuses.get(i));
+                            }
+                            jsonObject.put("customerStatuses", jsonArray);
                         }
-                        jsonObject.put("customerStatuses", jsonArray);
 
                         JSONArray jsonGroupArray = new JSONArray();
                         if (binding.searchChildView.spAssignedTo.getSelectedItemPosition() == 1) {
                             jsonGroupArray.put(viewModel.staffList.getValue().get(binding.searchChildView.spStaff.getSelectedItemPosition()).getId());
                             jsonObject.put("groupIds", jsonGroupArray);
                         } else if (binding.searchChildView.spAssignedTo.getSelectedItemPosition() == 2) {
-                           /* jsonGroupArray.put(viewModel.zoneList.getValue().get(binding.searchChildView.spZone.getSelectedItemPosition()).getId());
-                            jsonGroupArray.put(viewModel.marketList.getValue().get(binding.searchChildView.spMarket.getSelectedItemPosition()).getId());*/
                             for (int i = 0; i < zoneIds.size(); i++) {
                                 jsonGroupArray.put(zoneIds.get(i));
                             }
                             for (int i = 0; i < marketIds.size(); i++) {
                                 jsonGroupArray.put(marketIds.get(i));
                             }
-                            jsonObject.put("groupIds", jsonGroupArray);
-                        } else {
+                            if (!marketIds.isEmpty() || !zoneIds.isEmpty()) {
+                                jsonObject.put("groupIds", jsonGroupArray);
+                            }
+                        } /*else {
                             jsonGroupArray.put(sessionManager.getUserDetails().get(SessionManager.UserID));
                             jsonObject.put("groupIds", jsonGroupArray);
-                        }
+                        }*/
 
 
                         Log.i("jsonReq", jsonObject.toString());
@@ -350,7 +381,7 @@ public class CustomerFragment extends Fragment {
             binding.searchChildView.tvFromDate.setText("");
             binding.searchChildView.tvToDate.setText("");
 
-            ArrayAdapter<StaffListModel> staffAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, viewModel.staffList.getValue());
+  /*          ArrayAdapter<StaffListModel> staffAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, viewModel.staffList.getValue());
             binding.searchChildView.spStaff.setAdapter(staffAdapter);
 
             ArrayAdapter<ZoneListModel> zoneAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, viewModel.zoneList.getValue());
@@ -389,7 +420,7 @@ public class CustomerFragment extends Fragment {
 
 
             ArrayAdapter<ProductSegmentListModel> productSegmentAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, viewModel.productSegmentList.getValue());
-            binding.searchChildView.spSegment.setAdapter(productSegmentAdapter);
+            binding.searchChildView.spSegment.setAdapter(productSegmentAdapter);*/
 
         });
     }

@@ -4,6 +4,13 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class MarketListModel {
+    public MarketListModel(String name) {
+        this.name = name;
+    }
+
+    public MarketListModel() {
+    }
+
     @SerializedName("dateTimeCreated")
     @Expose
     private String dateTimeCreated;

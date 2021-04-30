@@ -17,7 +17,6 @@ import com.codeclinic.agent.model.LoanAccountsByNoModel;
 import com.codeclinic.agent.model.LoanAccountsModel;
 import com.codeclinic.agent.model.LoanProductListModel;
 import com.codeclinic.agent.model.LoanProductsModel;
-import com.codeclinic.agent.model.LoanStatusListModel;
 import com.codeclinic.agent.model.LoanStatusModel;
 import com.codeclinic.agent.model.MarketListModel;
 import com.codeclinic.agent.model.MarketModel;
@@ -248,25 +247,7 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public void getPerformanceDataAPI(Map<String, String> params) {
-        disposable.add(RestClass.getClient().PERFORMANCE_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken), params)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<PerformanceModel>() {
-                    @Override
-                    public void onSuccess(@io.reactivex.annotations.NonNull PerformanceModel response) {
-
-                        performanceData.postValue(response);
-
-                    }
-
-                    @Override
-                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-                        Log.i("performance", "" + e.getMessage());
-                        performanceData.postValue(null);
-                    }
-                }));
-    }
+    public MutableLiveData<List<String>> loanStatusList = new MutableLiveData<>();
 
 
     /****************************** Manage Filters Data Section *********************************************/
@@ -282,7 +263,29 @@ public class MainViewModel extends AndroidViewModel {
     public MutableLiveData<LoanAccountsByNoModel> loanAccountsByNo = new MutableLiveData<>();
     public MutableLiveData<List<LoanProductListModel>> productList = new MutableLiveData<>();
     public MutableLiveData<List<SupplierListModel>> supplierList = new MutableLiveData<>();
-    public MutableLiveData<List<LoanStatusListModel>> loanStatusList = new MutableLiveData<>();
+
+    public void getPerformanceDataAPI(Map<String, String> params) {
+        disposable.add(RestClass.getClient().PERFORMANCE_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken), params)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<PerformanceModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull PerformanceModel response) {
+
+                        performanceData.postValue(response);
+
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("performance", "" + e.getMessage());
+                        if (e.getMessage().contains("401")) {
+                            isSessionClear.postValue(true);
+                        }
+                        performanceData.postValue(null);
+                    }
+                }));
+    }
     public MutableLiveData<List<TimeLineStatusListModel>> timeLineStatusList = new MutableLiveData<>();
 
     public void getStatusAPI() {
@@ -473,8 +476,8 @@ public class MainViewModel extends AndroidViewModel {
                 .subscribeWith(new DisposableSingleObserver<LoanStatusModel>() {
                     @Override
                     public void onSuccess(@io.reactivex.annotations.NonNull LoanStatusModel response) {
-                        if (response.getBody() != null) {
-                            loanStatusList.postValue(response.getBody());
+                        if (response.getLoanStatuses() != null) {
+                            loanStatusList.postValue(response.getLoanStatuses());
                         }
                     }
 

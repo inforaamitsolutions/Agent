@@ -4,6 +4,14 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class ZoneListModel {
+
+    public ZoneListModel(String name) {
+        this.name = name;
+    }
+
+    public ZoneListModel() {
+    }
+
     @SerializedName("dateTimeCreated")
     @Expose
     private String dateTimeCreated;

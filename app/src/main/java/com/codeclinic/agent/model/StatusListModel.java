@@ -4,6 +4,14 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class StatusListModel {
+
+    public StatusListModel(String name) {
+        this.name = name;
+    }
+
+    public StatusListModel() {
+    }
+
     @SerializedName("dateTimeCreated")
     @Expose
     private String dateTimeCreated;

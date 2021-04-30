@@ -6,6 +6,14 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class SupplierListModel {
+
+    public SupplierListModel(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public SupplierListModel() {
+    }
+
     @SerializedName("id")
     @Expose
     private Integer id;

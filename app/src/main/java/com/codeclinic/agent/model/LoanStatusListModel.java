@@ -4,6 +4,14 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class LoanStatusListModel {
+
+    public LoanStatusListModel(String name) {
+        this.name = name;
+    }
+
+    public LoanStatusListModel() {
+    }
+
     @SerializedName("dateTimeCreated")
     @Expose
     private Object dateTimeCreated;

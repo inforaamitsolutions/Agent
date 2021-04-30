@@ -21,14 +21,12 @@ import com.codeclinic.agent.adapter.LoanAccountsListAdapter;
 import com.codeclinic.agent.databinding.FragmentLoanBinding;
 import com.codeclinic.agent.model.LoanAccountListModel;
 import com.codeclinic.agent.model.LoanProductListModel;
-import com.codeclinic.agent.model.LoanStatusListModel;
 import com.codeclinic.agent.model.MarketListModel;
 import com.codeclinic.agent.model.StaffListModel;
 import com.codeclinic.agent.model.SupplierListModel;
 import com.codeclinic.agent.model.TimeLineStatusListModel;
 import com.codeclinic.agent.model.ZoneListModel;
 import com.codeclinic.agent.utils.CommonMethods;
-import com.codeclinic.agent.utils.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
-import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 
 public class LoanFragment extends Fragment {
@@ -50,6 +47,10 @@ public class LoanFragment extends Fragment {
     private final List<String> marketIds = new ArrayList<>();
     private final List<String> loanStatus = new ArrayList<>();
     private final List<String> timeLineStatus = new ArrayList<>();
+
+    private final List<TimeLineStatusListModel> timeLineStatusList = new ArrayList<>();
+    private final List<SupplierListModel> supplierList = new ArrayList<>();
+    private final List<String> loanStatusList = new ArrayList<>();
 
     public LoanFragment() {
         // Required empty public constructor
@@ -97,12 +98,8 @@ public class LoanFragment extends Fragment {
         });
 
 
-        viewModel.staffList.observe(getActivity(), list -> {
-            if (list != null) {
-                ArrayAdapter<StaffListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, list);
-                binding.searchChildView.spStaff.setAdapter(adapter);
-            }
-        });
+        /********************************************* Mandatory Fields *********************************************************/
+
 
         viewModel.zoneList.observe(getActivity(), list -> {
             if (list != null) {
@@ -171,25 +168,40 @@ public class LoanFragment extends Fragment {
             }
         });
 
+
+        /************************************************ Optional Fields ******************************************************/
+
+
         viewModel.supplierList.observe(getActivity(), list -> {
             if (list != null) {
-                ArrayAdapter<SupplierListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, list);
+                supplierList.clear();
+                supplierList.addAll(list);
+                supplierList.add(0, new SupplierListModel("--Select--"));
+                ArrayAdapter<SupplierListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, supplierList);
                 binding.searchChildView.spSupplier.setAdapter(adapter);
             }
         });
 
         viewModel.loanStatusList.observe(getActivity(), list -> {
             if (list != null) {
-                ArrayAdapter<LoanStatusListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, list);
+                loanStatusList.clear();
+                loanStatusList.addAll(list);
+                loanStatusList.add(0, "--Select--");
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, loanStatusList);
                 binding.searchChildView.spLoanStatus.setAdapter(adapter);
                 binding.searchChildView.spLoanStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        Log.i("loanStatus", "" + list.get(i).getName());
-                        if (loanStatus.contains(list.get(i).getName())) {
-                            loanStatus.remove(list.get(i).getName());
+                        if (i != 0) {
+                            Log.i("loanStatus", "" + list.get(i));
+
+                            if (loanStatus.contains(list.get(i))) {
+                                loanStatus.remove(list.get(i));
+                            } else {
+                                loanStatus.add(list.get(i));
+                            }
                         } else {
-                            loanStatus.add(list.get(i).getName());
+                            loanStatus.clear();
                         }
                     }
 
@@ -203,16 +215,23 @@ public class LoanFragment extends Fragment {
 
         viewModel.timeLineStatusList.observe(getActivity(), list -> {
             if (list != null) {
-                ArrayAdapter<TimeLineStatusListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, list);
+                timeLineStatusList.clear();
+                timeLineStatusList.addAll(list);
+                timeLineStatusList.add(0, new TimeLineStatusListModel("--Select--"));
+                ArrayAdapter<TimeLineStatusListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, timeLineStatusList);
                 binding.searchChildView.spTimeLineStatus.setAdapter(adapter);
                 binding.searchChildView.spTimeLineStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        Log.i("timeLineStates", "" + list.get(i).getTimelineState());
-                        if (timeLineStatus.contains(list.get(i).getStateId() + "")) {
-                            timeLineStatus.remove(list.get(i).getStateId() + "");
+                        if (i != 0) {
+                            Log.i("timeLineStates", "" + list.get(i).getTimelineState());
+                            if (timeLineStatus.contains(list.get(i).getStateId() + "")) {
+                                timeLineStatus.remove(list.get(i).getStateId() + "");
+                            } else {
+                                timeLineStatus.add(list.get(i).getStateId() + "");
+                            }
                         } else {
-                            timeLineStatus.add(list.get(i).getStateId() + "");
+                            timeLineStatus.clear();
                         }
                     }
 
@@ -223,6 +242,16 @@ public class LoanFragment extends Fragment {
                 });
             }
         });
+
+        viewModel.staffList.observe(getActivity(), list -> {
+            if (list != null) {
+                ArrayAdapter<StaffListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, list);
+                binding.searchChildView.spStaff.setAdapter(adapter);
+            }
+        });
+
+
+        /************************************************ Retrieve Main Data ******************************************************/
 
         viewModel.loanAccounts.observe(getActivity(), account -> {
             binding.loadingView.loader.setVisibility(View.GONE);
@@ -355,14 +384,26 @@ public class LoanFragment extends Fragment {
                         jsonObject.put("startDate", binding.searchChildView.tvFromDate.getText().toString());
                         jsonObject.put("endDate", binding.searchChildView.tvToDate.getText().toString());
                         jsonObject.put("productId", viewModel.productList.getValue().get(binding.searchChildView.spLoanProducts.getSelectedItemPosition()).getProductId());
-                        jsonObject.put("partnerId", viewModel.supplierList.getValue().get(binding.searchChildView.spSupplier.getSelectedItemPosition()).getCustomerId());
 
-
-                        JSONArray jsonArray = new JSONArray();
-                        for (int i = 0; i < loanStatus.size(); i++) {
-                            jsonArray.put(loanStatus.get(i));
+                        if (binding.searchChildView.spSupplier.getSelectedItemPosition() != 0) {
+                            jsonObject.put("partnerId", viewModel.supplierList.getValue().get(binding.searchChildView.spSupplier.getSelectedItemPosition()).getCustomerId());
                         }
-                        jsonObject.put("loanStates", jsonArray);
+
+                        if (!loanStatus.isEmpty()) {
+                            JSONArray jsonArray = new JSONArray();
+                            for (int i = 0; i < loanStatus.size(); i++) {
+                                jsonArray.put(loanStatus.get(i));
+                            }
+                            jsonObject.put("loanStates", jsonArray);
+                        }
+
+                        if (!timeLineStatus.isEmpty()) {
+                            JSONArray jsonTimeLineArray = new JSONArray();
+                            for (int i = 0; i < timeLineStatus.size(); i++) {
+                                jsonTimeLineArray.put(Integer.parseInt(timeLineStatus.get(i)));
+                            }
+                            jsonObject.put("timelineStates", jsonTimeLineArray);
+                        }
 
 
                         JSONArray jsonGroupArray = new JSONArray();
@@ -378,16 +419,9 @@ public class LoanFragment extends Fragment {
                                 jsonGroupArray.put(Integer.parseInt(marketIds.get(i)));
                             }
                             jsonObject.put("groupIds", jsonGroupArray);
-                        } else {
+                        } /*else {
                             jsonObject.put("staff", sessionManager.getUserDetails().get(SessionManager.UserID));
-                        }
-
-
-                        JSONArray jsonTimeLineArray = new JSONArray();
-                        for (int i = 0; i < timeLineStatus.size(); i++) {
-                            jsonTimeLineArray.put(Integer.parseInt(timeLineStatus.get(i)));
-                        }
-                        jsonObject.put("timelineStates", jsonTimeLineArray);
+                        }*/
 
 
                         Log.i("jsonReq", jsonObject.toString());
@@ -420,7 +454,7 @@ public class LoanFragment extends Fragment {
             binding.searchChildView.tvFromDate.setText("");
             binding.searchChildView.tvToDate.setText("");
 
-            ArrayAdapter<StaffListModel> staffAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, viewModel.staffList.getValue());
+           /* ArrayAdapter<StaffListModel> staffAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, viewModel.staffList.getValue());
             binding.searchChildView.spStaff.setAdapter(staffAdapter);
 
             ArrayAdapter<ZoneListModel> zoneAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, viewModel.zoneList.getValue());
@@ -455,19 +489,21 @@ public class LoanFragment extends Fragment {
                 }
             });
 
-            ArrayAdapter<SupplierListModel> supplierAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, viewModel.supplierList.getValue());
+            ArrayAdapter<SupplierListModel> supplierAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, supplierList);
             binding.searchChildView.spSupplier.setAdapter(supplierAdapter);
 
-            ArrayAdapter<LoanStatusListModel> loanStatusAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, viewModel.loanStatusList.getValue());
+            ArrayAdapter<LoanStatusListModel> loanStatusAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, loanStatusList);
             binding.searchChildView.spLoanStatus.setAdapter(loanStatusAdapter);
             binding.searchChildView.spLoanStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    Log.i("loanStatus", "" + viewModel.loanStatusList.getValue().get(i).getName());
-                    if (loanStatus.contains(viewModel.loanStatusList.getValue().get(i).getName())) {
-                        loanStatus.remove(viewModel.loanStatusList.getValue().get(i).getName());
-                    } else {
-                        loanStatus.add(viewModel.loanStatusList.getValue().get(i).getName());
+                    if (i != 0) {
+                        Log.i("loanStatus", "" + viewModel.loanStatusList.getValue().get(i).getName());
+                        if (loanStatus.contains(viewModel.loanStatusList.getValue().get(i).getName())) {
+                            loanStatus.remove(viewModel.loanStatusList.getValue().get(i).getName());
+                        } else {
+                            loanStatus.add(viewModel.loanStatusList.getValue().get(i).getName());
+                        }
                     }
                 }
 
@@ -475,7 +511,7 @@ public class LoanFragment extends Fragment {
                 public void onNothingSelected(AdapterView<?> adapterView) {
 
                 }
-            });
+            });*/
 
         });
     }
