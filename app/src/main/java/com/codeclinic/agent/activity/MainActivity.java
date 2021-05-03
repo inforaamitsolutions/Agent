@@ -33,6 +33,12 @@ import com.codeclinic.agent.utils.LoadingDialog;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.android.material.tabs.TabLayout;
 
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.codeclinic.agent.database.LocalDatabase.localDatabase;
 import static com.codeclinic.agent.utils.Constants.AllInteraction;
 import static com.codeclinic.agent.utils.Constants.CUSTOMER_FRAGMENT;
 import static com.codeclinic.agent.utils.Constants.DueFollowUp;
@@ -52,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     private ViewPagerAdapter adapter;
     LoadingDialog loadingDialog;
 
+    CompositeDisposable disposable = new CompositeDisposable();
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -302,6 +309,21 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
         });
 
+
+        disposable.add(Single.fromCallable(this::checkFormSavedInDB)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((isExist) -> {
+                    if (!isExist) {
+                        fetchFormsOnline();
+                    }
+                }));
+
+
+    }
+
+    private boolean checkFormSavedInDB() {
+        return localDatabase.getDAO().isFormExists();
     }
 
     @Override
@@ -327,18 +349,21 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             case R.id.syncData:
                 //startActivity(new Intent(MainActivity.this, SearchActivity.class));
 
-                if (Connection_Detector.isInternetAvailable(this)) {
-                    loadingDialog.showProgressDialog("Please wait we are fetching new forms");
-                    Toast.makeText(this, "Please wait we are fetching new forms", Toast.LENGTH_LONG).show();
-                    viewModel.callCustomerForm();
-
-                } else {
-                    Toast.makeText(this, "please check your internet connection", Toast.LENGTH_SHORT).show();
-                }
+                fetchFormsOnline();
 
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void fetchFormsOnline() {
+        if (Connection_Detector.isInternetAvailable(this)) {
+            loadingDialog.showProgressDialog("Please wait we are fetching new forms");
+            Toast.makeText(this, "Please wait we are fetching new forms", Toast.LENGTH_LONG).show();
+            viewModel.callCustomerForm();
+        } else {
+            Toast.makeText(this, "please check your internet connection", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -437,4 +462,9 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        disposable.clear();
+    }
 }

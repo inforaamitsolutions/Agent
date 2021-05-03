@@ -24,6 +24,9 @@ public interface DAO {
     @Query("select * from CustomerFormBody")
     Flowable<FetchCustomerFormBodyModel> getCustomerSurveyForm();
 
+    @Query("SELECT EXISTS(SELECT * FROM CustomerFormBody)")
+    boolean isFormExists();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void saveCustomerEntries(SaveCustomerFormEntries entity);
 
