@@ -110,13 +110,13 @@ public class CustomerFragment extends Fragment {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                         if (i != 0) {
-                            Log.i("parentId", "" + list.get(i).getId());
-                            if (zoneIds.contains(list.get(i).getId() + "")) {
-                                zoneIds.remove(list.get(i).getId() + "");
+                            Log.i("parentId", "" + zoneList.get(i).getId());
+                            if (zoneIds.contains(zoneList.get(i).getId() + "")) {
+                                zoneIds.remove(zoneList.get(i).getId() + "");
                             } else {
-                                zoneIds.add(list.get(i).getId() + "");
+                                zoneIds.add(zoneList.get(i).getId() + "");
                             }
-                            viewModel.getMarketsAPI(list.get(i).getId() + "");
+                            viewModel.getMarketsAPI(zoneList.get(i).getId() + "");
                         } else {
                             zoneIds.clear();
                         }
@@ -141,11 +141,11 @@ public class CustomerFragment extends Fragment {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                         if (i != 0) {
-                            Log.i("marketId", "" + list.get(i).getId());
-                            if (marketIds.contains(list.get(i).getId() + "")) {
-                                marketIds.remove(list.get(i).getId() + "");
+                            Log.i("marketId", "" + marketList.get(i).getId());
+                            if (marketIds.contains(marketList.get(i).getId() + "")) {
+                                marketIds.remove(marketList.get(i).getId() + "");
                             } else {
-                                marketIds.add(list.get(i).getId() + "");
+                                marketIds.add(marketList.get(i).getId() + "");
                             }
                         } else {
                             marketIds.clear();
@@ -172,10 +172,10 @@ public class CustomerFragment extends Fragment {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                         if (i != 0)
-                            if (statuses.contains(list.get(i).getName())) {
-                                statuses.remove(list.get(i).getName());
+                            if (statuses.contains(statusList.get(i).getName())) {
+                                statuses.remove(statusList.get(i).getName());
                             } else {
-                                statuses.add(list.get(i).getName());
+                                statuses.add(statusList.get(i).getName());
                             }
                         else {
                             statuses.clear();
@@ -317,7 +317,7 @@ public class CustomerFragment extends Fragment {
                         if (binding.searchChildView.spSegment.getSelectedItemPosition() != 0) {
                             jsonObject.put("segment", binding.searchChildView.spSegment.getSelectedItem().toString());
                         }
-                        jsonObject.put("customerRole", "MYMOBI_BUSINESS_CUSTOMER");
+                        jsonObject.put("customerRole", "MYMOBI_INDIVIDUAL_CUSTOMER");
                         jsonObject.put("customerType", "BUSINESS");
 
                         if (!statusList.isEmpty()) {

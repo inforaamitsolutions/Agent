@@ -121,7 +121,7 @@ public interface API {
 
     //Fetch Loan Status List API
     @Headers("Content-Type: application/json")
-    @GET("baseapi/constants/getLoanAccountStatuses")
+    @GET("baseapi/constants/loanAccountStatuses")
     Single<LoanStatusModel> FETCH_LOAN_STATUS_MODEL_SINGLE(@Header("Authorization") String header);
 
     //Fetch Time Lines Status List API

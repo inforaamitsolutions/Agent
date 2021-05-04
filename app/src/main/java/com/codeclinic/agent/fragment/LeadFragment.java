@@ -106,13 +106,13 @@ public class LeadFragment extends Fragment {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                         if (i != 0) {
-                            Log.i("parentId", "" + list.get(i).getId());
-                            if (zoneIds.contains(list.get(i).getId() + "")) {
-                                zoneIds.remove(list.get(i).getId() + "");
+                            Log.i("parentId", "" + zoneList.get(i).getId());
+                            if (zoneIds.contains(zoneList.get(i).getId() + "")) {
+                                zoneIds.remove(zoneList.get(i).getId() + "");
                             } else {
-                                zoneIds.add(list.get(i).getId() + "");
+                                zoneIds.add(zoneList.get(i).getId() + "");
                             }
-                            viewModel.getMarketsAPI(list.get(i).getId() + "");
+                            viewModel.getMarketsAPI(zoneList.get(i).getId() + "");
                         } else {
                             zoneIds.clear();
                         }
@@ -137,11 +137,11 @@ public class LeadFragment extends Fragment {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                         if (i != 0) {
-                            Log.i("marketId", "" + list.get(i).getId());
-                            if (marketIds.contains(list.get(i).getId() + "")) {
-                                marketIds.remove(list.get(i).getId() + "");
+                            Log.i("marketId", "" + marketList.get(i).getId());
+                            if (marketIds.contains(marketList.get(i).getId() + "")) {
+                                marketIds.remove(marketList.get(i).getId() + "");
                             } else {
-                                marketIds.add(list.get(i).getId() + "");
+                                marketIds.add(marketList.get(i).getId() + "");
                             }
                         } else {
                             marketIds.clear();

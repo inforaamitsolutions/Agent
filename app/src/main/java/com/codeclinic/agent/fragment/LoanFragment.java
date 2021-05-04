@@ -193,12 +193,12 @@ public class LoanFragment extends Fragment {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                         if (i != 0) {
-                            Log.i("loanStatus", "" + list.get(i));
+                            Log.i("loanStatus", "" + loanStatusList.get(i));
 
-                            if (loanStatus.contains(list.get(i))) {
-                                loanStatus.remove(list.get(i));
+                            if (loanStatus.contains(loanStatusList.get(i))) {
+                                loanStatus.remove(loanStatusList.get(i));
                             } else {
-                                loanStatus.add(list.get(i));
+                                loanStatus.add(loanStatusList.get(i));
                             }
                         } else {
                             loanStatus.clear();
@@ -224,11 +224,11 @@ public class LoanFragment extends Fragment {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                         if (i != 0) {
-                            Log.i("timeLineStates", "" + list.get(i).getTimelineState());
-                            if (timeLineStatus.contains(list.get(i).getStateId() + "")) {
-                                timeLineStatus.remove(list.get(i).getStateId() + "");
+                            Log.i("timeLineStates", "" + timeLineStatusList.get(i).getTimelineState());
+                            if (timeLineStatus.contains(timeLineStatusList.get(i).getStateId() + "")) {
+                                timeLineStatus.remove(timeLineStatusList.get(i).getStateId() + "");
                             } else {
-                                timeLineStatus.add(list.get(i).getStateId() + "");
+                                timeLineStatus.add(timeLineStatusList.get(i).getStateId() + "");
                             }
                         } else {
                             timeLineStatus.clear();
