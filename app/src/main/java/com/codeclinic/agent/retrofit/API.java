@@ -152,7 +152,7 @@ public interface API {
 
     //Customer List API
     @Headers("Content-Type: application/json")
-    @POST("customer/customers/getLeadCustomers")
+    @POST("customer/customers/getCustomers")
     Single<CustomerModel> GET_CUSTOMER_LIST_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
 
     //Loan List By Number List API
