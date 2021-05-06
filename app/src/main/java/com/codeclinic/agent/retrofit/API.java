@@ -116,7 +116,7 @@ public interface API {
 
     //Fetch Supplier List API
     @Headers("Content-Type: application/json")
-    @GET("customer/customers/getCustomersByRole?role=SUPPLIER")
+    @GET("customer/customers/getCustomersByRole?role=MYMOBI_PARTNER")
     Single<SupplierModel> FETCH_SUPPLIER_MODEL_SINGLE(@Header("Authorization") String header);
 
     //Fetch Loan Status List API

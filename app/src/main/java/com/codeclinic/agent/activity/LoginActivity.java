@@ -13,7 +13,7 @@ import androidx.databinding.DataBindingUtil;
 import com.codeclinic.agent.R;
 import com.codeclinic.agent.databinding.ActivityLoginBinding;
 import com.codeclinic.agent.model.LoginModel;
-import com.codeclinic.agent.model.user.UserDetailsModel;
+import com.codeclinic.agent.model.user.StaffModel;
 import com.codeclinic.agent.model.user.UserModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.LogoutService;
@@ -112,14 +112,19 @@ public class LoginActivity extends AppCompatActivity {
                     public void onSuccess(@io.reactivex.annotations.NonNull UserModel response) {
                         binding.loadingView.loader.setVisibility(View.GONE);
                         if (response.getBody() != null) {
-                            UserDetailsModel user = response.getBody().getUser();
-                            Log.i("userDetails", "Data ==> " + new Gson().toJson(user));
-                            sessionManager.setUserCredentials(user.getId() + "", user.getEmail(), user.getUserName(), user.getFirstName(), user.getLastName(), user.getOtherName(), user.getPhoneNumber() + "");
-                            startService(new Intent(LoginActivity.this, LogoutService.class));
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            finish();
+                            StaffModel user = response.getBody().getStaff();
+                            if (user != null) {
+                                Log.i("userDetails", "Data ==> " + new Gson().toJson(user));
+                                sessionManager.setUserCredentials(user.getId() + "", user.getEmailAddress(), user.getOtherName(), user.getFirstName(), user.getLastName(), user.getOtherName(), user.getMobileNumber() + "");
+                                startService(new Intent(LoginActivity.this, LogoutService.class));
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                finish();
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Unauthorized Staff", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
                             Log.i("userDetails", "Server Error " + response.getSuccessStatus());
+                            Toast.makeText(LoginActivity.this, "Server Error " + response.getSuccessStatus(), Toast.LENGTH_SHORT).show();
                         }
 
                     }

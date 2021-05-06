@@ -6,16 +6,16 @@ import com.google.gson.annotations.SerializedName;
 public class UserBodyModel {
     @SerializedName("staff")
     @Expose
-    private Object staff;
+    private StaffModel staff;
     @SerializedName("user")
     @Expose
     private UserDetailsModel user;
 
-    public Object getStaff() {
+    public StaffModel getStaff() {
         return staff;
     }
 
-    public void setStaff(Object staff) {
+    public void setStaff(StaffModel staff) {
         this.staff = staff;
     }
 
