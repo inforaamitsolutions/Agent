@@ -385,7 +385,7 @@ public class LoanFragment extends Fragment {
                         jsonObject.put("endDate", binding.searchChildView.tvToDate.getText().toString());
                         jsonObject.put("productId", viewModel.productList.getValue().get(binding.searchChildView.spLoanProducts.getSelectedItemPosition()).getProductId());
 
-                        if (binding.searchChildView.spSupplier.getSelectedItemPosition() != 0) {
+                        if (binding.searchChildView.spSupplier.getSelectedItemPosition() != 0 && !supplierList.isEmpty()) {
                             try {
                                 jsonObject.put("partnerId", viewModel.supplierList.getValue().get(binding.searchChildView.spSupplier.getSelectedItemPosition()).getCustomerId());
                             } catch (JSONException e) {

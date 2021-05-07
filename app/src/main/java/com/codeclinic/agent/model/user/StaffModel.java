@@ -19,9 +19,6 @@ public class StaffModel {
     @SerializedName("id")
     @Expose
     private Integer id;
-    @SerializedName("joiningDate")
-    @Expose
-    private Integer joiningDate;
     @SerializedName("lastName")
     @Expose
     private String lastName;
@@ -82,14 +79,6 @@ public class StaffModel {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getJoiningDate() {
-        return joiningDate;
-    }
-
-    public void setJoiningDate(Integer joiningDate) {
-        this.joiningDate = joiningDate;
     }
 
     public String getLastName() {
