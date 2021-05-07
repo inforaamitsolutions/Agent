@@ -567,7 +567,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 || question.getFieldType().equals("select_multiple")) {
 
             Log.i("answered", binding.spLabel.getSelectedItem().toString() + "");
-            answeredQuestions.put(questionPage, binding.spLabel.getSelectedItem().toString());
+            answeredQuestions.put(questionPage, question.getOptions().get(binding.spLabel.getSelectedItemPosition()).getValue());
 
         } else if (question.getFieldType().equals("checkbox")) {
 
@@ -731,7 +731,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 || question.getFieldType().equals("select_multiple")) {
 
             Log.i("followUpAnswered", binding.spQueToFollow.getSelectedItem().toString() + "");
-            answeredToFollowQuestions.put(questionToFollowPage, binding.spQueToFollow.getSelectedItem().toString());
+            //answeredToFollowQuestions.put(questionToFollowPage, binding.spQueToFollow.getSelectedItem().toString());
+            answeredToFollowQuestions.put(questionToFollowPage, question.getOptions().get(binding.spQueToFollow.getSelectedItemPosition()).getValue());
 
         } else if (question.getFieldType().equals("checkbox")) {
 
