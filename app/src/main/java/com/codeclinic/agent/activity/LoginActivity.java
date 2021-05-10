@@ -29,8 +29,6 @@ import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static android.text.TextUtils.isEmpty;
-import static com.codeclinic.agent.utils.SessionManager.AccessToken;
-import static com.codeclinic.agent.utils.SessionManager.UName;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 public class LoginActivity extends AppCompatActivity {
@@ -76,17 +74,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onSuccess(@NonNull LoginModel response) {
                         binding.loadingView.loader.setVisibility(View.GONE);
                         if (response.getAccessToken() != null) {
-                            sessionManager.setUserSession("Bearer " + response.getAccessToken(),
-                                    binding.edtUserName.getText().toString()
-                                    , response.getExpiresIn() + ""
-                                    , response.getRefreshToken()
-                                    , response.getRefreshExpiresIn() + "");
-                           /* WorkManager workManager = WorkManager.getInstance(LoginActivity.this);
-                            OneTimeWorkRequest oneTimeWorkRequest =
-                                    new OneTimeWorkRequest.Builder(RefreshTokenWorker.class)
-                                            .build();
-                            workManager.enqueue(oneTimeWorkRequest);*/
-                            callUserDetailsAPI();
+                            callUserDetailsAPI(response);
                         } else {
                             Toast.makeText(LoginActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
                         }
@@ -100,11 +88,12 @@ public class LoginActivity extends AppCompatActivity {
                 }));
     }
 
-    public void callUserDetailsAPI() {
+    public void callUserDetailsAPI(LoginModel login) {
         binding.loadingView.loader.setVisibility(View.VISIBLE);
-        disposable.add(RestClass.getClient().USER_MODEL_SINGLE_CALL(
-                sessionManager.getTokenDetails().get(AccessToken),
-                sessionManager.getTokenDetails().get(UName))
+        String token = "Bearer " + login.getAccessToken();
+        String userName = binding.edtUserName.getText().toString();
+        Log.i("userDetails", "token : " + token + " username " + userName);
+        disposable.add(RestClass.getClient().USER_MODEL_SINGLE_CALL(token, userName)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<UserModel>() {
@@ -115,6 +104,7 @@ public class LoginActivity extends AppCompatActivity {
                             StaffModel user = response.getBody().getStaff();
                             if (user != null) {
                                 Log.i("userDetails", "Data ==> " + new Gson().toJson(user));
+                                sessionManager.setUserSession("Bearer " + login.getAccessToken(), binding.edtUserName.getText().toString(), login.getExpiresIn() + "", login.getRefreshToken(), login.getRefreshExpiresIn() + "");
                                 sessionManager.setUserCredentials(user.getId() + "", user.getEmailAddress(), user.getOtherName(), user.getFirstName(), user.getLastName(), user.getOtherName(), user.getMobileNumber() + "");
                                 startService(new Intent(LoginActivity.this, LogoutService.class));
                                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
@@ -133,6 +123,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onError(@io.reactivex.annotations.NonNull Throwable e) {
                         binding.loadingView.loader.setVisibility(View.GONE);
                         Log.i("userDetails", "Server Error " + e.getMessage());
+                        Toast.makeText(LoginActivity.this, "Server Error " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }));
     }

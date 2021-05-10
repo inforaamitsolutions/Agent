@@ -242,15 +242,18 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
                                 if (options.get(j).getQuestionToFollow() != null) {
 
-                                    Map<Integer, String> questionToFollowAnswered = optionQuestions.get(entry.getKey());
+                                    if (options.get(j).getQuestionToFollow().size() != 0) {
+                                        Map<Integer, String> questionToFollowAnswered = optionQuestions.get(entry.getKey());
 
-                                    if (questionToFollowAnswered != null) {
-                                        for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
-                                            JSONObject jObject = new JSONObject();
-                                            jObject.put("fieldName", options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName());
-                                            jObject.put("responseText", item.getValue());
-                                            jsonArray.put(jObject);
+                                        if (questionToFollowAnswered != null) {
+                                            for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
+                                                JSONObject jObject = new JSONObject();
+                                                jObject.put("fieldName", options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName());
+                                                jObject.put("responseText", item.getValue());
+                                                jsonArray.put(jObject);
+                                            }
                                         }
+
                                     }
 
                                 }

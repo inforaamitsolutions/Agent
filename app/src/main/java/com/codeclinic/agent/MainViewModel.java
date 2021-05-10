@@ -107,6 +107,8 @@ public class MainViewModel extends AndroidViewModel {
                             List<CustomerSurveyDefinitionPageModel> surveyPagesList = response.getBody().getSurveyDefinitionPages();
                             if (surveyPagesList != null) {
                                 addCustomerSurveyForm(response.getBody());
+                            } else {
+                                formFetchingComplete.postValue(new LoadingResult("Response Error " + response.getSuccessStatus() + " ", true));
                             }
 
                         } else {
@@ -160,6 +162,8 @@ public class MainViewModel extends AndroidViewModel {
                             List<LeadSurveyDefinitionPageModel> surveyPagesList = response.getBody().getSurveyDefinitionPages();
                             if (surveyPagesList != null) {
                                 addLeadSurveyForm(response.getBody());
+                            } else {
+                                formFetchingComplete.postValue(new LoadingResult("Response Error " + response.getSuccessStatus() + " ", true));
                             }
 
                         } else {
@@ -210,6 +214,8 @@ public class MainViewModel extends AndroidViewModel {
                             List<BusinessDataSurveyDefinitionPageModel> surveyPagesList = response.getBody().getSurveyDefinitionPages();
                             if (surveyPagesList != null) {
                                 addBusinessDataSurveyForm(response.getBody());
+                            } else {
+                                formFetchingComplete.postValue(new LoadingResult("Response Error " + response.getSuccessStatus() + " ", true));
                             }
 
                         } else {

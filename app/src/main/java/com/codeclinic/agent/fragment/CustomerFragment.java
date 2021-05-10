@@ -225,14 +225,14 @@ public class CustomerFragment extends Fragment {
 
     private void manageSpinners() {
 
-        List<String> defaultSearches = new ArrayList<String>();
+        List<String> defaultSearches = new ArrayList<>();
         defaultSearches.add("--Select--");
         defaultSearches.add("Customer ID");
         defaultSearches.add("Business Name");
         defaultSearches.add("Customer Document Number");
         defaultSearches.add("Customer Phone Number");
         defaultSearches.add("Others");
-        ArrayAdapter<String> defaultAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_item_view, defaultSearches);
+        ArrayAdapter<String> defaultAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, defaultSearches);
         binding.searchChildView.spDefaultSearch.setAdapter(defaultAdapter);
         binding.searchChildView.spDefaultSearch.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -261,7 +261,7 @@ public class CustomerFragment extends Fragment {
         assigned.add("--Select--");
         assigned.add("Staff");
         assigned.add("Zones and Markets");
-        ArrayAdapter<String> assignedAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_item_view, assigned);
+        ArrayAdapter<String> assignedAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, assigned);
         binding.searchChildView.spAssignedTo.setAdapter(assignedAdapter);
 
         binding.searchChildView.spAssignedTo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
