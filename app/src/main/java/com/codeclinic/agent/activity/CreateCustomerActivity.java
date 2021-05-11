@@ -130,7 +130,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 if (questionToFollowList != null && binding.llQuestions.getVisibility() == View.VISIBLE) {
                     if (questionToFollowList.size() != 0) {
                         if (questionToFollowPage == -1) {
-                            questionToFollowPage = questionToFollowPage + 1;
+                            questionToFollowPage = 0;
                             updateQuestionToFollowPage();
                         } else if (questionToFollowList.size() > (questionToFollowPage + 1)) {
                             if (validateQueToFollowAnswer(questionToFollowList)) {
@@ -238,26 +238,25 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
                         for (int j = 0; j < options.size(); j++) {
 
-                            if (value.equals(options.get(j).getLabel())) {
+                            if (options.get(j).getQuestionToFollow() != null && value.equals(options.get(j).getValue())) {
 
-                                if (options.get(j).getQuestionToFollow() != null) {
+                                if (options.get(j).getQuestionToFollow().size() != 0) {
 
-                                    if (options.get(j).getQuestionToFollow().size() != 0) {
-                                        Map<Integer, String> questionToFollowAnswered = optionQuestions.get(entry.getKey());
+                                    Map<Integer, String> questionToFollowAnswered = optionQuestions.get(entry.getKey());
 
-                                        if (questionToFollowAnswered != null) {
-                                            for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
-                                                JSONObject jObject = new JSONObject();
-                                                jObject.put("fieldName", options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName());
-                                                jObject.put("responseText", item.getValue());
-                                                jsonArray.put(jObject);
-                                            }
+                                    if (questionToFollowAnswered != null) {
+                                        for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
+                                            JSONObject jObject = new JSONObject();
+                                            jObject.put("fieldName", options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName());
+                                            jObject.put("responseText", item.getValue());
+                                            jsonArray.put(jObject);
                                         }
-
                                     }
 
                                 }
+
                             }
+
                         }
                     }
                 }
@@ -292,7 +291,13 @@ public class CreateCustomerActivity extends AppCompatActivity {
                     @Override
                     public void onError(@NonNull Throwable e) {
                         binding.loadingView.loader.setVisibility(View.GONE);
-                        Toast.makeText(CreateCustomerActivity.this, "Server Error" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        if (e.getMessage().contains("401")) {
+                            Toast.makeText(CreateCustomerActivity.this, "Session Time out you have to login again", Toast.LENGTH_LONG).show();
+                        } else {
+
+                            Toast.makeText(CreateCustomerActivity.this, "Server Error " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+
                     }
                 }));
     }

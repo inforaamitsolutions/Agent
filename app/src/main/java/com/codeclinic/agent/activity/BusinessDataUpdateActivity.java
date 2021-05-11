@@ -120,7 +120,7 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
                 if (questionToFollowList != null && binding.llQuestions.getVisibility() == View.VISIBLE) {
                     if (questionToFollowList.size() != 0) {
                         if (questionToFollowPage == -1) {
-                            questionToFollowPage = questionToFollowPage + 1;
+                            questionToFollowPage = 0;
                             updateQuestionToFollowPage();
                         } else if (questionToFollowList.size() > (questionToFollowPage + 1)) {
                             if (validateQueToFollowAnswer(questionToFollowList)) {
@@ -225,22 +225,26 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
                             || surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_multiple"))) {
                         List<BusinessDataOptionsListModel> options = surveyPagesList.get(i).getQuestions().get(entry.getKey()).getOptions();
                         for (int j = 0; j < options.size(); j++) {
-                            if (value.equals(options.get(j).getLabel())) {
-                                if (options.get(j).getQuestionToFollow() != null) {
-                                    if (options.get(j).getQuestionToFollow().size() != 0) {
-                                        Map<Integer, String> questionToFollowAnswered = optionQuestions.get(entry.getKey());
 
-                                        if (questionToFollowAnswered != null) {
-                                            for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
-                                                JSONObject jObject = new JSONObject();
-                                                jObject.put("fieldName", options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName());
-                                                jObject.put("responseText", item.getValue());
-                                                jsonArray.put(jObject);
-                                            }
+                            if (options.get(j).getQuestionToFollow() != null && value.equals(options.get(j).getValue())) {
+
+                                if (options.get(j).getQuestionToFollow().size() != 0) {
+
+                                    Map<Integer, String> questionToFollowAnswered = optionQuestions.get(entry.getKey());
+
+                                    if (questionToFollowAnswered != null) {
+                                        for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
+                                            JSONObject jObject = new JSONObject();
+                                            jObject.put("fieldName", options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName());
+                                            jObject.put("responseText", item.getValue());
+                                            jsonArray.put(jObject);
                                         }
                                     }
+
                                 }
+
                             }
+
                         }
                     }
                 }
