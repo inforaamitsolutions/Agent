@@ -20,6 +20,7 @@ import androidx.databinding.DataBindingUtil;
 
 import com.bumptech.glide.Glide;
 import com.codeclinic.agent.R;
+import com.codeclinic.agent.database.BusinessDataFinalFormEntity;
 import com.codeclinic.agent.databinding.ActivityBusinessDataUpdateBinding;
 import com.codeclinic.agent.model.businesDataUpdate.BusinessDataOptionsListModel;
 import com.codeclinic.agent.model.businesDataUpdate.BusinessDataQuestionListModel;
@@ -28,6 +29,7 @@ import com.codeclinic.agent.model.businesDataUpdate.BusinessDataSubmitModel;
 import com.codeclinic.agent.model.businesDataUpdate.BusinessDataSurveyDefinitionPageModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.AccessMediaUtil;
+import com.codeclinic.agent.utils.Connection_Detector;
 import com.codeclinic.agent.utils.LocationInfo;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.gson.Gson;
@@ -42,9 +44,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -262,24 +266,53 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
 
         Log.i("formReq", jsonObject.toString());
 
-        disposable.add(RestClass.getClient().BUSINESS_DATA_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
-                , jsonObject.toString())
+        if (Connection_Detector.isInternetAvailable(this)) {
+            disposable.add(RestClass.getClient().BUSINESS_DATA_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
+                    , jsonObject.toString())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableSingleObserver<BusinessDataSubmitModel>() {
+                        @Override
+                        public void onSuccess(@NonNull BusinessDataSubmitModel response) {
+                            binding.loadingView.loader.setVisibility(View.GONE);
+                            if (response.getSuccessStatus().equals("success")) {
+                                finish();
+                            }
+                            Toast.makeText(BusinessDataUpdateActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onError(@NonNull Throwable e) {
+                            binding.loadingView.loader.setVisibility(View.GONE);
+                            Toast.makeText(BusinessDataUpdateActivity.this, "Server Error" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }));
+        } else {
+            binding.loadingView.loader.setVisibility(View.GONE);
+            saveBusinessDataFormToLocal(jsonObject.toString());
+        }
+    }
+
+    private void saveBusinessDataFormToLocal(String request) {
+        BusinessDataFinalFormEntity businessFinalFormEntity = new BusinessDataFinalFormEntity();
+        businessFinalFormEntity.setMainId(0);
+        businessFinalFormEntity.setRequest(request);
+        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                .saveBusinessDataFinalForm(businessFinalFormEntity))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<BusinessDataSubmitModel>() {
+                .subscribeWith(new DisposableCompletableObserver() {
                     @Override
-                    public void onSuccess(@NonNull BusinessDataSubmitModel response) {
-                        binding.loadingView.loader.setVisibility(View.GONE);
-                        if (response.getSuccessStatus().equals("success")) {
-                            finish();
-                        }
-                        Toast.makeText(BusinessDataUpdateActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
+                    public void onComplete() {
+                        Toast.makeText(BusinessDataUpdateActivity.this, "Business Data Update Saved to local", Toast.LENGTH_SHORT).show();
+                        finish();
+                        Log.i("BusinessForm", "Business Data Update final form saved to local");
                     }
 
                     @Override
-                    public void onError(@NonNull Throwable e) {
-                        binding.loadingView.loader.setVisibility(View.GONE);
-                        Toast.makeText(BusinessDataUpdateActivity.this, "Server Error" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    public void onError(Throwable e) {
+                        Log.i("BusinessForm", "Error  ==  " + e.getMessage());
+                        Toast.makeText(BusinessDataUpdateActivity.this, "Error  ==  " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }));
     }

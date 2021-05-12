@@ -20,6 +20,7 @@ import androidx.databinding.DataBindingUtil;
 
 import com.bumptech.glide.Glide;
 import com.codeclinic.agent.R;
+import com.codeclinic.agent.database.CustomerFinalFormEntity;
 import com.codeclinic.agent.databinding.ActivityCreateCustomerBinding;
 import com.codeclinic.agent.model.customer.CustomerOptionsListModel;
 import com.codeclinic.agent.model.customer.CustomerQuestionToFollowModel;
@@ -28,6 +29,7 @@ import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
 import com.codeclinic.agent.model.customer.CustomerSurveyDefinitionPageModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.AccessMediaUtil;
+import com.codeclinic.agent.utils.Connection_Detector;
 import com.codeclinic.agent.utils.LocationInfo;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.gson.Gson;
@@ -43,9 +45,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -274,30 +278,60 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
         Log.i("formReq", jsonObject.toString());
 
-        disposable.add(RestClass.getClient().CUSTOMER_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
-                , jsonObject.toString())
+        if (Connection_Detector.isInternetAvailable(this)) {
+            disposable.add(RestClass.getClient().CUSTOMER_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
+                    , jsonObject.toString())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableSingleObserver<CustomerSubmitFormModel>() {
+                        @Override
+                        public void onSuccess(@NonNull CustomerSubmitFormModel response) {
+                            binding.loadingView.loader.setVisibility(View.GONE);
+                            if (response.getSuccessStatus().equals("success")) {
+                                finish();
+                            }
+                            Toast.makeText(CreateCustomerActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onError(@NonNull Throwable e) {
+                            binding.loadingView.loader.setVisibility(View.GONE);
+                            if (e.getMessage().contains("401")) {
+                                Toast.makeText(CreateCustomerActivity.this, "Session Time out you have to login again", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(CreateCustomerActivity.this, "Server Error " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+
+                        }
+                    }));
+        } else {
+            binding.loadingView.loader.setVisibility(View.GONE);
+            saveCustomerFormToLocal(jsonObject.toString());
+        }
+
+
+    }
+
+    private void saveCustomerFormToLocal(String request) {
+        CustomerFinalFormEntity customerFinalFormEntity = new CustomerFinalFormEntity();
+        customerFinalFormEntity.setMainId(0);
+        customerFinalFormEntity.setRequest(request);
+        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                .saveCustomerFinalForm(customerFinalFormEntity))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<CustomerSubmitFormModel>() {
+                .subscribeWith(new DisposableCompletableObserver() {
                     @Override
-                    public void onSuccess(@NonNull CustomerSubmitFormModel response) {
-                        binding.loadingView.loader.setVisibility(View.GONE);
-                        if (response.getSuccessStatus().equals("success")) {
-                            finish();
-                        }
-                        Toast.makeText(CreateCustomerActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
+                    public void onComplete() {
+                        Toast.makeText(CreateCustomerActivity.this, "Customer Saved to local", Toast.LENGTH_SHORT).show();
+                        finish();
+                        Log.i("customerForm", "Customer final form saved to local");
                     }
 
                     @Override
-                    public void onError(@NonNull Throwable e) {
-                        binding.loadingView.loader.setVisibility(View.GONE);
-                        if (e.getMessage().contains("401")) {
-                            Toast.makeText(CreateCustomerActivity.this, "Session Time out you have to login again", Toast.LENGTH_LONG).show();
-                        } else {
-
-                            Toast.makeText(CreateCustomerActivity.this, "Server Error " + e.getMessage(), Toast.LENGTH_LONG).show();
-                        }
-
+                    public void onError(Throwable e) {
+                        Log.i("customerForm", "Error  ==  " + e.getMessage());
+                        Toast.makeText(CreateCustomerActivity.this, "Error  ==  " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }));
     }

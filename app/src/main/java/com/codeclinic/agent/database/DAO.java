@@ -30,8 +30,17 @@ public interface DAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void saveCustomerEntries(SaveCustomerFormEntries entity);
 
+    @Insert
+    void saveCustomerFinalForm(CustomerFinalFormEntity entity);
+
+    @Query("select * from CustomerForm")
+    Flowable<CustomerFinalFormEntity> getCustomerFinalForm();
+
     @Delete
     void removeCustomerForm(FetchCustomerFormBodyModel entity);
+
+    @Query("DELETE FROM CustomerForm")
+    void deleteAllCustomerFinalForms();
 
     /*****************Lead Survey Form Table Queries*************************/
 
@@ -41,8 +50,17 @@ public interface DAO {
     @Query("select * from LeadFormBody")
     Flowable<FetchLeadFormBodyModel> getLeadSurveyFormList();
 
+    @Insert
+    void saveLeadFinalForm(LeadFinalFormEntity entity);
+
+    @Query("select * from LeadForm")
+    Flowable<LeadFinalFormEntity> getLeadFinalForm();
+
     @Delete
     void removeLeadForm(FetchLeadFormBodyModel entity);
+
+    @Query("DELETE FROM LeadForm")
+    void deleteAllLeadFinalForms();
 
     /*****************Lead Survey Form Table Queries*************************/
 
@@ -52,8 +70,17 @@ public interface DAO {
     @Query("select * from BusinessDataFormBody")
     Flowable<FetchBusinessDataFormBodyModel> getBusinessDataSurveyFormList();
 
+    @Insert
+    void saveBusinessDataFinalForm(BusinessDataFinalFormEntity entity);
+
+    @Query("select * from BusinessDataForm")
+    Flowable<BusinessDataFinalFormEntity> getBusinessDataFinalForm();
+
     @Delete
     void removeBusinessDataForm(FetchBusinessDataFormBodyModel entity);
+
+    @Query("DELETE FROM BusinessDataForm")
+    void deleteAllBusinessDataFinalForms();
 
 
 }

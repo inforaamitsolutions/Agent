@@ -253,11 +253,23 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public MutableLiveData<List<String>> loanStatusList = new MutableLiveData<>();
+    /*public void getCustomerFinalForm() {
+        disposable.add(localDatabase.getDAO().getCustomerFinalForm()
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(form -> Log.i("customerFinalForm", form.getRequest()),
+                        throwable -> {
+                            if (throwable.getMessage() != null)
+                                Log.i("customerFinalForm", "Error == " + throwable.getMessage());
+                        }
+                )
+        );
+    }*/
 
 
     /****************************** Manage Filters Data Section *********************************************/
 
+    public MutableLiveData<List<String>> loanStatusList = new MutableLiveData<>();
     public MutableLiveData<List<StaffListModel>> staffList = new MutableLiveData<>();
     public MutableLiveData<List<StatusListModel>> statusesList = new MutableLiveData<>();
     public MutableLiveData<List<ProductSegmentListModel>> productSegmentList = new MutableLiveData<>();
@@ -292,6 +304,7 @@ public class MainViewModel extends AndroidViewModel {
                     }
                 }));
     }
+
     public MutableLiveData<List<TimeLineStatusListModel>> timeLineStatusList = new MutableLiveData<>();
 
     public void getStatusAPI() {

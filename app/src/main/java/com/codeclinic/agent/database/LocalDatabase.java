@@ -15,7 +15,7 @@ import com.codeclinic.agent.model.lead.FetchLeadFormBodyModel;
 @Database(entities = {FetchCustomerFormBodyModel.class,
         FetchLeadFormBodyModel.class,
         FetchBusinessDataFormBodyModel.class,
-        SaveCustomerFormEntries.class}, version = 1, exportSchema = false)
+        SaveCustomerFormEntries.class, CustomerFinalFormEntity.class}, version = 1, exportSchema = false)
 public abstract class LocalDatabase extends RoomDatabase {
     public abstract DAO getDAO();
 

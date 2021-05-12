@@ -20,6 +20,7 @@ import androidx.databinding.DataBindingUtil;
 
 import com.bumptech.glide.Glide;
 import com.codeclinic.agent.R;
+import com.codeclinic.agent.database.LeadFinalFormEntity;
 import com.codeclinic.agent.databinding.ActivityCreateLeadBinding;
 import com.codeclinic.agent.model.lead.LeadOptionsListModel;
 import com.codeclinic.agent.model.lead.LeadQuestionToFollowModel;
@@ -28,6 +29,7 @@ import com.codeclinic.agent.model.lead.LeadSubmitFormModel;
 import com.codeclinic.agent.model.lead.LeadSurveyDefinitionPageModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.AccessMediaUtil;
+import com.codeclinic.agent.utils.Connection_Detector;
 import com.codeclinic.agent.utils.LocationInfo;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.gson.Gson;
@@ -42,9 +44,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -271,24 +275,54 @@ public class CreateLeadActivity extends AppCompatActivity {
 
         Log.i("formReq", jsonObject.toString());
 
-        disposable.add(RestClass.getClient().LEAD_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
-                , jsonObject.toString())
+        if (Connection_Detector.isInternetAvailable(this)) {
+            disposable.add(RestClass.getClient().LEAD_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
+                    , jsonObject.toString())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableSingleObserver<LeadSubmitFormModel>() {
+                        @Override
+                        public void onSuccess(@NonNull LeadSubmitFormModel response) {
+                            binding.loadingView.loader.setVisibility(View.GONE);
+                            if (response.getSuccessStatus().equals("success")) {
+                                finish();
+                            }
+                            Toast.makeText(CreateLeadActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onError(@NonNull Throwable e) {
+                            binding.loadingView.loader.setVisibility(View.GONE);
+                            Toast.makeText(CreateLeadActivity.this, "Server Error" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }));
+        } else {
+            binding.loadingView.loader.setVisibility(View.GONE);
+            saveLeadFormToLocal(jsonObject.toString());
+        }
+
+    }
+
+    private void saveLeadFormToLocal(String request) {
+        LeadFinalFormEntity leadFinalFormEntity = new LeadFinalFormEntity();
+        leadFinalFormEntity.setMainId(0);
+        leadFinalFormEntity.setRequest(request);
+        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                .saveLeadFinalForm(leadFinalFormEntity))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<LeadSubmitFormModel>() {
+                .subscribeWith(new DisposableCompletableObserver() {
                     @Override
-                    public void onSuccess(@NonNull LeadSubmitFormModel response) {
-                        binding.loadingView.loader.setVisibility(View.GONE);
-                        if (response.getSuccessStatus().equals("success")) {
-                            finish();
-                        }
-                        Toast.makeText(CreateLeadActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
+                    public void onComplete() {
+                        Toast.makeText(CreateLeadActivity.this, "Lead Saved to local", Toast.LENGTH_SHORT).show();
+                        Log.i("leadForm", "lead final form saved to local");
+                        finish();
                     }
 
                     @Override
-                    public void onError(@NonNull Throwable e) {
-                        binding.loadingView.loader.setVisibility(View.GONE);
-                        Toast.makeText(CreateLeadActivity.this, "Server Error" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    public void onError(Throwable e) {
+                        Log.i("leadForm", "Error  ==  " + e.getMessage());
+                        Toast.makeText(CreateLeadActivity.this, "Error  ==  " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }));
     }
