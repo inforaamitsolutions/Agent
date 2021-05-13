@@ -49,6 +49,7 @@ public class LoanAccountsListAdapter extends RecyclerView.Adapter<LoanAccountsLi
 
     @Override
     public void onBindViewHolder(@NonNull LoanAccountsListAdapter.Holder holder, int position) {
+        holder.bind();
         holder.binding.llMain.setOnClickListener(v -> {
             context.startActivity(new Intent(context, LoanProfileActivity.class)
                     .putExtra(LoanNumber, arrayList.get(position).getLoanNumber() + ""));
@@ -58,6 +59,11 @@ public class LoanAccountsListAdapter extends RecyclerView.Adapter<LoanAccountsLi
     @Override
     public int getItemCount() {
         return arrayList.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     public class Holder extends RecyclerView.ViewHolder implements ExpandableLayout.OnExpansionUpdateListener {
@@ -103,6 +109,16 @@ public class LoanAccountsListAdapter extends RecyclerView.Adapter<LoanAccountsLi
                 }
             });
         }
+
+
+        private void bind() {
+            int position = getAdapterPosition();
+            boolean isSelected = position == selectedItem;
+            binding.expandedDetail.setOnExpansionUpdateListener(this);
+            //binding.llHeader.setSelected(isSelected);
+            binding.expandedDetail.setExpanded(isSelected, false);
+        }
+
 
         @Override
         public void onExpansionUpdate(float expansionFraction, int state) {

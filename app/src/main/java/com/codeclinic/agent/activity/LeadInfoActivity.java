@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -45,6 +46,7 @@ public class LeadInfoActivity extends AppCompatActivity {
         });
 
         customerID = getIntent().getStringExtra(CustomerID);
+        Log.i("customerID", customerID + " ");
 
         binding.recyclerViewAttributes.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
 

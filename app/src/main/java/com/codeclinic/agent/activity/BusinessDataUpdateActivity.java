@@ -57,6 +57,7 @@ import static com.codeclinic.agent.database.LocalDatabase.localDatabase;
 import static com.codeclinic.agent.utils.CommonMethods.datePicker;
 import static com.codeclinic.agent.utils.CommonMethods.isPermissionGranted;
 import static com.codeclinic.agent.utils.Constants.ACCESS_CAMERA_GALLERY;
+import static com.codeclinic.agent.utils.Constants.CustomerID;
 import static com.codeclinic.agent.utils.Constants.PICTURE_PATH;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
@@ -68,7 +69,7 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
     private final Map<Integer, Map<Integer, String>> optionQuestions = new HashMap<>();
     boolean isSubmitForm = false;
     private ActivityBusinessDataUpdateBinding binding;
-    private String imagePath;
+    private String imagePath, customerID;
     private int surveyPage = 0, questionPage = 0, questionToFollowPage = -1, radioButtonTextSize, edtHeight;
     private ArrayAdapter spAdapter;
     private List<BusinessDataSurveyDefinitionPageModel> surveyPagesList = new ArrayList<>();
@@ -86,6 +87,8 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
         binding.headerLayout.txtHeading.setText("Business Data Update");
 
         LocationInfo.getLastLocation(this, null);
+
+        customerID = getIntent().getStringExtra(CustomerID);
 
         binding.headerLayout.imgBack.setOnClickListener(view -> {
             onBackPressed();
@@ -202,6 +205,7 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
         binding.loadingView.loader.setVisibility(View.VISIBLE);
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put("customerId", customerID);
             jsonObject.put("customerRole", "MYMOBI_INDIVIDUAL_CUSTOMER");
             jsonObject.put("firstName", binding.edtFirstName.getText().toString());
             jsonObject.put("lastName", binding.edtLastName.getText().toString());

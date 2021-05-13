@@ -40,13 +40,11 @@ public class ProfileActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_profile);
 
         customerID = getIntent().getStringExtra(CustomerID);
+        Log.i("customerID", customerID + " ");
 
 
         binding.imgBack.setOnClickListener(view -> {
             onBackPressed();
-        });
-        binding.layoutInteraction.setOnClickListener(view -> {
-            startActivity(new Intent(this, InteractionActivity.class));
         });
 
 
@@ -59,17 +57,26 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         binding.cardInteraction.setOnClickListener(v -> {
-            startActivity(new Intent(this, InteractionActivity.class)
-                    .putExtra(CustomerID, customerID));
+            if (!isEmpty(customerID)) {
+                startActivity(new Intent(this, InteractionActivity.class)
+                        .putExtra(CustomerID, customerID));
+            } else {
+                Toast.makeText(this, "Customer ID is null", Toast.LENGTH_SHORT).show();
+            }
         });
 
         binding.cardLoanAccounts.setOnClickListener(v -> {
-            startActivity(new Intent(this, CustomerLoanAccountsActivity.class)
-                    .putExtra(CustomerID, customerID));
+            if (!isEmpty(customerID)) {
+                startActivity(new Intent(this, CustomerLoanAccountsActivity.class)
+                        .putExtra(CustomerID, customerID));
+            } else {
+                Toast.makeText(this, "Customer ID is null", Toast.LENGTH_SHORT).show();
+            }
         });
 
         binding.cardBusinessDataUpdate.setOnClickListener(v -> {
-            startActivity(new Intent(this, BusinessDataUpdateActivity.class));
+            startActivity(new Intent(this, BusinessDataUpdateActivity.class)
+                    .putExtra(CustomerID, customerID));
         });
 
         binding.llCall.setOnClickListener(v -> {

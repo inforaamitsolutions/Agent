@@ -2,6 +2,7 @@ package com.codeclinic.agent.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -45,6 +46,7 @@ public class InteractionActivity extends AppCompatActivity {
 
 
         customerID = getIntent().getStringExtra(CustomerID);
+        Log.i("customerID", customerID + " ");
 
         binding.headerLayout.imgBack.setVisibility(View.VISIBLE);
         binding.headerLayout.imgBack.setOnClickListener(v -> {

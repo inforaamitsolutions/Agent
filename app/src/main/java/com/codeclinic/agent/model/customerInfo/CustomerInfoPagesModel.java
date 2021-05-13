@@ -13,7 +13,7 @@ public class CustomerInfoPagesModel {
     @SerializedName("businessData")
     @Expose
     private CustomerBusinessDataModel customerBusinessData;
-    @SerializedName("customerBiodata")
+    @SerializedName("customerBioData")
     @Expose
     private CustomerBioDataModel customerBioData;
     @SerializedName("leadDetails")

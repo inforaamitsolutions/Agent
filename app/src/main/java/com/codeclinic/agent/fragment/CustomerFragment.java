@@ -311,7 +311,9 @@ public class CustomerFragment extends Fragment {
                 if (binding.searchChildView.spDefaultSearch.getSelectedItemPosition() == 5) {
                     JSONObject jsonObject = new JSONObject();
                     try {
-                        jsonObject.put("staffId", viewModel.staffList.getValue().get(binding.searchChildView.spStaff.getSelectedItemPosition()).getId());
+                        if (binding.searchChildView.spAssignedTo.getSelectedItemPosition() == 1) {
+                            jsonObject.put("staffId", viewModel.staffList.getValue().get(binding.searchChildView.spStaff.getSelectedItemPosition()).getId());
+                        }
                         jsonObject.put("fromDate", binding.searchChildView.tvFromDate.getText().toString());
                         jsonObject.put("toDate", binding.searchChildView.tvToDate.getText().toString());
                         if (binding.searchChildView.spSegment.getSelectedItemPosition() != 0) {

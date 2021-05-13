@@ -269,7 +269,9 @@ public class LeadFragment extends Fragment {
                 if (binding.searchChildView.spDefaultSearch.getSelectedItemPosition() == 4) {
                     JSONObject jsonObject = new JSONObject();
                     try {
-                        jsonObject.put("staffId", viewModel.staffList.getValue().get(binding.searchChildView.spStaff.getSelectedItemPosition()).getId());
+                        if (binding.searchChildView.spAssignedTo.getSelectedItemPosition() == 1) {
+                            jsonObject.put("staffId", viewModel.staffList.getValue().get(binding.searchChildView.spStaff.getSelectedItemPosition()).getId());
+                        }
                         jsonObject.put("fromDate", binding.searchChildView.tvFromDate.getText().toString());
                         jsonObject.put("toDate", binding.searchChildView.tvToDate.getText().toString());
                         if (binding.searchChildView.spChannel.getSelectedItemPosition() != 0) {
@@ -285,7 +287,12 @@ public class LeadFragment extends Fragment {
                         if (binding.searchChildView.chkProspectiveLead.isChecked()) {
                             jsonArray.put(binding.searchChildView.chkProspectiveLead.getText().toString());
                         }
-                        jsonObject.put("customerStatuses", jsonArray);
+                        if (binding.searchChildView.chkNewLead.isChecked() ||
+                                binding.searchChildView.chkColdLead.isChecked() ||
+                                binding.searchChildView.chkProspectiveLead.isChecked()
+                        ) {
+                            jsonObject.put("customerStatuses", jsonArray);
+                        }
 
                         JSONArray jsonGroupArray = new JSONArray();
                         if (binding.searchChildView.spAssignedTo.getSelectedItemPosition() == 1) {

@@ -75,6 +75,7 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
         binding.headerLayout.txtHeading.setText("Choose Interaction Category");
 
         customerID = getIntent().getStringExtra(CustomerID);
+        Log.i("customerID", customerID + " ");
 
         binding.recyclerViewCategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
 
