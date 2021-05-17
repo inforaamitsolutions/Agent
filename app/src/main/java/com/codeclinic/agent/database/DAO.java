@@ -11,6 +11,8 @@ import com.codeclinic.agent.model.customer.FetchCustomerFormBodyModel;
 import com.codeclinic.agent.model.customer.SaveCustomerFormEntries;
 import com.codeclinic.agent.model.lead.FetchLeadFormBodyModel;
 
+import java.util.List;
+
 import io.reactivex.Flowable;
 
 @Dao
@@ -34,13 +36,13 @@ public interface DAO {
     void saveCustomerFinalForm(CustomerFinalFormEntity entity);
 
     @Query("select * from CustomerForm")
-    Flowable<CustomerFinalFormEntity> getCustomerFinalForm();
+    Flowable<List<CustomerFinalFormEntity>> getCustomerFinalForm();
 
     @Delete
     void removeCustomerForm(FetchCustomerFormBodyModel entity);
 
-    @Query("DELETE FROM CustomerForm")
-    void deleteAllCustomerFinalForms();
+    @Delete
+    void deleteCustomerFinalForms(List<CustomerFinalFormEntity> entity);
 
     /*****************Lead Survey Form Table Queries*************************/
 
@@ -54,13 +56,13 @@ public interface DAO {
     void saveLeadFinalForm(LeadFinalFormEntity entity);
 
     @Query("select * from LeadForm")
-    Flowable<LeadFinalFormEntity> getLeadFinalForm();
+    Flowable<List<LeadFinalFormEntity>> getLeadFinalForm();
 
     @Delete
     void removeLeadForm(FetchLeadFormBodyModel entity);
 
-    @Query("DELETE FROM LeadForm")
-    void deleteAllLeadFinalForms();
+    @Delete
+    void deleteLeadFinalForms(List<LeadFinalFormEntity> entity);
 
     /*****************Lead Survey Form Table Queries*************************/
 
@@ -74,13 +76,13 @@ public interface DAO {
     void saveBusinessDataFinalForm(BusinessDataFinalFormEntity entity);
 
     @Query("select * from BusinessDataForm")
-    Flowable<BusinessDataFinalFormEntity> getBusinessDataFinalForm();
+    Flowable<List<BusinessDataFinalFormEntity>> getBusinessDataFinalForm();
 
     @Delete
     void removeBusinessDataForm(FetchBusinessDataFormBodyModel entity);
 
-    @Query("DELETE FROM BusinessDataForm")
-    void deleteAllBusinessDataFinalForms();
+    @Delete
+    void deleteBusinessDataFinalForms(List<BusinessDataFinalFormEntity> entity);
 
 
 }

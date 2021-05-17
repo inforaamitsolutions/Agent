@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/notification"
+        android:id="@+id/submitForms"
         android:title=""
         app:showAsAction="always"
-        android:icon="@drawable/ic_notification_black"/>
+        android:icon="@drawable/upload_form" />
 </menu>

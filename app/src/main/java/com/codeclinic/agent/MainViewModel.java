@@ -253,18 +253,6 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    /*public void getCustomerFinalForm() {
-        disposable.add(localDatabase.getDAO().getCustomerFinalForm()
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(form -> Log.i("customerFinalForm", form.getRequest()),
-                        throwable -> {
-                            if (throwable.getMessage() != null)
-                                Log.i("customerFinalForm", "Error == " + throwable.getMessage());
-                        }
-                )
-        );
-    }*/
 
 
     /****************************** Manage Filters Data Section *********************************************/

@@ -31,6 +31,7 @@ import com.codeclinic.agent.model.user.UserModel;
 
 import java.util.Map;
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -76,6 +77,11 @@ public interface API {
     @POST("customer/customerState/registerCustomer")
     Single<CustomerSubmitFormModel> CUSTOMER_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
 
+    //Submit customer form API
+    @Headers("Content-Type: application/json")
+    @POST("customer/customerState/registerCustomer")
+    Observable<CustomerSubmitFormModel> CUSTOMER_OBSERVABLE_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
+
     //Fetch LeadRegistration Form API
     @Headers("Content-Type: application/json")
     @GET("customer/customerState/getSurveyBySurveyName")
@@ -86,6 +92,11 @@ public interface API {
     @POST("customer/customerState/registerLeadCustomer")
     Single<LeadSubmitFormModel> LEAD_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
 
+    //Lead Submit Form API
+    @Headers("Content-Type: application/json")
+    @POST("customer/customerState/registerLeadCustomer")
+    Observable<LeadSubmitFormModel> LEAD_OBSERVABLE_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
+
     //Fetch Business Data Update Form API
     @Headers("Content-Type: application/json")
     @GET("customer/customerState/getSurveyBySurveyName")
@@ -95,6 +106,11 @@ public interface API {
     @Headers("Content-Type: application/json")
     @POST("customer/customerState/kycRefresh")
     Single<BusinessDataSubmitModel> BUSINESS_DATA_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
+
+    //Business data update form API
+    @Headers("Content-Type: application/json")
+    @POST("customer/customerState/kycRefresh")
+    Observable<BusinessDataSubmitModel> BUSINESS_OBSERVABLE_DATA_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
 
 
     /****************************************** Filters Loan , Lead  and Customer list *****************************************************/

@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/submitForms"
+        android:icon="@drawable/upload_form"
+        android:title="form"
+        app:showAsAction="always" />
+
     <item
         android:id="@+id/syncData"
-        android:title=""
-        app:showAsAction="always"
-        android:icon="@drawable/sync_icon" />
+        android:icon="@drawable/sync_icon"
+        android:title="fetch"
+        app:showAsAction="always" />
 </menu>

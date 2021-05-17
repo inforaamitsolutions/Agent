@@ -338,18 +338,11 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.profile:
-                /*startActivity(new Intent(this, ProfileActivity.class)
-                        .putExtra(CustomerID, "MFS000317"));*/
-                return true;
-            case R.id.notification:
-                startActivity(new Intent(MainActivity.this, NotificationActivity.class));
+            case R.id.submitForms:
+                startActivity(new Intent(MainActivity.this, SubmitFormsActivity.class));
                 return true;
             case R.id.syncData:
-                //startActivity(new Intent(MainActivity.this, SearchActivity.class));
-
                 fetchFormsOnline();
-
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
