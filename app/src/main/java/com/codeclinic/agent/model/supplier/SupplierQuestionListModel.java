@@ -1,19 +1,19 @@
-package com.codeclinic.agent.model.businesDataUpdate;
+package com.codeclinic.agent.model.supplier;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import com.codeclinic.agent.typeConverters.business.BusinessDataOptionsConverter;
+import com.codeclinic.agent.typeConverters.supplier.SupplierOptionsTypeConverter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-@Entity(tableName = "BusinessDataQuestionsToFollow")
-public class BusinessDataQuestionToFollowModel {
-    @ColumnInfo(name = "questionToFollowMainId")
+@Entity(tableName = "SupplierQuestions")
+public class SupplierQuestionListModel {
+    @ColumnInfo(name = "questionMainId")
     @PrimaryKey(autoGenerate = true)
     @Expose
     private long mainId;
@@ -53,6 +53,21 @@ public class BusinessDataQuestionToFollowModel {
     @Expose
     private Boolean allowOtherTextBox;
 
+    @ColumnInfo(name = "questionOrder")
+    @SerializedName("questionOrder")
+    @Expose
+    private Integer questionOrder;
+
+    @ColumnInfo(name = "min")
+    @SerializedName("min")
+    @Expose
+    private Integer min;
+
+    @ColumnInfo(name = "max")
+    @SerializedName("max")
+    @Expose
+    private Integer max;
+
     @ColumnInfo(name = "fieldType")
     @SerializedName("fieldType")
     @Expose
@@ -63,20 +78,16 @@ public class BusinessDataQuestionToFollowModel {
     @Expose
     private Integer surveyDefinitionPageId;
 
-    @ColumnInfo(name = "parentQuestionId")
-    @SerializedName("parentQuestionId")
-    @Expose
-    private Integer parentQuestionId;
-
     @ColumnInfo(name = "active")
     @SerializedName("active")
     @Expose
     private Boolean active;
 
+
     @SerializedName("options")
     @Expose
-    @TypeConverters(BusinessDataOptionsConverter.class)
-    private List<BusinessDataOptionsListModel> options = null;
+    @TypeConverters(SupplierOptionsTypeConverter.class)
+    private List<SupplierOptionsListModel> options = null;
 
     public long getMainId() {
         return mainId;
@@ -142,6 +153,30 @@ public class BusinessDataQuestionToFollowModel {
         this.allowOtherTextBox = allowOtherTextBox;
     }
 
+    public Integer getQuestionOrder() {
+        return questionOrder;
+    }
+
+    public void setQuestionOrder(Integer questionOrder) {
+        this.questionOrder = questionOrder;
+    }
+
+    public Integer getMin() {
+        return min;
+    }
+
+    public void setMin(Integer min) {
+        this.min = min;
+    }
+
+    public Integer getMax() {
+        return max;
+    }
+
+    public void setMax(Integer max) {
+        this.max = max;
+    }
+
     public String getFieldType() {
         return fieldType;
     }
@@ -158,14 +193,6 @@ public class BusinessDataQuestionToFollowModel {
         this.surveyDefinitionPageId = surveyDefinitionPageId;
     }
 
-    public Integer getParentQuestionId() {
-        return parentQuestionId;
-    }
-
-    public void setParentQuestionId(Integer parentQuestionId) {
-        this.parentQuestionId = parentQuestionId;
-    }
-
     public Boolean getActive() {
         return active;
     }
@@ -174,11 +201,11 @@ public class BusinessDataQuestionToFollowModel {
         this.active = active;
     }
 
-    public List<BusinessDataOptionsListModel> getOptions() {
+    public List<SupplierOptionsListModel> getOptions() {
         return options;
     }
 
-    public void setOptions(List<BusinessDataOptionsListModel> options) {
+    public void setOptions(List<SupplierOptionsListModel> options) {
         this.options = options;
     }
 }

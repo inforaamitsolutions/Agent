@@ -1,18 +1,18 @@
-package com.codeclinic.agent.model.businesDataUpdate;
+package com.codeclinic.agent.model.supplier;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import com.codeclinic.agent.typeConverters.business.BusinessDataQuestionConverter;
+import com.codeclinic.agent.typeConverters.supplier.SupplierQuestionsListTypeConverter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-@Entity(tableName = "BusinessDataSurveyPages")
-public class BusinessDataSurveyDefinitionPageModel {
+@Entity(tableName = "SupplierSurveyPages")
+public class SupplierSurveyDefinitionPageModel {
     @ColumnInfo(name = "surveyMainId")
     @PrimaryKey(autoGenerate = true)
     @Expose
@@ -55,8 +55,8 @@ public class BusinessDataSurveyDefinitionPageModel {
 
     @SerializedName("questions")
     @Expose
-    @TypeConverters(BusinessDataQuestionConverter.class)
-    private List<BusinessDataQuestionListModel> questions = null;
+    @TypeConverters(SupplierQuestionsListTypeConverter.class)
+    private List<SupplierQuestionListModel> questions = null;
 
     public long getMainId() {
         return mainId;
@@ -122,11 +122,11 @@ public class BusinessDataSurveyDefinitionPageModel {
         this.surveyDefinitionId = surveyDefinitionId;
     }
 
-    public List<BusinessDataQuestionListModel> getQuestions() {
+    public List<SupplierQuestionListModel> getQuestions() {
         return questions;
     }
 
-    public void setQuestions(List<BusinessDataQuestionListModel> questions) {
+    public void setQuestions(List<SupplierQuestionListModel> questions) {
         this.questions = questions;
     }
 }

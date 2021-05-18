@@ -5,7 +5,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import com.codeclinic.agent.typeConverters.CustomerQuestionToFollowConverter;
+import com.codeclinic.agent.typeConverters.customer.CustomerQuestionToFollowConverter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

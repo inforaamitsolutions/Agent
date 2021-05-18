@@ -1,19 +1,18 @@
-package com.codeclinic.agent.model.lead;
+package com.codeclinic.agent.model.supplier;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import com.codeclinic.agent.typeConverters.lead.LeadQuestionToFollowConverter;
+import com.codeclinic.agent.typeConverters.supplier.SupplierQuestionToFollowConverter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-@Entity(tableName = "LeadQuestionsOptions")
-public class LeadOptionsListModel {
-
+@Entity(tableName = "SupplierQuestionsOptions")
+public class SupplierOptionsListModel {
     @ColumnInfo(name = "optionMainId")
     @PrimaryKey(autoGenerate = true)
     @Expose
@@ -47,8 +46,8 @@ public class LeadOptionsListModel {
 
     @SerializedName("questionToFollow")
     @Expose
-    @TypeConverters(LeadQuestionToFollowConverter.class)
-    private List<LeadQuestionToFollowModel> questionToFollow = null;
+    @TypeConverters(SupplierQuestionToFollowConverter.class)
+    private List<SupplierQuestionToFollowModel> questionToFollow = null;
 
     public long getMainId() {
         return mainId;
@@ -98,11 +97,11 @@ public class LeadOptionsListModel {
         this.active = active;
     }
 
-    public List<LeadQuestionToFollowModel> getQuestionToFollow() {
+    public List<SupplierQuestionToFollowModel> getQuestionToFollow() {
         return questionToFollow;
     }
 
-    public void setQuestionToFollow(List<LeadQuestionToFollowModel> questionToFollow) {
+    public void setQuestionToFollow(List<SupplierQuestionToFollowModel> questionToFollow) {
         this.questionToFollow = questionToFollow;
     }
 

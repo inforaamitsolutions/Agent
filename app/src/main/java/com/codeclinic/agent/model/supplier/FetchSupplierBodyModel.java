@@ -1,18 +1,18 @@
-package com.codeclinic.agent.model.customer;
+package com.codeclinic.agent.model.supplier;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import com.codeclinic.agent.typeConverters.customer.CustomerSurveyPageTypeConverter;
+import com.codeclinic.agent.typeConverters.supplier.SupplierSurveyPageTypeConverter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-@Entity(tableName = "CustomerFormBody")
-public class FetchCustomerFormBodyModel {
+@Entity(tableName = "SupplierFormBody")
+public class FetchSupplierBodyModel {
 
     @ColumnInfo(name = "bodyId")
     @PrimaryKey(autoGenerate = false)
@@ -68,8 +68,8 @@ public class FetchCustomerFormBodyModel {
 
     @SerializedName("surveyDefinitionPages")
     @Expose
-    @TypeConverters(CustomerSurveyPageTypeConverter.class)
-    private List<CustomerSurveyDefinitionPageModel> surveyDefinitionPages = null;
+    @TypeConverters(SupplierSurveyPageTypeConverter.class)
+    private List<SupplierSurveyDefinitionPageModel> surveyDefinitionPages = null;
 
     public Integer getId() {
         return id;
@@ -151,13 +151,11 @@ public class FetchCustomerFormBodyModel {
         this.surveyVersion = surveyVersion;
     }
 
-    public List<CustomerSurveyDefinitionPageModel> getSurveyDefinitionPages() {
+    public List<SupplierSurveyDefinitionPageModel> getSurveyDefinitionPages() {
         return surveyDefinitionPages;
     }
 
-    public void setSurveyDefinitionPages(List<CustomerSurveyDefinitionPageModel> surveyDefinitionPages) {
+    public void setSurveyDefinitionPages(List<SupplierSurveyDefinitionPageModel> surveyDefinitionPages) {
         this.surveyDefinitionPages = surveyDefinitionPages;
     }
-
-
 }

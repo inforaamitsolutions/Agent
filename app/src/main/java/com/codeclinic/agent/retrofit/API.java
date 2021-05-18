@@ -27,6 +27,7 @@ import com.codeclinic.agent.model.lead.LeadSubmitFormModel;
 import com.codeclinic.agent.model.leadInfo.LeadInfoModel;
 import com.codeclinic.agent.model.leadInfo.LeadInteractionHistoryModel;
 import com.codeclinic.agent.model.leadList.LeadModel;
+import com.codeclinic.agent.model.supplier.FetchSupplierFormModel;
 import com.codeclinic.agent.model.user.UserModel;
 
 import java.util.Map;
@@ -65,7 +66,7 @@ public interface API {
     @GET("baseapi/staffservice/staff-performance/getPerformanceSummary")
     Single<PerformanceModel> PERFORMANCE_MODEL_SINGLE(@Header("Authorization") String header, @QueryMap Map<String, String> paramsMap);
 
-    /****************************************** Dynamic Lead Customer Forms  *****************************************************/
+    /****************************************** Dynamic Lead Customer Business and Supplier Forms  *****************************************************/
 
     //Fetch CustomRegistration Form API
     @Headers("Content-Type: application/json")
@@ -111,6 +112,11 @@ public interface API {
     @Headers("Content-Type: application/json")
     @POST("customer/customerState/kycRefresh")
     Observable<BusinessDataSubmitModel> BUSINESS_OBSERVABLE_DATA_SUBMIT_FORM_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Body String body);
+
+    //Fetch Supplier Data Update Form API
+    @Headers("Content-Type: application/json")
+    @GET("customer/customerState/getSurveyBySurveyName")
+    Single<FetchSupplierFormModel> FETCH_SUPPLIER_FORM_MODEL_SINGLE(@Header("Authorization") String header, @Query("surveyName") String params);
 
 
     /****************************************** Filters Loan , Lead  and Customer list *****************************************************/

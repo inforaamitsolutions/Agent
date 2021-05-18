@@ -1,4 +1,4 @@
-package com.codeclinic.agent.typeConverters;
+package com.codeclinic.agent.typeConverters.business;
 
 import androidx.room.TypeConverter;
 

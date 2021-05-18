@@ -10,6 +10,7 @@ import com.codeclinic.agent.model.businesDataUpdate.FetchBusinessDataFormBodyMod
 import com.codeclinic.agent.model.customer.FetchCustomerFormBodyModel;
 import com.codeclinic.agent.model.customer.SaveCustomerFormEntries;
 import com.codeclinic.agent.model.lead.FetchLeadFormBodyModel;
+import com.codeclinic.agent.model.supplier.FetchSupplierBodyModel;
 
 import java.util.List;
 
@@ -64,7 +65,7 @@ public interface DAO {
     @Delete
     void deleteLeadFinalForms(List<LeadFinalFormEntity> entity);
 
-    /*****************Lead Survey Form Table Queries*************************/
+    /*****************Business Survey Form Table Queries*************************/
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void addBusinessDataSurveyForm(FetchBusinessDataFormBodyModel entity);
@@ -83,6 +84,26 @@ public interface DAO {
 
     @Delete
     void deleteBusinessDataFinalForms(List<BusinessDataFinalFormEntity> entity);
+
+    /*****************Supplier Survey Form Table Queries*************************/
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void addSupplierSurveyForm(FetchSupplierBodyModel entity);
+
+    @Query("select * from SupplierFormBody")
+    Flowable<FetchSupplierBodyModel> getSupplierSurveyFormList();
+
+   /* @Insert
+    void saveSupplierFinalForm(BusinessDataFinalFormEntity entity);*/
+
+   /* @Query("select * from SupplierFormBody")
+    Flowable<List<BusinessDataFinalFormEntity>> getBusinessDataFinalForm();*/
+
+    @Delete
+    void removeBusinessDataForm(FetchSupplierBodyModel entity);
+
+    /*@Delete
+    void deleteBusinessDataFinalForms(List<BusinessDataFinalFormEntity> entity);*/
 
 
 }

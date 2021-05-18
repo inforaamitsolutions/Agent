@@ -1,18 +1,18 @@
-package com.codeclinic.agent.model.businesDataUpdate;
+package com.codeclinic.agent.model.supplier;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import com.codeclinic.agent.typeConverters.business.BusinessDataOptionsConverter;
+import com.codeclinic.agent.typeConverters.supplier.SupplierOptionsTypeConverter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-@Entity(tableName = "BusinessDataQuestionsToFollow")
-public class BusinessDataQuestionToFollowModel {
+@Entity(tableName = "SupplierQuestionsToFollow")
+public class SupplierQuestionToFollowModel {
     @ColumnInfo(name = "questionToFollowMainId")
     @PrimaryKey(autoGenerate = true)
     @Expose
@@ -75,8 +75,9 @@ public class BusinessDataQuestionToFollowModel {
 
     @SerializedName("options")
     @Expose
-    @TypeConverters(BusinessDataOptionsConverter.class)
-    private List<BusinessDataOptionsListModel> options = null;
+    @TypeConverters(SupplierOptionsTypeConverter.class)
+    private List<SupplierOptionsListModel> options = null;
+
 
     public long getMainId() {
         return mainId;
@@ -174,11 +175,11 @@ public class BusinessDataQuestionToFollowModel {
         this.active = active;
     }
 
-    public List<BusinessDataOptionsListModel> getOptions() {
+    public List<SupplierOptionsListModel> getOptions() {
         return options;
     }
 
-    public void setOptions(List<BusinessDataOptionsListModel> options) {
+    public void setOptions(List<SupplierOptionsListModel> options) {
         this.options = options;
     }
 }

@@ -44,6 +44,9 @@ import com.codeclinic.agent.model.lead.FetchLeadFormBodyModel;
 import com.codeclinic.agent.model.lead.FetchLeadFormModel;
 import com.codeclinic.agent.model.lead.LeadSurveyDefinitionPageModel;
 import com.codeclinic.agent.model.leadList.LeadModel;
+import com.codeclinic.agent.model.supplier.FetchSupplierBodyModel;
+import com.codeclinic.agent.model.supplier.FetchSupplierFormModel;
+import com.codeclinic.agent.model.supplier.SupplierSurveyDefinitionPageModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.gson.Gson;
@@ -242,7 +245,7 @@ public class MainViewModel extends AndroidViewModel {
                     @Override
                     public void onComplete() {
                         Log.i("BusinessDateSurveyForm", "added to local");
-                        formFetchingComplete.postValue(new LoadingResult(" All Forms are fetched and saved", true));
+                        callSupplierForm();
                     }
 
                     @Override
@@ -253,6 +256,57 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
+    public void callSupplierForm() {
+        disposable.add(RestClass.getClient().FETCH_SUPPLIER_FORM_MODEL_SINGLE(
+                sessionManager.getTokenDetails().get(AccessToken),
+                "supplier_update_form")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<FetchSupplierFormModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull FetchSupplierFormModel response) {
+                        if (response.getBody() != null) {
+                            List<SupplierSurveyDefinitionPageModel> surveyPagesList = response.getBody().getSurveyDefinitionPages();
+                            if (surveyPagesList != null) {
+                                addSupplierSurveyForm(response.getBody());
+                            } else {
+                                formFetchingComplete.postValue(new LoadingResult("Response Error " + response.getSuccessStatus() + " ", true));
+                            }
+
+                        } else {
+                            Log.i("SupplierForm", "Server Error " + response.getSuccessStatus());
+                            formFetchingComplete.postValue(new LoadingResult("Response Error " + response.getSuccessStatus() + " ", true));
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("SupplierForm", "Server Error " + e.getMessage());
+                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", true));
+                    }
+                }));
+    }
+
+    private void addSupplierSurveyForm(FetchSupplierBodyModel entity) {
+        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                .addSupplierSurveyForm(entity))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.i("SupplierForm", "added to local");
+                        formFetchingComplete.postValue(new LoadingResult(" All Forms are fetched and saved", true));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("SupplierForm", "Error  ==  " + e.getMessage());
+                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", true));
+                    }
+                }));
+    }
 
 
     /****************************** Manage Filters Data Section *********************************************/

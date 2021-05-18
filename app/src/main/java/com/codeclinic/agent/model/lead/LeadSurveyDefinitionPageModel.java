@@ -5,8 +5,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import com.codeclinic.agent.typeConverters.CustomerQuestionsGsonTypeConverter;
-import com.codeclinic.agent.typeConverters.LeadQuestionsGsonTypeConverter;
+import com.codeclinic.agent.typeConverters.lead.LeadQuestionsGsonTypeConverter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

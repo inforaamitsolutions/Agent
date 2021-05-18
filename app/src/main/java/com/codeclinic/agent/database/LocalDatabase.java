@@ -10,6 +10,7 @@ import com.codeclinic.agent.model.businesDataUpdate.FetchBusinessDataFormBodyMod
 import com.codeclinic.agent.model.customer.FetchCustomerFormBodyModel;
 import com.codeclinic.agent.model.customer.SaveCustomerFormEntries;
 import com.codeclinic.agent.model.lead.FetchLeadFormBodyModel;
+import com.codeclinic.agent.model.supplier.FetchSupplierBodyModel;
 
 
 @Database(entities = {FetchCustomerFormBodyModel.class,
@@ -18,7 +19,8 @@ import com.codeclinic.agent.model.lead.FetchLeadFormBodyModel;
         SaveCustomerFormEntries.class,
         CustomerFinalFormEntity.class,
         LeadFinalFormEntity.class,
-        BusinessDataFinalFormEntity.class}, version = 1, exportSchema = false)
+        BusinessDataFinalFormEntity.class,
+        FetchSupplierBodyModel.class}, version = 1, exportSchema = false)
 public abstract class LocalDatabase extends RoomDatabase {
     public abstract DAO getDAO();
 
