@@ -73,7 +73,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
     List<CustomerSurveyDefinitionPageModel> surveyPagesList = new ArrayList<>();
     Map<Integer, List<CustomerQuestionsListModel>> questionList = new HashMap<>();
 
-    Map<Integer, Map<Integer, String>> surveyQuestions = new HashMap<>();
+    HashMap<Integer, Map<Integer, String>> surveyQuestions = new HashMap<>();
     Map<Integer, String> answeredQuestions = new HashMap<>();
     Map<Integer, Map<Integer, String>> optionQuestions = new HashMap<>();
     Map<Integer, String> answeredToFollowQuestions = new HashMap<>();
@@ -87,7 +87,9 @@ public class CreateCustomerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_create_customer);
+
         binding.headerLayout.imgBack.setVisibility(View.VISIBLE);
         binding.headerLayout.txtHeading.setText("Create Customer");
 
@@ -175,6 +177,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
             mTimePicker.show();
 
         });
+
 
         final float scale = getResources().getDisplayMetrics().density;
         radioButtonTextSize = (int) (14 * scale + 0.5f);
@@ -1003,5 +1006,16 @@ public class CreateCustomerActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         disposable.clear();
+        if (!surveyQuestions.isEmpty()) {
+            //tempQueData = new Gson().toJson(surveyQuestions);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void toHashMap() {
+        if (!surveyQuestions.isEmpty()) {
+            surveyQuestions = new Gson().fromJson(new Gson().toJson(surveyQuestions), HashMap.class);
+            Log.i("surveyQuestion", "Data stored is " + new Gson().toJson(surveyQuestions));
+        }
     }
 }

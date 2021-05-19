@@ -20,4 +20,5 @@ public class Constants {
     public static String AllInteraction = "allInteraction";
     public static String DueFollowUp = "dueFollowUp";
     public static String PromiseToPays = "promiseToPays";
+
 }
