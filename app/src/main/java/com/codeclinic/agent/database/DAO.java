@@ -93,17 +93,17 @@ public interface DAO {
     @Query("select * from SupplierFormBody")
     Flowable<FetchSupplierBodyModel> getSupplierSurveyFormList();
 
-   /* @Insert
-    void saveSupplierFinalForm(BusinessDataFinalFormEntity entity);*/
+    @Insert
+    void saveSupplierFinalForm(SupplierFinalFormEntity entity);
 
-   /* @Query("select * from SupplierFormBody")
-    Flowable<List<BusinessDataFinalFormEntity>> getBusinessDataFinalForm();*/
+    @Query("select * from SupplierForm")
+    Flowable<List<SupplierFinalFormEntity>> getSupplierFinalForm();
 
     @Delete
     void removeBusinessDataForm(FetchSupplierBodyModel entity);
 
-    /*@Delete
-    void deleteBusinessDataFinalForms(List<BusinessDataFinalFormEntity> entity);*/
+    @Delete
+    void deleteSupplierFinalForms(List<SupplierFinalFormEntity> entity);
 
 
 }

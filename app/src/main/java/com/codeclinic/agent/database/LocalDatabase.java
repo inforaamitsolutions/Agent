@@ -20,7 +20,8 @@ import com.codeclinic.agent.model.supplier.FetchSupplierBodyModel;
         CustomerFinalFormEntity.class,
         LeadFinalFormEntity.class,
         BusinessDataFinalFormEntity.class,
-        FetchSupplierBodyModel.class}, version = 1, exportSchema = false)
+        FetchSupplierBodyModel.class,
+        SupplierFinalFormEntity.class}, version = 1, exportSchema = false)
 public abstract class LocalDatabase extends RoomDatabase {
     public abstract DAO getDAO();
 

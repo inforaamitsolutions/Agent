@@ -79,6 +79,11 @@ public class ProfileActivity extends AppCompatActivity {
                     .putExtra(CustomerID, customerID));
         });
 
+        binding.cardSupplierUpdate.setOnClickListener(v -> {
+            startActivity(new Intent(this, SupplierUpdateActivity.class)
+                    .putExtra(CustomerID, customerID));
+        });
+
         binding.llCall.setOnClickListener(v -> {
             if (!isEmpty(phoneNo)) {
                 Intent intent = new Intent(Intent.ACTION_DIAL);
