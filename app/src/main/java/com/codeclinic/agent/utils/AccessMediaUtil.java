@@ -8,7 +8,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
@@ -41,7 +40,8 @@ public class AccessMediaUtil extends AppCompatActivity {
     }
 
     public void selectImage() {
-        final CharSequence[] options = {"Take Photo", "Choose from Gallery", "Cancel"};
+        dispatchPickFromGalleryIntent();
+      /*  final CharSequence[] options = {"Take Photo", "Choose from Gallery", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add Photo !!");
         builder.setCancelable(false);
@@ -55,12 +55,12 @@ public class AccessMediaUtil extends AppCompatActivity {
                 onBackPressed();
             }
         });
-        builder.show();
+        builder.show();*/
     }
 
     private void dispatchPickFromGalleryIntent() {
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        photoPickerIntent.setType("image/*");
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        photoPickerIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
         startActivityForResult(photoPickerIntent, REQUEST_FROM_GALLERY);
 
     }

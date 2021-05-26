@@ -106,6 +106,7 @@
                     android:gravity="center"
                     android:orientation="vertical">
 
+
                     <LinearLayout
                         android:id="@+id/llQuestions"
                         android:layout_width="match_parent"
@@ -308,6 +309,12 @@
 
                     </LinearLayout>
 
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewSummary"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -342,133 +349,6 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/linear2"
-                    android:layout_width="match_parent"
-
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/txtProductName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="MobiDrinks"
-                        android:textColor="@color/black"
-                        android:textSize="19dp"
-                        android:textStyle="bold" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:layout_marginTop="20dp"
-                        android:background="@drawable/button_bg"
-                        android:backgroundTint="#F4F4F4"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginTop="10dp"
-                            android:text="6% completed"
-                            android:textColor="@color/black"
-                            android:textStyle="bold" />
-
-                        <com.sasank.roundedhorizontalprogress.RoundedHorizontalProgressBar
-                            android:id="@+id/progress_bar_1"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="300dp"
-                            android:layout_height="6dp"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginTop="10dp"
-                            android:indeterminate="false"
-                            android:maxHeight="12dp"
-                            android:minHeight="12dp"
-                            android:progress="20"
-                            app:backgroundColor="#ffffff"
-                            app:isRounded="true"
-                            app:progressColor="#FA911D" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/txtLabel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="50dp"
-                        android:text="1. Is this a new or an already
-   existing business?"
-                        android:textColor="@color/black"
-
-                        android:textSize="20dp" />
-
-                    <!--<RadioGroup
-                        android:id="@+id/radioGroup"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:layout_marginTop="20dp"
-
-                        android:gravity="left"
-                        android:orientation="horizontal">
-
-                        <RadioButton
-                            android:layout_width="match_parent"
-                            android:layout_height="29dp"
-                            android:layout_weight="1"
-                            android:text="New" />
-
-                        <RadioButton
-                            android:layout_width="match_parent"
-                            android:layout_height="29dp"
-                            android:layout_marginLeft="30dp"
-                            android:layout_weight="1"
-                            android:text="Existing" />
-                    </RadioGroup-->>
-
-                    <EditText
-                        android:id="@+id/edtLocation"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:layout_marginTop="20dp"
-                        android:background="@drawable/button_bg"
-                        android:backgroundTint="#F4F4F4"
-                        android:hint="Enter Location"
-                        android:paddingLeft="10dp"
-                        android:singleLine="true"
-                        android:text="Rongal"
-                        android:visibility="gone" />
-
-                    <Button
-                        android:id="@+id/btnNext2"
-                        android:layout_width="305dp"
-                        android:layout_height="44dp"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="80dp"
-                        android:background="@drawable/button_bg"
-                        android:text="Next"
-                        android:textAllCaps="false"
-                        android:textColor="@color/white"
-                        android:textStyle="bold" />
-
-                    <Button
-                        android:id="@+id/btnNext3"
-                        android:layout_width="305dp"
-                        android:layout_height="44dp"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="80dp"
-                        android:background="@drawable/button_bg"
-                        android:text="Next"
-                        android:textAllCaps="false"
-                        android:textColor="@color/white"
-                        android:textStyle="bold"
-                        android:visibility="gone" />
-                </LinearLayout>
 
             </LinearLayout>
 

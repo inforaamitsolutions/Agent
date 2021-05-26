@@ -20,7 +20,7 @@ import androidx.databinding.DataBindingUtil;
 
 import com.bumptech.glide.Glide;
 import com.codeclinic.agent.R;
-import com.codeclinic.agent.database.LeadFinalFormEntity;
+import com.codeclinic.agent.database.lead.LeadFinalFormEntity;
 import com.codeclinic.agent.databinding.ActivityCreateLeadBinding;
 import com.codeclinic.agent.model.lead.LeadOptionsListModel;
 import com.codeclinic.agent.model.lead.LeadQuestionToFollowModel;

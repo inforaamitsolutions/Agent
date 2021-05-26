@@ -17,10 +17,15 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.codeclinic.agent.R;
-import com.codeclinic.agent.database.CustomerFinalFormEntity;
+import com.codeclinic.agent.adapter.FormSummaryModel;
+import com.codeclinic.agent.adapter.SummaryFormAdapter;
+import com.codeclinic.agent.database.customer.CustomerFinalFormEntity;
+import com.codeclinic.agent.database.customer.CustomerFormResumeEntity;
 import com.codeclinic.agent.databinding.ActivityCreateCustomerBinding;
 import com.codeclinic.agent.model.customer.CustomerOptionsListModel;
 import com.codeclinic.agent.model.customer.CustomerQuestionToFollowModel;
@@ -33,6 +38,7 @@ import com.codeclinic.agent.utils.Connection_Detector;
 import com.codeclinic.agent.utils.LocationInfo;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 
 import org.json.JSONArray;
@@ -42,10 +48,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
@@ -65,21 +73,22 @@ public class CreateCustomerActivity extends AppCompatActivity {
     ActivityCreateCustomerBinding binding;
 
     CompositeDisposable disposable = new CompositeDisposable();
-
+    CustomerFormResumeEntity customerFormResumeEntity;
     String imagePath, filePath;
     int surveyPage = 0, questionPage = 0, questionToFollowPage = -1, radioButtonTextSize, edtHeight;
     ArrayAdapter spAdapter;
 
     List<CustomerSurveyDefinitionPageModel> surveyPagesList = new ArrayList<>();
+    List<FormSummaryModel> summaryList = new ArrayList<>();
     Map<Integer, List<CustomerQuestionsListModel>> questionList = new HashMap<>();
 
-    HashMap<Integer, Map<Integer, String>> surveyQuestions = new HashMap<>();
+    HashMap<Integer, Map<Integer, String>> surveyQuestions = new LinkedHashMap<>();
     Map<Integer, String> answeredQuestions = new HashMap<>();
     Map<Integer, Map<Integer, String>> optionQuestions = new HashMap<>();
     Map<Integer, String> answeredToFollowQuestions = new HashMap<>();
     LinearLayout.LayoutParams layoutParams;
 
-    boolean isSubmitForm = false;
+    boolean isSubmitForm = false, isFormSubmitted = false;
     private ChooserDialog chooserDialog;
 
 
@@ -94,6 +103,9 @@ public class CreateCustomerActivity extends AppCompatActivity {
         binding.headerLayout.txtHeading.setText("Create Customer");
 
         LocationInfo.getLastLocation(this, null);
+
+        binding.recyclerViewSummary.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        binding.recyclerViewSummary.setNestedScrollingEnabled(false);
 
         binding.headerLayout.imgBack.setOnClickListener(view -> {
             onBackPressed();
@@ -163,6 +175,13 @@ public class CreateCustomerActivity extends AppCompatActivity {
             }
         });
 
+        binding.btnBack.setOnClickListener(v -> {
+            binding.llSections.setVisibility(View.VISIBLE);
+            binding.llSummary.setVisibility(View.GONE);
+        });
+
+        binding.btnSubmit.setOnClickListener(v -> submitForm());
+
         binding.tvDate.setOnClickListener(v -> datePicker(binding.tvDate, this));
 
         binding.tvTime.setOnClickListener(v -> {
@@ -186,13 +205,12 @@ public class CreateCustomerActivity extends AppCompatActivity {
         layoutParams.setMargins(5, 5, 5, 5);
 
 
-        //callCustomerForm();
-        getSurveyForm();
+        getCustomerFormResume();
     }
 
     private void getSurveyForm() {
         disposable.add(localDatabase.getDAO().getCustomerSurveyForm()
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(form -> {
 
@@ -210,6 +228,176 @@ public class CreateCustomerActivity extends AppCompatActivity {
                         }
                 )
         );
+    }
+
+    private void getCustomerFormResume() {
+        disposable.add(Single.fromCallable(this::checkFormSavedInDB)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((isExist) -> {
+                    if (isExist) {
+                        disposable.add(localDatabase.getDAO().getCustomerFormResume()
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(form -> {
+                                            if (form != null) {
+                                                customerFormResumeEntity = form;
+                                                surveyQuestions = new Gson().fromJson(form.getSurveyQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
+                                                }.getType());
+                                                if (!isEmpty(form.getOptionQuestions())) {
+                                                    optionQuestions = new Gson().fromJson(form.getOptionQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
+                                                    }.getType());
+                                                }
+                                                Log.i("customerFormResume", "Data stored is " + new Gson().toJson(surveyQuestions));
+                                            }
+                                            getSurveyForm();
+                                        },
+                                        throwable -> {
+                                            if (throwable.getMessage() != null) {
+                                                Log.i("customerFormResume", "Error == " + throwable.getMessage());
+                                            }
+                                            getSurveyForm();
+                                        }
+                                )
+                        );
+                    } else {
+                        getSurveyForm();
+                    }
+                }));
+    }
+
+    private boolean checkFormSavedInDB() {
+        return localDatabase.getDAO().isCustomerFormResumeExists();
+    }
+
+
+    private void saveCustomerFormToLocal(String request) {
+        CustomerFinalFormEntity customerFinalFormEntity = new CustomerFinalFormEntity();
+        customerFinalFormEntity.setMainId(0);
+        customerFinalFormEntity.setRequest(request);
+        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                .saveCustomerFinalForm(customerFinalFormEntity))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Toast.makeText(CreateCustomerActivity.this, "Customer Saved to local", Toast.LENGTH_SHORT).show();
+                        finish();
+                        Log.i("customerForm", "Customer final form saved to local");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("customerForm", "Error  ==  " + e.getMessage());
+                        Toast.makeText(CreateCustomerActivity.this, "Error  ==  " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }));
+    }
+
+    private void moveToNextQuestion() {
+        if (!isSubmitForm) {
+            if (validateAnswer()) {
+                if (surveyPagesList.get(surveyPage).getQuestions().size() > (questionPage + 1)) {
+
+                    addAnswers();
+                    questionPage++;
+                    updatePage();
+
+                } else if (surveyPagesList.size() > (surveyPage + 1)) {
+
+                    addAnswers();
+                    surveyQuestions.put(surveyPage, answeredQuestions);
+                    Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
+                    answeredQuestions = new HashMap<>();
+                    questionPage = 0;
+                    surveyPage++;
+                    updatePage();
+
+                } else {
+
+                    if (binding.llQuestions.getVisibility() == View.VISIBLE) {
+                        binding.llQuestions.setVisibility(View.GONE);
+                        binding.linearUserDetail.setVisibility(View.VISIBLE);
+                    } else {
+                        addAnswers();
+                        surveyQuestions.put(surveyPage, answeredQuestions);
+                        Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
+                        answeredQuestions = new HashMap<>();
+                        questionPage = 0;
+                        isSubmitForm = true;
+                        //submitForm();
+                        renderSummary();
+                    }
+                }
+            }
+        } else {
+            //submitForm();
+            renderSummary();
+        }
+    }
+
+    private void renderSummary() {
+        binding.llSections.setVisibility(View.GONE);
+        binding.llSummary.setVisibility(View.VISIBLE);
+        //binding.loadingView.loader.setVisibility(View.VISIBLE);
+        summaryList.clear();
+        for (int i = 0; i < surveyPagesList.size(); i++) {
+
+            Map<Integer, String> mapAnswered = surveyQuestions.get(i);
+
+            FormSummaryModel section = new FormSummaryModel();
+            section.setAnswer("");
+            section.setQuestion("");
+            section.setSection(surveyPagesList.get(i).getPageName());
+            summaryList.add(section);
+
+            for (Map.Entry<Integer, String> entry : mapAnswered.entrySet()) {
+                String value = entry.getValue();
+
+                FormSummaryModel object = new FormSummaryModel();
+                object.setQuestion(surveyPagesList.get(i).getQuestions().get(entry.getKey()).getQuestionText());
+                object.setAnswer(value);
+                object.setSection("");
+                summaryList.add(object);
+
+
+                if ((surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_one")
+                        || surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_multiple"))) {
+                    List<CustomerOptionsListModel> options = surveyPagesList.get(i).getQuestions().get(entry.getKey()).getOptions();
+
+                    for (int j = 0; j < options.size(); j++) {
+
+                        if (options.get(j).getQuestionToFollow() != null && value.equals(options.get(j).getValue())) {
+
+                            if (options.get(j).getQuestionToFollow().size() != 0) {
+
+                                Map<Integer, String> questionToFollowAnswered = optionQuestions.get(entry.getKey());
+
+                                if (questionToFollowAnswered != null) {
+                                    for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
+                                        FormSummaryModel subQuestions = new FormSummaryModel();
+                                        subQuestions.setQuestion(options.get(j).getQuestionToFollow().get(item.getKey()).getQuestionText());
+                                        subQuestions.setAnswer(item.getValue());
+                                        subQuestions.setSection("");
+                                        summaryList.add(subQuestions);
+                                    }
+                                }
+
+                            }
+
+                        }
+
+                    }
+                }
+            }
+        }
+
+        Log.i("formReq", "Summary List is => " + new Gson().toJson(summaryList));
+
+        binding.recyclerViewSummary.setAdapter(new SummaryFormAdapter(summaryList, this));
+
+
     }
 
     private void submitForm() {
@@ -292,6 +480,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
                             binding.loadingView.loader.setVisibility(View.GONE);
                             if (response.getSuccessStatus().equals("success")) {
                                 finish();
+                                isFormSubmitted = true;
                             }
                             Toast.makeText(CreateCustomerActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
                         }
@@ -313,70 +502,6 @@ public class CreateCustomerActivity extends AppCompatActivity {
         }
 
 
-    }
-
-    private void saveCustomerFormToLocal(String request) {
-        CustomerFinalFormEntity customerFinalFormEntity = new CustomerFinalFormEntity();
-        customerFinalFormEntity.setMainId(0);
-        customerFinalFormEntity.setRequest(request);
-        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
-                .saveCustomerFinalForm(customerFinalFormEntity))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        Toast.makeText(CreateCustomerActivity.this, "Customer Saved to local", Toast.LENGTH_SHORT).show();
-                        finish();
-                        Log.i("customerForm", "Customer final form saved to local");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.i("customerForm", "Error  ==  " + e.getMessage());
-                        Toast.makeText(CreateCustomerActivity.this, "Error  ==  " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }));
-    }
-
-    private void moveToNextQuestion() {
-        if (!isSubmitForm) {
-            if (validateAnswer()) {
-                if (surveyPagesList.get(surveyPage).getQuestions().size() > (questionPage + 1)) {
-
-                    addAnswers();
-                    questionPage++;
-                    updatePage();
-
-                } else if (surveyPagesList.size() > (surveyPage + 1)) {
-
-                    addAnswers();
-                    surveyQuestions.put(surveyPage, answeredQuestions);
-                    Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
-                    answeredQuestions = new HashMap<>();
-                    questionPage = 0;
-                    surveyPage++;
-                    updatePage();
-
-                } else {
-
-                    if (binding.llQuestions.getVisibility() == View.VISIBLE) {
-                        binding.llQuestions.setVisibility(View.GONE);
-                        binding.linearUserDetail.setVisibility(View.VISIBLE);
-                    } else {
-                        addAnswers();
-                        surveyQuestions.put(surveyPage, answeredQuestions);
-                        Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
-                        answeredQuestions = new HashMap<>();
-                        questionPage = 0;
-                        isSubmitForm = true;
-                        submitForm();
-                    }
-                }
-            }
-        } else {
-            submitForm();
-        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -430,7 +555,6 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
             binding.edtAnswer.setVisibility(View.VISIBLE);
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
-
 
             if (surveyQuestions.containsKey(surveyPage)) {
                 Map<Integer, String> data = surveyQuestions.get(surveyPage);
@@ -583,10 +707,12 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 if (data != null) {
                     if (data.containsKey(questionPage)) {
                         Glide.with(CreateCustomerActivity.this).load(data.get(questionPage)).into(binding.imgUser);
+                        imagePath = data.get(questionPage);
                     }
                 }
             } else if (answeredQuestions.containsKey(questionPage)) {
                 Glide.with(CreateCustomerActivity.this).load(answeredQuestions.get(questionPage)).into(binding.imgUser);
+                imagePath = answeredQuestions.get(questionPage);
             }
         } else if (question.getFieldType().equals("file")) {
 
@@ -597,10 +723,12 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 if (data != null) {
                     if (data.containsKey(questionPage)) {
                         binding.tvFileName.setText(data.get(questionPage) + "");
+                        filePath = data.get(questionPage) + "";
                     }
                 }
             } else if (answeredQuestions.containsKey(questionPage)) {
                 binding.tvFileName.setText(answeredQuestions.get(questionPage) + "");
+                filePath = answeredQuestions.get(questionPage) + "";
             }
         }
     }
@@ -706,16 +834,49 @@ public class CreateCustomerActivity extends AppCompatActivity {
             binding.edtAnswer.setVisibility(View.VISIBLE);
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
 
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.edtAnswer.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
+
         } else if (question.getFieldType().equals("textField")) {
 
             binding.edtAnswer.setVisibility(View.VISIBLE);
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
+
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.edtAnswer.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
 
         } else if (question.getFieldType().equals("textArea")) {
 
             binding.edtAnswer.setVisibility(View.VISIBLE);
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.edtAnswer.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
 
 
         } else if (question.getFieldType().equals("number")) {
@@ -724,11 +885,33 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_NUMBER);
 
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.edtAnswer.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
+
         } else if (question.getFieldType().equals("decimal")) {
 
             binding.edtAnswer.setVisibility(View.VISIBLE);
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.edtAnswer.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
 
         } else if (question.getFieldType().equals("checkbox")) {
 
@@ -751,19 +934,78 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
             binding.tvDate.setVisibility(View.VISIBLE);
 
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.tvDate.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.tvDate.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
+
+
         } else if (question.getFieldType().equals("time")) {
 
             binding.tvTime.setVisibility(View.VISIBLE);
+
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.tvTime.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.tvTime.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
 
         } else if (question.getFieldType().equals("geopoint")) {
 
             binding.tvDate.setVisibility(View.VISIBLE);
             binding.tvDate.setText(LocationInfo.location.getLongitude() + "," + LocationInfo.location.getLatitude());
 
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.tvDate.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.tvDate.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
+
         } else if (question.getFieldType().equals("image")) {
             binding.imgUser.setVisibility(View.VISIBLE);
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        Glide.with(this).load(data.get(questionToFollowPage)).into(binding.imgUser);
+                        imagePath = data.get(questionToFollowPage);
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+
+                Glide.with(this).load(answeredToFollowQuestions.get(questionToFollowPage)).into(binding.imgUser);
+                imagePath = answeredToFollowQuestions.get(questionToFollowPage);
+            }
         } else if (question.getFieldType().equals("file")) {
             binding.llFile.setVisibility(View.VISIBLE);
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.tvFileName.setText(data.get(questionToFollowPage) + "");
+                        filePath = data.get(questionToFollowPage) + "";
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.tvFileName.setText(answeredToFollowQuestions.get(questionToFollowPage) + "");
+                filePath = answeredToFollowQuestions.get(questionToFollowPage) + "";
+            }
         }
     }
 
@@ -1004,18 +1246,60 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        manageResumeForm();
         super.onDestroy();
-        disposable.clear();
-        if (!surveyQuestions.isEmpty()) {
-            //tempQueData = new Gson().toJson(surveyQuestions);
+    }
+
+    synchronized private void manageResumeForm() {
+        if (!isFormSubmitted) {
+            if (!surveyQuestions.isEmpty()) {
+                CustomerFormResumeEntity entity = new CustomerFormResumeEntity();
+                entity.setMainId(0);
+                entity.setSurveyQuestions(new Gson().toJson(surveyQuestions));
+                entity.setOptionQuestions(optionQuestions.isEmpty() ? "" : new Gson().toJson(optionQuestions));
+                disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                        .saveCustomerFormResume(entity))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableCompletableObserver() {
+                            @Override
+                            public void onComplete() {
+                                //Toast.makeText(CreateCustomerActivity.this, "Customer Resume Saved to local", Toast.LENGTH_SHORT).show();
+                                finish();
+                                Log.i("customerForm", "Customer Resume form saved to local");
+                                disposable.clear();
+
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.i("customerFormResume", "Error  ==  " + e.getMessage());
+                                Toast.makeText(CreateCustomerActivity.this, "Error  ==  " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                disposable.clear();
+                            }
+                        }));
+            }
+        } else {
+            if (customerFormResumeEntity != null) {
+                disposable.add(Completable.fromAction(() -> localDatabase.getDAO().removeCustomerFormResume(customerFormResumeEntity))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableCompletableObserver() {
+
+                            @Override
+                            public void onComplete() {
+                                Log.i("customerFormResume", "formDeleted");
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.i("customerFormResume", "Error = > " + e.getMessage());
+                                disposable.clear();
+                            }
+                        }));
+            }
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void toHashMap() {
-        if (!surveyQuestions.isEmpty()) {
-            surveyQuestions = new Gson().fromJson(new Gson().toJson(surveyQuestions), HashMap.class);
-            Log.i("surveyQuestion", "Data stored is " + new Gson().toJson(surveyQuestions));
-        }
-    }
 }

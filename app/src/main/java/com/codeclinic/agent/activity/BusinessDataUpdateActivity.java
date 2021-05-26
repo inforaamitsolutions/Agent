@@ -20,7 +20,7 @@ import androidx.databinding.DataBindingUtil;
 
 import com.bumptech.glide.Glide;
 import com.codeclinic.agent.R;
-import com.codeclinic.agent.database.BusinessDataFinalFormEntity;
+import com.codeclinic.agent.database.business.BusinessDataFinalFormEntity;
 import com.codeclinic.agent.databinding.ActivityBusinessDataUpdateBinding;
 import com.codeclinic.agent.model.businesDataUpdate.BusinessDataOptionsListModel;
 import com.codeclinic.agent.model.businesDataUpdate.BusinessDataQuestionListModel;

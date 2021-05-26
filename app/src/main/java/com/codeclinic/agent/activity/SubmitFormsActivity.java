@@ -10,9 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
 import com.codeclinic.agent.R;
-import com.codeclinic.agent.database.BusinessDataFinalFormEntity;
-import com.codeclinic.agent.database.CustomerFinalFormEntity;
-import com.codeclinic.agent.database.LeadFinalFormEntity;
+import com.codeclinic.agent.database.business.BusinessDataFinalFormEntity;
+import com.codeclinic.agent.database.customer.CustomerFinalFormEntity;
+import com.codeclinic.agent.database.lead.LeadFinalFormEntity;
+import com.codeclinic.agent.database.supplier.SupplierFinalFormEntity;
 import com.codeclinic.agent.databinding.ActivitySubmitFormsBinding;
 import com.codeclinic.agent.model.businesDataUpdate.BusinessDataSubmitModel;
 import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
@@ -42,10 +43,16 @@ public class SubmitFormsActivity extends AppCompatActivity {
     private final CompositeDisposable disposable = new CompositeDisposable();
     List<CustomerFinalFormEntity> customerFormsList = new ArrayList<>();
     List<CustomerFinalFormEntity> deleteCustomerFormsList = new ArrayList<>();
+
     List<LeadFinalFormEntity> leadFormsList = new ArrayList<>();
     List<LeadFinalFormEntity> deleteLeadFormsList = new ArrayList<>();
+
     List<BusinessDataFinalFormEntity> businessFormsList = new ArrayList<>();
     List<BusinessDataFinalFormEntity> deleteBusinessFormsList = new ArrayList<>();
+
+    List<SupplierFinalFormEntity> supplierFormsList = new ArrayList<>();
+    List<SupplierFinalFormEntity> deleteSupplierFormsList = new ArrayList<>();
+
     String totalForms = "Total Forms : ";
     int currentPos = 0;
     private ActivitySubmitFormsBinding binding;
@@ -101,10 +108,23 @@ public class SubmitFormsActivity extends AppCompatActivity {
             }
         });
 
+        binding.btnSupplier.setOnClickListener(v -> {
+            if (Connection_Detector.isInternetAvailable(this) && supplierFormsList.size() != 0) {
+                submitSupplierForms();
+            } else {
+                Toast.makeText(this,
+                        !Connection_Detector.isInternetAvailable(this)
+                                ? "Please check internet connection" :
+                                "no forms available to submit",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
         binding.tvCustomerTotalForms.setText(totalForms + customerFormsList.size());
         binding.tvLeadTotalForms.setText(totalForms + leadFormsList.size());
         binding.tvBusinessTotalForms.setText(totalForms + businessFormsList.size());
+        binding.tvSupplierTotalForms.setText(totalForms + supplierFormsList.size());
 
         getCustomerFinalForm();
         getLeadFinalForm();
@@ -158,6 +178,23 @@ public class SubmitFormsActivity extends AppCompatActivity {
                         throwable -> {
                             if (throwable.getMessage() != null)
                                 Log.i("businessFinalForm", "Error == " + throwable.getMessage());
+                        }
+                )
+        );
+    }
+
+    public void getSupplierFinalForm() {
+        disposable.add(localDatabase.getDAO().getSupplierFinalForm()
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(form ->
+                        {
+                            Log.i("supplierFinalForm", new Gson().toJson(form));
+                            supplierFormsList = form;
+                        },
+                        throwable -> {
+                            if (throwable.getMessage() != null)
+                                Log.i("supplierFinalForm", "Error == " + throwable.getMessage());
                         }
                 )
         );
@@ -363,6 +400,73 @@ public class SubmitFormsActivity extends AppCompatActivity {
                     public void onError(Throwable e) {
                         Log.i("businessFormDelete", "Error = > " + e.getMessage());
                         binding.tvBusinessTotalForms.setText(totalForms + businessFormsList.size());
+                    }
+                }));
+    }
+
+    private void submitSupplierForms() {
+        loadingDialog.showProgressDialog("");
+        int size = supplierFormsList.size();
+        Observable.range(0, size)
+                .concatMap(pos -> {
+                    currentPos = pos;
+                    return RestClass.getClient().BUSINESS_OBSERVABLE_DATA_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
+                            , supplierFormsList.get(pos).getRequest());
+                })
+                .subscribeOn(Schedulers.io())
+                .subscribe(new DisposableObserver<BusinessDataSubmitModel>() {
+                    @Override
+                    public void onNext(BusinessDataSubmitModel response) {
+                        if (response.getSuccessStatus().equals("success")) {
+                            deleteSupplierFormsList.add(supplierFormsList.get(currentPos));
+                        }
+                        Log.i("formResponse", "response ==> " + new Gson().toJson(response));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("formResponse", "error " + e.getMessage());
+                        currentPos = 0;
+                        if (e.getMessage().contains("401")) {
+                            Toast.makeText(SubmitFormsActivity.this, "Session Time out you have to login again", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(SubmitFormsActivity.this, "Server Error " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onComplete() {
+                        loadingDialog.hideProgressDialog();
+                        currentPos = 0;
+                        if (deleteSupplierFormsList.size() != 0) {
+                            for (int i = 0; i < deleteSupplierFormsList.size(); i++) {
+                                supplierFormsList.remove(deleteSupplierFormsList.get(i));
+                            }
+                            deleteSupplierForm();
+                        }
+                    }
+                });
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void deleteSupplierForm() {
+        disposable.add(Completable.fromAction(() -> localDatabase.getDAO().deleteSupplierFinalForms(deleteSupplierFormsList))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+
+                    @Override
+                    public void onComplete() {
+                        Log.i("businessFormDelete", "formDeleted");
+                        binding.tvSupplierTotalForms.setText(totalForms + supplierFormsList.size());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("businessFormDelete", "Error = > " + e.getMessage());
+                        binding.tvSupplierTotalForms.setText(totalForms + supplierFormsList.size());
                     }
                 }));
     }

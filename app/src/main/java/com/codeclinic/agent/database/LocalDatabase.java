@@ -6,6 +6,11 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import com.codeclinic.agent.database.business.BusinessDataFinalFormEntity;
+import com.codeclinic.agent.database.customer.CustomerFinalFormEntity;
+import com.codeclinic.agent.database.customer.CustomerFormResumeEntity;
+import com.codeclinic.agent.database.lead.LeadFinalFormEntity;
+import com.codeclinic.agent.database.supplier.SupplierFinalFormEntity;
 import com.codeclinic.agent.model.businesDataUpdate.FetchBusinessDataFormBodyModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormBodyModel;
 import com.codeclinic.agent.model.customer.SaveCustomerFormEntries;
@@ -21,7 +26,8 @@ import com.codeclinic.agent.model.supplier.FetchSupplierBodyModel;
         LeadFinalFormEntity.class,
         BusinessDataFinalFormEntity.class,
         FetchSupplierBodyModel.class,
-        SupplierFinalFormEntity.class}, version = 1, exportSchema = false)
+        SupplierFinalFormEntity.class,
+        CustomerFormResumeEntity.class}, version = 1, exportSchema = false)
 public abstract class LocalDatabase extends RoomDatabase {
     public abstract DAO getDAO();
 
@@ -32,6 +38,7 @@ public abstract class LocalDatabase extends RoomDatabase {
             localDatabase = Room.databaseBuilder(application.getApplicationContext(),
                     LocalDatabase.class,
                     "AgentLocalDB")
+                    .fallbackToDestructiveMigration()
                     .build();
         }
     }

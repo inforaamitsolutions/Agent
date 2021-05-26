@@ -1,4 +1,4 @@
-package com.codeclinic.agent.database;
+package com.codeclinic.agent.database.supplier;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -6,9 +6,8 @@ import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
 
-@Entity(tableName = "BusinessDataForm")
-public class BusinessDataFinalFormEntity {
-
+@Entity(tableName = "SupplierForm")
+public class SupplierFinalFormEntity {
     @ColumnInfo(name = "mainId")
     @PrimaryKey(autoGenerate = true)
     @Expose

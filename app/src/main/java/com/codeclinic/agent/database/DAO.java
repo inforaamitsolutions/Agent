@@ -6,6 +6,11 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import com.codeclinic.agent.database.business.BusinessDataFinalFormEntity;
+import com.codeclinic.agent.database.customer.CustomerFinalFormEntity;
+import com.codeclinic.agent.database.customer.CustomerFormResumeEntity;
+import com.codeclinic.agent.database.lead.LeadFinalFormEntity;
+import com.codeclinic.agent.database.supplier.SupplierFinalFormEntity;
 import com.codeclinic.agent.model.businesDataUpdate.FetchBusinessDataFormBodyModel;
 import com.codeclinic.agent.model.customer.FetchCustomerFormBodyModel;
 import com.codeclinic.agent.model.customer.SaveCustomerFormEntries;
@@ -44,6 +49,18 @@ public interface DAO {
 
     @Delete
     void deleteCustomerFinalForms(List<CustomerFinalFormEntity> entity);
+
+    @Query("SELECT EXISTS(SELECT * FROM CustomerFormResume)")
+    boolean isCustomerFormResumeExists();
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void saveCustomerFormResume(CustomerFormResumeEntity entity);
+
+    @Query("select * from CustomerFormResume")
+    Flowable<CustomerFormResumeEntity> getCustomerFormResume();
+
+    @Delete
+    void removeCustomerFormResume(CustomerFormResumeEntity entity);
 
     /*****************Lead Survey Form Table Queries*************************/
 
@@ -100,7 +117,7 @@ public interface DAO {
     Flowable<List<SupplierFinalFormEntity>> getSupplierFinalForm();
 
     @Delete
-    void removeBusinessDataForm(FetchSupplierBodyModel entity);
+    void removeSupplierDataForm(FetchSupplierBodyModel entity);
 
     @Delete
     void deleteSupplierFinalForms(List<SupplierFinalFormEntity> entity);

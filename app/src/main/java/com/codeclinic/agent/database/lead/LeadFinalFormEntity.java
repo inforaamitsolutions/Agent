@@ -1,4 +1,4 @@
-package com.codeclinic.agent.database;
+package com.codeclinic.agent.database.lead;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
