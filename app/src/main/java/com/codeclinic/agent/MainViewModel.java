@@ -100,7 +100,7 @@ public class MainViewModel extends AndroidViewModel {
         /*"Customer Registration Form"*/
         disposable.add(RestClass.getClient().FETCH_CUSTOMER_FORM_MODEL_SINGLE(
                 sessionManager.getTokenDetails().get(AccessToken),
-                "customer_registration_form")
+                "customer_registration_form_uat")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<FetchCustomerFormModel>() {

@@ -736,6 +736,22 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 binding.edtAnswer.setText(answeredQuestions.get(questionPage));
             }
 
+        } else if (question.getFieldType().equals("integer")) {
+
+            binding.edtAnswer.setVisibility(View.VISIBLE);
+            binding.edtAnswer.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+            if (surveyQuestions.containsKey(surveyPage)) {
+                Map<Integer, String> data = surveyQuestions.get(surveyPage);
+                if (data != null) {
+                    if (data.containsKey(questionPage)) {
+                        binding.edtAnswer.setText(data.get(questionPage));
+                    }
+                }
+            } else if (answeredQuestions.containsKey(questionPage)) {
+                binding.edtAnswer.setText(answeredQuestions.get(questionPage));
+            }
+
         } else if (question.getFieldType().equals("checkbox")) {
 
 
@@ -1000,6 +1016,23 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
             }
 
+        } else if (question.getFieldType().equals("integer")) {
+
+            binding.edtAnswer.setVisibility(View.VISIBLE);
+
+            binding.edtAnswer.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.edtAnswer.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
+
         } else if (question.getFieldType().equals("decimal")) {
 
             binding.edtAnswer.setVisibility(View.VISIBLE);
@@ -1177,7 +1210,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
         if (question.getFieldType().equals("text") || question.getFieldType().equals("textfield")
                 || question.getFieldType().equals("textArea") || question.getFieldType().equals("decimal")
-                || question.getFieldType().equals("number") || question.getFieldType().equals("textField")) {
+                || question.getFieldType().equals("number") || question.getFieldType().equals("integer")
+                || question.getFieldType().equals("textField")) {
 
             if (isEmpty(binding.edtAnswer.getText().toString())) {
                 Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
@@ -1225,7 +1259,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
     private boolean validateQueToFollowAnswer(List<CustomerQuestionToFollowModel> questionToFollowList) {
         if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("text") || questionToFollowList.get(questionToFollowPage).getFieldType().equals("textfield")
                 || questionToFollowList.get(questionToFollowPage).getFieldType().equals("textArea") || questionToFollowList.get(questionToFollowPage).getFieldType().equals("decimal")
-                || questionToFollowList.get(questionToFollowPage).getFieldType().equals("number") || questionToFollowList.get(questionToFollowPage).getFieldType().equals("textField")) {
+                || questionToFollowList.get(questionToFollowPage).getFieldType().equals("number") || questionToFollowList.get(questionToFollowPage).getFieldType().equals("integer")
+                || questionToFollowList.get(questionToFollowPage).getFieldType().equals("textField")) {
 
             if (isEmpty(binding.edtAnswer.getText().toString())) {
                 Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
