@@ -1,12 +1,14 @@
 package com.codeclinic.agent.activity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -27,6 +29,8 @@ import com.codeclinic.agent.adapter.SummaryFormAdapter;
 import com.codeclinic.agent.database.customer.CustomerFinalFormEntity;
 import com.codeclinic.agent.database.customer.CustomerFormResumeEntity;
 import com.codeclinic.agent.databinding.ActivityCreateCustomerBinding;
+import com.codeclinic.agent.databinding.CheckCustomerDialogBinding;
+import com.codeclinic.agent.model.CheckCustomerExistModel;
 import com.codeclinic.agent.model.customer.CustomerOptionsListModel;
 import com.codeclinic.agent.model.customer.CustomerQuestionToFollowModel;
 import com.codeclinic.agent.model.customer.CustomerQuestionsListModel;
@@ -35,6 +39,7 @@ import com.codeclinic.agent.model.customer.CustomerSurveyDefinitionPageModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.AccessMediaUtil;
 import com.codeclinic.agent.utils.Connection_Detector;
+import com.codeclinic.agent.utils.LoadingDialog;
 import com.codeclinic.agent.utils.LocationInfo;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.gson.Gson;
@@ -63,6 +68,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import static android.text.TextUtils.isEmpty;
 import static com.codeclinic.agent.database.LocalDatabase.localDatabase;
+import static com.codeclinic.agent.utils.CommonMethods.birthDatePicker;
 import static com.codeclinic.agent.utils.CommonMethods.datePicker;
 import static com.codeclinic.agent.utils.CommonMethods.isPermissionGranted;
 import static com.codeclinic.agent.utils.Constants.ACCESS_CAMERA_GALLERY;
@@ -77,6 +83,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
     String imagePath, filePath;
     int surveyPage = 0, questionPage = 0, questionToFollowPage = -1, radioButtonTextSize, edtHeight;
     ArrayAdapter spAdapter;
+    AlertDialog alertDialog;
 
     List<CustomerSurveyDefinitionPageModel> surveyPagesList = new ArrayList<>();
     List<FormSummaryModel> summaryList = new ArrayList<>();
@@ -84,12 +91,13 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
     HashMap<Integer, Map<Integer, String>> surveyQuestions = new LinkedHashMap<>();
     Map<Integer, String> answeredQuestions = new HashMap<>();
-    Map<Integer, Map<Integer, String>> optionQuestions = new HashMap<>();
+    HashMap<Integer, Map<Integer, String>> optionQuestions = new LinkedHashMap<>();
     Map<Integer, String> answeredToFollowQuestions = new HashMap<>();
     LinearLayout.LayoutParams layoutParams;
 
     boolean isSubmitForm = false, isFormSubmitted = false;
     private ChooserDialog chooserDialog;
+    private LoadingDialog loadingDialog;
 
 
     @SuppressLint("SetTextI18n")
@@ -101,6 +109,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
         binding.headerLayout.imgBack.setVisibility(View.VISIBLE);
         binding.headerLayout.txtHeading.setText("Create Customer");
+        loadingDialog = new LoadingDialog(this);
 
         LocationInfo.getLastLocation(this, null);
 
@@ -120,15 +129,37 @@ public class CreateCustomerActivity extends AppCompatActivity {
             chooserDialog.show();
         });
 
+        binding.btnConfirm.setOnClickListener(v -> {
+            if (isEmpty(binding.edtFullName.getText().toString())) {
+                Toast.makeText(this, "Please enter full name", Toast.LENGTH_SHORT).show();
+            } /*else if (!binding.edtFullName.getText().toString().matches("^(\\\\w.+\\\\s).+$")) {
+                Toast.makeText(this, "Please enter valid name", Toast.LENGTH_SHORT).show();
+            }*/ else if (isEmpty(binding.edtMobileNo.getText().toString())) {
+                Toast.makeText(this, "Please enter mobile number", Toast.LENGTH_SHORT).show();
+            } else if (!binding.edtMobileNo.getText().toString().matches("^(?:254|\\\\+254|0)((?:7|1)[0-9]{8})$")) {
+                Toast.makeText(this, "Please enter valid mobile number", Toast.LENGTH_SHORT).show();
+            } else if (isEmpty(binding.edtDocumentNo.getText().toString())) {
+                Toast.makeText(this, "Please enter ID number", Toast.LENGTH_SHORT).show();
+            } else if (!binding.edtDocumentNo.getText().toString().matches("^[0-9]{5,10}$")) {
+                Toast.makeText(this, "Please enter valid ID number", Toast.LENGTH_SHORT).show();
+            } else if (isEmpty(binding.tvBirthDate.getText().toString())) {
+                Toast.makeText(this, "Please enter customers birth date", Toast.LENGTH_SHORT).show();
+            } else {
+                binding.llSections.setVisibility(View.VISIBLE);
+                binding.llCustomerDetails.setVisibility(View.GONE);
+            }
+        });
+
         binding.btnPrevious.setOnClickListener(v -> {
             questionToFollowPage = -1;
-            if (binding.llQuestions.getVisibility() == View.GONE) {
+            if (questionPage == 0 && surveyPage == 0) {
+                binding.llSections.setVisibility(View.GONE);
+                binding.llCustomerDetails.setVisibility(View.VISIBLE);
+            } else if (binding.llQuestions.getVisibility() == View.GONE) {
                 binding.llQuestions.setVisibility(View.VISIBLE);
-                binding.linearUserDetail.setVisibility(View.GONE);
                 isSubmitForm = false;
                 questionPage = surveyPagesList.get(surveyPage).getQuestions().size() - 1;
             } else {
-
                 if (questionPage > 0) {
                     questionPage--;
                 } else if (surveyPage > 0) {
@@ -176,6 +207,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
         });
 
         binding.btnBack.setOnClickListener(v -> {
+            isSubmitForm = false;
             binding.llSections.setVisibility(View.VISIBLE);
             binding.llSummary.setVisibility(View.GONE);
         });
@@ -183,6 +215,10 @@ public class CreateCustomerActivity extends AppCompatActivity {
         binding.btnSubmit.setOnClickListener(v -> submitForm());
 
         binding.tvDate.setOnClickListener(v -> datePicker(binding.tvDate, this));
+
+        binding.tvBirthDate.setOnClickListener(v -> {
+            birthDatePicker(binding.tvBirthDate, binding.tvAge, this);
+        });
 
         binding.tvTime.setOnClickListener(v -> {
             Calendar mcurrentTime = Calendar.getInstance();
@@ -204,8 +240,68 @@ public class CreateCustomerActivity extends AppCompatActivity {
         layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.setMargins(5, 5, 5, 5);
 
-
         getCustomerFormResume();
+    }
+
+    @SuppressLint("CheckResult")
+    public void checkCustomerExistDialog() {
+
+        ViewGroup viewGroup = findViewById(android.R.id.content);
+        CheckCustomerDialogBinding dialogBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.check_customer_dialog, viewGroup, false);
+
+
+        dialogBinding.btnConfirm.setOnClickListener(view -> {
+            if (isEmpty(dialogBinding.edtMobileNo.getText().toString())) {
+                Toast.makeText(this, "Please enter mobile number", Toast.LENGTH_SHORT).show();
+            } else if (!dialogBinding.edtMobileNo.getText().toString().matches("^(?:254|\\\\+254|0)((?:7|1)[0-9]{8})$")) {
+                Toast.makeText(this, "Please enter valid mobile number", Toast.LENGTH_SHORT).show();
+            } else if (isEmpty(dialogBinding.edtDocumentNo.getText().toString())) {
+                Toast.makeText(this, "Please enter ID number", Toast.LENGTH_SHORT).show();
+            } else if (!dialogBinding.edtDocumentNo.getText().toString().matches("^[0-9]{5,10}$")) {
+                Toast.makeText(this, "Please enter valid ID number", Toast.LENGTH_SHORT).show();
+            } else {
+                loadingDialog.showProgressDialog("");
+
+                disposable.add(RestClass.getClient().CHECK_CUSTOMER_EXIST_MODEL_SINGLE(sessionManager.getTokenDetails().get(SessionManager.AccessToken),
+                        dialogBinding.edtDocumentNo.getText().toString(),
+                        dialogBinding.edtMobileNo.getText().toString())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableSingleObserver<CheckCustomerExistModel>() {
+                            @Override
+                            public void onSuccess(CheckCustomerExistModel response) {
+                                loadingDialog.hideProgressDialog();
+                                if (response != null) {
+                                    Toast.makeText(CreateCustomerActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
+                                    if (response.getMessage().equals("existing_mobiloan_customer") || response.getMessage().equals("existing_mymobi_customer")) {
+                                        binding.rbYes.setChecked(true);
+                                        binding.rbNo.setVisibility(View.GONE);
+                                    } else {
+                                        binding.rbNo.setChecked(true);
+                                        binding.rbYes.setVisibility(View.GONE);
+                                    }
+                                    alertDialog.dismiss();
+                                }
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                loadingDialog.hideProgressDialog();
+                                Toast.makeText(CreateCustomerActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            }
+                        }));
+            }
+        });
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(dialogBinding.getRoot());
+
+        alertDialog = builder.create();
+        alertDialog.setCancelable(false);
+        alertDialog.show();
+
     }
 
     private void getSurveyForm() {
@@ -230,6 +326,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
         );
     }
 
+    @SuppressLint("SetTextI18n")
     private void getCustomerFormResume() {
         disposable.add(Single.fromCallable(this::checkFormSavedInDB)
                 .subscribeOn(Schedulers.io())
@@ -250,6 +347,18 @@ public class CreateCustomerActivity extends AppCompatActivity {
                                                 }
                                                 Log.i("customerFormResume", "Data stored is " + new Gson().toJson(surveyQuestions));
                                             }
+                                            binding.edtFullName.setText(form.getName() + "");
+                                            binding.edtDocumentNo.setText(form.getIdNumber() + "");
+                                            binding.edtMobileNo.setText(form.getNumber());
+                                            binding.tvBirthDate.setText(form.getBirthDate() + "");
+                                            binding.tvAge.setText(form.getAge() + "");
+                                            if (form.getExist().equals("yes")) {
+                                                binding.rbYes.setChecked(true);
+                                                binding.rbNo.setVisibility(View.GONE);
+                                            } else {
+                                                binding.rbYes.setVisibility(View.GONE);
+                                                binding.rbNo.setChecked(true);
+                                            }
                                             getSurveyForm();
                                         },
                                         throwable -> {
@@ -261,6 +370,9 @@ public class CreateCustomerActivity extends AppCompatActivity {
                                 )
                         );
                     } else {
+                        if (Connection_Detector.isInternetAvailable(this)) {
+                            checkCustomerExistDialog();
+                        }
                         getSurveyForm();
                     }
                 }));
@@ -269,7 +381,6 @@ public class CreateCustomerActivity extends AppCompatActivity {
     private boolean checkFormSavedInDB() {
         return localDatabase.getDAO().isCustomerFormResumeExists();
     }
-
 
     private void saveCustomerFormToLocal(String request) {
         CustomerFinalFormEntity customerFinalFormEntity = new CustomerFinalFormEntity();
@@ -296,46 +407,36 @@ public class CreateCustomerActivity extends AppCompatActivity {
     }
 
     private void moveToNextQuestion() {
-        if (!isSubmitForm) {
-            if (validateAnswer()) {
-                if (surveyPagesList.get(surveyPage).getQuestions().size() > (questionPage + 1)) {
+        if (validateAnswer()) {
+            if (surveyPagesList.get(surveyPage).getQuestions().size() > (questionPage + 1)) {
 
-                    addAnswers();
-                    questionPage++;
-                    updatePage();
+                addAnswers();
+                questionPage++;
+                updatePage();
 
-                } else if (surveyPagesList.size() > (surveyPage + 1)) {
+            } else if (surveyPagesList.size() > (surveyPage + 1)) {
 
-                    addAnswers();
-                    surveyQuestions.put(surveyPage, answeredQuestions);
-                    Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
-                    answeredQuestions = new HashMap<>();
-                    questionPage = 0;
-                    surveyPage++;
-                    updatePage();
+                addAnswers();
+                surveyQuestions.put(surveyPage, answeredQuestions);
+                Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
+                answeredQuestions = new HashMap<>();
+                questionPage = 0;
+                surveyPage++;
+                updatePage();
 
-                } else {
+            } else {
 
-                    if (binding.llQuestions.getVisibility() == View.VISIBLE) {
-                        binding.llQuestions.setVisibility(View.GONE);
-                        binding.linearUserDetail.setVisibility(View.VISIBLE);
-                    } else {
-                        addAnswers();
-                        surveyQuestions.put(surveyPage, answeredQuestions);
-                        Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
-                        answeredQuestions = new HashMap<>();
-                        questionPage = 0;
-                        isSubmitForm = true;
-                        //submitForm();
-                        renderSummary();
-                    }
-                }
+                addAnswers();
+                surveyQuestions.put(surveyPage, answeredQuestions);
+                Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
+                answeredQuestions = new HashMap<>();
+                questionPage = 0;
+                isSubmitForm = true;
+                renderSummary();
             }
-        } else {
-            //submitForm();
-            renderSummary();
         }
     }
+
 
     private void renderSummary() {
         binding.llSections.setVisibility(View.GONE);
@@ -405,9 +506,12 @@ public class CreateCustomerActivity extends AppCompatActivity {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("customerRole", "MYMOBI_INDIVIDUAL_CUSTOMER");
-            jsonObject.put("firstName", binding.edtFirstName.getText().toString());
-            jsonObject.put("lastName", binding.edtLastName.getText().toString());
-            jsonObject.put("middleName", binding.edtMiddleName.getText().toString());
+            jsonObject.put("customerName", binding.edtFullName.getText().toString());
+            jsonObject.put("mobileNumber", binding.edtMobileNo.getText().toString());
+            jsonObject.put("dateOfBirth", binding.tvBirthDate.getText().toString());
+            jsonObject.put("customerAge", binding.tvAge.getText().toString());
+            jsonObject.put("idNumber", binding.edtDocumentNo.getText().toString());
+            jsonObject.put("existingCustomer", binding.rbYes.isChecked() ? "existing" : "new");
             jsonObject.put("staffId", sessionManager.getUserDetails().get(SessionManager.UserID));
             jsonObject.put("status", "COMPLETED");
             jsonObject.put("surveyName", "customer_registration_form");
@@ -1068,124 +1172,99 @@ public class CreateCustomerActivity extends AppCompatActivity {
     }
 
     private boolean validateAnswer() {
-        if (binding.llQuestions.getVisibility() == View.VISIBLE) {
 
-            CustomerQuestionsListModel question = questionList.get(surveyPage).get(questionPage);
+        CustomerQuestionsListModel question = questionList.get(surveyPage).get(questionPage);
 
-            if (question.getFieldType().equals("text") || question.getFieldType().equals("textfield")
-                    || question.getFieldType().equals("textArea") || question.getFieldType().equals("decimal")
-                    || question.getFieldType().equals("number") || question.getFieldType().equals("textField")) {
+        if (question.getFieldType().equals("text") || question.getFieldType().equals("textfield")
+                || question.getFieldType().equals("textArea") || question.getFieldType().equals("decimal")
+                || question.getFieldType().equals("number") || question.getFieldType().equals("textField")) {
 
-                if (isEmpty(binding.edtAnswer.getText().toString())) {
-                    Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
-                    return false;
-                } else if (binding.edtAnswer.getText().toString().length() < question.getMin()) {
-                    Toast.makeText(this, "Please enter minimum " + question.getMin() + " characters", Toast.LENGTH_SHORT).show();
-                    return false;
-                } else if (isEmpty(question.getRegularExpression())) {
-                    return true;
-                } else if (!binding.edtAnswer.getText().toString().matches(question.getRegularExpression())) {
-                    Toast.makeText(this, "Please enter valid details", Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-
-            } else if (question.getFieldType().equals("checkbox")
-                    && binding.radioGroup.getCheckedRadioButtonId() == -1) {
-                Toast.makeText(this, "Please select one option", Toast.LENGTH_SHORT).show();
+            if (isEmpty(binding.edtAnswer.getText().toString())) {
+                Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
                 return false;
-            } else if (question.getFieldType().equals("date")
-                    && isEmpty(binding.tvDate.getText().toString())) {
-                Toast.makeText(this, "Please enter date", Toast.LENGTH_SHORT).show();
+            } else if (binding.edtAnswer.getText().toString().length() < question.getMin()) {
+                Toast.makeText(this, "Please enter minimum " + question.getMin() + " characters", Toast.LENGTH_SHORT).show();
                 return false;
-            } else if (question.getFieldType().equals("time")
-                    && isEmpty(binding.tvTime.getText().toString())) {
-                Toast.makeText(this, "Please enter time", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (question.getFieldType().equals("geopoint")
-                    && isEmpty(binding.tvDate.getText().toString())) {
-                Toast.makeText(this, "Please enter your location coordinates", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (question.getFieldType().equals("image")
-                    && isEmpty(imagePath)) {
-                Toast.makeText(this, "Please add image", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (question.getFieldType().equals("file")
-                    && isEmpty(filePath)) {
-                Toast.makeText(this, "Please attach file", Toast.LENGTH_SHORT).show();
+            } else if (isEmpty(question.getRegularExpression())) {
+                return true;
+            } else if (!binding.edtAnswer.getText().toString().matches(question.getRegularExpression())) {
+                Toast.makeText(this, "Please enter valid details", Toast.LENGTH_SHORT).show();
                 return false;
             }
-        } else if (binding.linearUserDetail.getVisibility() == View.VISIBLE) {
-            if (isEmpty(binding.edtFirstName.getText().toString())) {
-                Toast.makeText(this, "Please enter first name", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (isEmpty(binding.edtMiddleName.getText().toString())) {
-                Toast.makeText(this, "Please enter middle name", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (isEmpty(binding.edtLastName.getText().toString())) {
-                Toast.makeText(this, "Please enter last name", Toast.LENGTH_SHORT).show();
-                return false;
-            }
+
+        } else if (question.getFieldType().equals("checkbox")
+                && binding.radioGroup.getCheckedRadioButtonId() == -1) {
+            Toast.makeText(this, "Please select one option", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (question.getFieldType().equals("date")
+                && isEmpty(binding.tvDate.getText().toString())) {
+            Toast.makeText(this, "Please enter date", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (question.getFieldType().equals("time")
+                && isEmpty(binding.tvTime.getText().toString())) {
+            Toast.makeText(this, "Please enter time", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (question.getFieldType().equals("geopoint")
+                && isEmpty(binding.tvDate.getText().toString())) {
+            Toast.makeText(this, "Please enter your location coordinates", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (question.getFieldType().equals("image")
+                && isEmpty(imagePath)) {
+            Toast.makeText(this, "Please add image", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (question.getFieldType().equals("file")
+                && isEmpty(filePath)) {
+            Toast.makeText(this, "Please attach file", Toast.LENGTH_SHORT).show();
+            return false;
         }
+
 
         return true;
     }
 
     private boolean validateQueToFollowAnswer(List<CustomerQuestionToFollowModel> questionToFollowList) {
-        if (binding.llQuestions.getVisibility() == View.VISIBLE) {
-            if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("text") || questionToFollowList.get(questionToFollowPage).getFieldType().equals("textfield")
-                    || questionToFollowList.get(questionToFollowPage).getFieldType().equals("textArea") || questionToFollowList.get(questionToFollowPage).getFieldType().equals("decimal")
-                    || questionToFollowList.get(questionToFollowPage).getFieldType().equals("number") || questionToFollowList.get(questionToFollowPage).getFieldType().equals("textField")) {
+        if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("text") || questionToFollowList.get(questionToFollowPage).getFieldType().equals("textfield")
+                || questionToFollowList.get(questionToFollowPage).getFieldType().equals("textArea") || questionToFollowList.get(questionToFollowPage).getFieldType().equals("decimal")
+                || questionToFollowList.get(questionToFollowPage).getFieldType().equals("number") || questionToFollowList.get(questionToFollowPage).getFieldType().equals("textField")) {
 
-                if (isEmpty(binding.edtAnswer.getText().toString())) {
-                    Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
-                    return false;
-                } else if (isEmpty(questionToFollowList.get(questionToFollowPage).getRegularExpression())) {
+            if (isEmpty(binding.edtAnswer.getText().toString())) {
+                Toast.makeText(this, "Please enter something", Toast.LENGTH_SHORT).show();
+                return false;
+            } else if (isEmpty(questionToFollowList.get(questionToFollowPage).getRegularExpression())) {
+                return true;
+            } else {
+                String answer = binding.edtAnswer.getText().toString();
+                if (answer.matches(questionToFollowList.get(questionToFollowPage).getRegularExpression())) {
                     return true;
                 } else {
-                    String answer = binding.edtAnswer.getText().toString();
-                    if (answer.matches(questionToFollowList.get(questionToFollowPage).getRegularExpression())) {
-                        return true;
-                    } else {
-                        Toast.makeText(this, "Please enter valid details", Toast.LENGTH_SHORT).show();
-                        return false;
-                    }
+                    Toast.makeText(this, "Please enter valid details", Toast.LENGTH_SHORT).show();
+                    return false;
                 }
-            } else if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("checkbox")
-                    && binding.radioGroup.getCheckedRadioButtonId() == -1) {
-                Toast.makeText(this, "Please select one option", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("date")
-                    && isEmpty(binding.tvDate.getText().toString())) {
-                Toast.makeText(this, "Please enter date", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("time")
-                    && isEmpty(binding.tvTime.getText().toString())) {
-                Toast.makeText(this, "Please enter time", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("geopoint")
-                    && isEmpty(binding.tvDate.getText().toString())) {
-                Toast.makeText(this, "Please enter your coordinates", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("image")
-                    && isEmpty(imagePath)) {
-                Toast.makeText(this, "Please add image", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("file")
-                    && isEmpty(filePath)) {
-                Toast.makeText(this, "Please attach file", Toast.LENGTH_SHORT).show();
-                return false;
             }
-        } else if (binding.linearUserDetail.getVisibility() == View.VISIBLE) {
-            if (isEmpty(binding.edtFirstName.getText().toString())) {
-                Toast.makeText(this, "Please enter first name", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (isEmpty(binding.edtMiddleName.getText().toString())) {
-                Toast.makeText(this, "Please enter middle name", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (isEmpty(binding.edtLastName.getText().toString())) {
-                Toast.makeText(this, "Please enter last name", Toast.LENGTH_SHORT).show();
-                return false;
-            }
+        } else if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("checkbox")
+                && binding.radioGroup.getCheckedRadioButtonId() == -1) {
+            Toast.makeText(this, "Please select one option", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("date")
+                && isEmpty(binding.tvDate.getText().toString())) {
+            Toast.makeText(this, "Please enter date", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("time")
+                && isEmpty(binding.tvTime.getText().toString())) {
+            Toast.makeText(this, "Please enter time", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("geopoint")
+                && isEmpty(binding.tvDate.getText().toString())) {
+            Toast.makeText(this, "Please enter your coordinates", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("image")
+                && isEmpty(imagePath)) {
+            Toast.makeText(this, "Please add image", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("file")
+                && isEmpty(filePath)) {
+            Toast.makeText(this, "Please attach file", Toast.LENGTH_SHORT).show();
+            return false;
         }
 
         return true;
@@ -1255,6 +1334,12 @@ public class CreateCustomerActivity extends AppCompatActivity {
             if (!surveyQuestions.isEmpty()) {
                 CustomerFormResumeEntity entity = new CustomerFormResumeEntity();
                 entity.setMainId(0);
+                entity.setName(binding.edtFullName.getText().toString() + "");
+                entity.setNumber(binding.edtMobileNo.getText().toString() + "");
+                entity.setIdNumber(binding.edtDocumentNo.getText().toString() + "");
+                entity.setBirthDate(binding.tvBirthDate.getText().toString() + "");
+                entity.setAge(binding.tvAge.getText().toString() + "");
+                entity.setExist(binding.rbYes.isChecked() ? "yes" : "no");
                 entity.setSurveyQuestions(new Gson().toJson(surveyQuestions));
                 entity.setOptionQuestions(optionQuestions.isEmpty() ? "" : new Gson().toJson(optionQuestions));
                 disposable.add(Completable.fromAction(() -> localDatabase.getDAO()

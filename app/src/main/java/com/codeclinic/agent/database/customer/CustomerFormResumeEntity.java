@@ -13,6 +13,30 @@ public class CustomerFormResumeEntity {
     @Expose
     private long mainId;
 
+    @ColumnInfo(name = "name")
+    @Expose
+    private String name;
+
+    @ColumnInfo(name = "number")
+    @Expose
+    private String number;
+
+    @ColumnInfo(name = "id_number")
+    @Expose
+    private String idNumber;
+
+    @ColumnInfo(name = "birthDate")
+    @Expose
+    private String birthDate;
+
+    @ColumnInfo(name = "age")
+    @Expose
+    private String age;
+
+    @ColumnInfo(name = "exist")
+    @Expose
+    private String exist;
+
     @ColumnInfo(name = "surveyQue")
     @Expose
     private String surveyQuestions;
@@ -27,6 +51,54 @@ public class CustomerFormResumeEntity {
 
     public void setMainId(long mainId) {
         this.mainId = mainId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getIdNumber() {
+        return idNumber;
+    }
+
+    public void setIdNumber(String idNumber) {
+        this.idNumber = idNumber;
+    }
+
+    public String getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(String birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public String getExist() {
+        return exist;
+    }
+
+    public void setExist(String exist) {
+        this.exist = exist;
     }
 
     public String getSurveyQuestions() {

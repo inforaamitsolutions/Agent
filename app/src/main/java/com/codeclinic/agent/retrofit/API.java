@@ -1,6 +1,7 @@
 package com.codeclinic.agent.retrofit;
 
 
+import com.codeclinic.agent.model.CheckCustomerExistModel;
 import com.codeclinic.agent.model.InteractionCategoryModel;
 import com.codeclinic.agent.model.InteractionModel;
 import com.codeclinic.agent.model.LoanAccountsByNoModel;
@@ -72,6 +73,11 @@ public interface API {
     @Headers("Content-Type: application/json")
     @GET("customer/customerState/getSurveyBySurveyName")
     Single<FetchCustomerFormModel> FETCH_CUSTOMER_FORM_MODEL_SINGLE(@Header("Authorization") String header, @Query("surveyName") String params);
+
+    //Check Customer Exist API
+    @Headers("Content-Type: application/json")
+    @GET("customer/customers/checkCustomer")
+    Single<CheckCustomerExistModel> CHECK_CUSTOMER_EXIST_MODEL_SINGLE(@Header("Authorization") String header, @Query("documentNumber") String param1, @Query("mobileNumber") String param2);
 
     //Submit customer form API
     @Headers("Content-Type: application/json")

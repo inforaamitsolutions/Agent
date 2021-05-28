@@ -17,10 +17,15 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.codeclinic.agent.R;
+import com.codeclinic.agent.adapter.FormSummaryModel;
+import com.codeclinic.agent.adapter.SummaryFormAdapter;
 import com.codeclinic.agent.database.lead.LeadFinalFormEntity;
+import com.codeclinic.agent.database.lead.LeadFormResumeEntity;
 import com.codeclinic.agent.databinding.ActivityCreateLeadBinding;
 import com.codeclinic.agent.model.lead.LeadOptionsListModel;
 import com.codeclinic.agent.model.lead.LeadQuestionToFollowModel;
@@ -33,6 +38,7 @@ import com.codeclinic.agent.utils.Connection_Detector;
 import com.codeclinic.agent.utils.LocationInfo;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,10 +47,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
@@ -65,6 +73,7 @@ public class CreateLeadActivity extends AppCompatActivity {
     ActivityCreateLeadBinding binding;
 
     CompositeDisposable disposable = new CompositeDisposable();
+    LeadFormResumeEntity leadFormResumeEntity;
 
     String imagePath;
     int surveyPage = 0, questionPage = 0, questionToFollowPage = -1, radioButtonTextSize, edtHeight;
@@ -72,15 +81,16 @@ public class CreateLeadActivity extends AppCompatActivity {
 
     List<LeadSurveyDefinitionPageModel> surveyPagesList = new ArrayList<>();
     Map<Integer, List<LeadQuestionsListModel>> questionList = new HashMap<>();
+    List<FormSummaryModel> summaryList = new ArrayList<>();
 
-
-    Map<Integer, Map<Integer, String>> surveyQuestions = new HashMap<>();
+    HashMap<Integer, Map<Integer, String>> surveyQuestions = new LinkedHashMap<>();
     Map<Integer, String> answeredQuestions = new HashMap<>();
-    Map<Integer, Map<Integer, String>> optionQuestions = new HashMap<>();
+    HashMap<Integer, Map<Integer, String>> optionQuestions = new LinkedHashMap<>();
+
     Map<Integer, String> answeredToFollowQuestions = new HashMap<>();
     LinearLayout.LayoutParams layoutParams;
 
-    boolean isSubmitForm = false;
+    boolean isSubmitForm = false, isFormSubmitted = false;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -90,6 +100,10 @@ public class CreateLeadActivity extends AppCompatActivity {
 
         binding.headerLayout.imgBack.setVisibility(View.VISIBLE);
         binding.headerLayout.txtHeading.setText("Create Lead");
+
+
+        binding.recyclerViewSummary.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        binding.recyclerViewSummary.setNestedScrollingEnabled(false);
 
         binding.headerLayout.imgBack.setOnClickListener(view -> {
             onBackPressed();
@@ -152,6 +166,14 @@ public class CreateLeadActivity extends AppCompatActivity {
             }
         });
 
+        binding.btnBack.setOnClickListener(v -> {
+            isSubmitForm = false;
+            binding.llSections.setVisibility(View.VISIBLE);
+            binding.llSummary.setVisibility(View.GONE);
+        });
+
+        binding.btnSubmit.setOnClickListener(v -> submitForm());
+
         binding.tvDate.setOnClickListener(v -> datePicker(binding.tvDate, this));
 
         binding.tvTime.setOnClickListener(v -> {
@@ -175,8 +197,51 @@ public class CreateLeadActivity extends AppCompatActivity {
 
 
         //callCustomerForm();
-        getSurveyForm();
+        getLeadFormResume();
+        //getSurveyForm();
 
+    }
+
+    private boolean checkFormSavedInDB() {
+        return localDatabase.getDAO().isLeadFormResumeExists();
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void getLeadFormResume() {
+        disposable.add(Single.fromCallable(this::checkFormSavedInDB)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((isExist) -> {
+                    if (isExist) {
+                        disposable.add(localDatabase.getDAO().getLeadFormResume()
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(form -> {
+                                            if (form != null) {
+                                                leadFormResumeEntity = form;
+                                                surveyQuestions = new Gson().fromJson(form.getSurveyQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
+                                                }.getType());
+                                                if (!isEmpty(form.getOptionQuestions())) {
+                                                    optionQuestions = new Gson().fromJson(form.getOptionQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
+                                                    }.getType());
+                                                }
+                                                Log.i("leadFormResume", "Data stored is " + new Gson().toJson(surveyQuestions));
+                                            }
+
+                                            getSurveyForm();
+                                        },
+                                        throwable -> {
+                                            if (throwable.getMessage() != null) {
+                                                Log.i("leadFormResume", "Error == " + throwable.getMessage());
+                                            }
+                                            getSurveyForm();
+                                        }
+                                )
+                        );
+                    } else {
+                        getSurveyForm();
+                    }
+                }));
     }
 
     private void getSurveyForm() {
@@ -200,6 +265,72 @@ public class CreateLeadActivity extends AppCompatActivity {
                         }
                 )
         );
+    }
+
+    private void saveLeadFormToLocal(String request) {
+        LeadFinalFormEntity leadFinalFormEntity = new LeadFinalFormEntity();
+        leadFinalFormEntity.setMainId(0);
+        leadFinalFormEntity.setRequest(request);
+        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                .saveLeadFinalForm(leadFinalFormEntity))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Toast.makeText(CreateLeadActivity.this, "Lead Saved to local", Toast.LENGTH_SHORT).show();
+                        Log.i("leadForm", "lead final form saved to local");
+                        finish();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("leadForm", "Error  ==  " + e.getMessage());
+                        Toast.makeText(CreateLeadActivity.this, "Error  ==  " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }));
+    }
+
+    private void moveToNextQuestion() {
+        if (!isSubmitForm) {
+            if (validateAnswer()) {
+                if (surveyPagesList.get(surveyPage).getQuestions().size() > (questionPage + 1)) {
+
+                    addAnswers();
+                    questionPage++;
+                    updatePage();
+
+                } else if (surveyPagesList.size() > (surveyPage + 1)) {
+
+                    addAnswers();
+                    surveyQuestions.put(surveyPage, answeredQuestions);
+                    Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
+                    answeredQuestions = new HashMap<>();
+                    questionPage = 0;
+                    surveyPage++;
+                    updatePage();
+
+                } else {
+
+                    if (binding.llQuestions.getVisibility() == View.VISIBLE) {
+                        binding.llQuestions.setVisibility(View.GONE);
+                        binding.linearUserDetail.setVisibility(View.VISIBLE);
+                    } else {
+                        addAnswers();
+                        surveyQuestions.put(surveyPage, answeredQuestions);
+                        Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
+                        answeredQuestions = new HashMap<>();
+                        questionPage = 0;
+                        isSubmitForm = true;
+                        //submitForm();
+                        renderSummary();
+                    }
+                }
+            }
+        } else {
+            //submitForm();
+            renderSummary();
+        }
     }
 
     private void submitForm() {
@@ -303,68 +434,67 @@ public class CreateLeadActivity extends AppCompatActivity {
 
     }
 
-    private void saveLeadFormToLocal(String request) {
-        LeadFinalFormEntity leadFinalFormEntity = new LeadFinalFormEntity();
-        leadFinalFormEntity.setMainId(0);
-        leadFinalFormEntity.setRequest(request);
-        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
-                .saveLeadFinalForm(leadFinalFormEntity))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        Toast.makeText(CreateLeadActivity.this, "Lead Saved to local", Toast.LENGTH_SHORT).show();
-                        Log.i("leadForm", "lead final form saved to local");
-                        finish();
-                    }
+    private void renderSummary() {
+        binding.llSections.setVisibility(View.GONE);
+        binding.llSummary.setVisibility(View.VISIBLE);
+        //binding.loadingView.loader.setVisibility(View.VISIBLE);
+        summaryList.clear();
+        for (int i = 0; i < surveyPagesList.size(); i++) {
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.i("leadForm", "Error  ==  " + e.getMessage());
-                        Toast.makeText(CreateLeadActivity.this, "Error  ==  " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }));
-    }
+            Map<Integer, String> mapAnswered = surveyQuestions.get(i);
 
-    private void moveToNextQuestion() {
-        if (!isSubmitForm) {
-            if (validateAnswer()) {
-                if (surveyPagesList.get(surveyPage).getQuestions().size() > (questionPage + 1)) {
+            FormSummaryModel section = new FormSummaryModel();
+            section.setAnswer("");
+            section.setQuestion("");
+            section.setSection(surveyPagesList.get(i).getPageName());
+            summaryList.add(section);
 
-                    addAnswers();
-                    questionPage++;
-                    updatePage();
+            for (Map.Entry<Integer, String> entry : mapAnswered.entrySet()) {
+                String value = entry.getValue();
 
-                } else if (surveyPagesList.size() > (surveyPage + 1)) {
+                FormSummaryModel object = new FormSummaryModel();
+                object.setQuestion(surveyPagesList.get(i).getQuestions().get(entry.getKey()).getQuestionText());
+                object.setAnswer(value);
+                object.setSection("");
+                summaryList.add(object);
 
-                    addAnswers();
-                    surveyQuestions.put(surveyPage, answeredQuestions);
-                    Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
-                    answeredQuestions = new HashMap<>();
-                    questionPage = 0;
-                    surveyPage++;
-                    updatePage();
 
-                } else {
+                if ((surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_one")
+                        || surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_multiple"))) {
+                    List<LeadOptionsListModel> options = surveyPagesList.get(i).getQuestions().get(entry.getKey()).getOptions();
 
-                    if (binding.llQuestions.getVisibility() == View.VISIBLE) {
-                        binding.llQuestions.setVisibility(View.GONE);
-                        binding.linearUserDetail.setVisibility(View.VISIBLE);
-                    } else {
-                        addAnswers();
-                        surveyQuestions.put(surveyPage, answeredQuestions);
-                        Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
-                        answeredQuestions = new HashMap<>();
-                        questionPage = 0;
-                        isSubmitForm = true;
-                        submitForm();
+                    for (int j = 0; j < options.size(); j++) {
+
+                        if (options.get(j).getQuestionToFollow() != null && value.equals(options.get(j).getValue())) {
+
+                            if (options.get(j).getQuestionToFollow().size() != 0) {
+
+                                Map<Integer, String> questionToFollowAnswered = optionQuestions.get(entry.getKey());
+
+                                if (questionToFollowAnswered != null) {
+                                    for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
+                                        FormSummaryModel subQuestions = new FormSummaryModel();
+                                        subQuestions.setQuestion(options.get(j).getQuestionToFollow().get(item.getKey()).getQuestionText());
+                                        subQuestions.setAnswer(item.getValue());
+                                        subQuestions.setSection("");
+                                        summaryList.add(subQuestions);
+                                    }
+                                }
+
+                            }
+
+                        }
+
                     }
                 }
             }
-        } else {
-            submitForm();
         }
+
+        Log.i("formReq", "Summary List is => " + new Gson().toJson(summaryList));
+
+        binding.recyclerViewSummary.setAdapter(new SummaryFormAdapter(summaryList, this));
+
+
     }
 
     @SuppressLint("SetTextI18n")
@@ -388,6 +518,7 @@ public class CreateLeadActivity extends AppCompatActivity {
         binding.edtAnswer.getText().clear();
 
         LeadQuestionsListModel question = questionList.get(surveyPage).get(questionPage);
+        Glide.with(CreateLeadActivity.this).load("").into(binding.imgUser);
 
         RelativeLayout.LayoutParams lp;
         if (question.getFieldType().equals("textArea")) {
@@ -560,18 +691,17 @@ public class CreateLeadActivity extends AppCompatActivity {
         } else if (question.getFieldType().equals("image")) {
 
             binding.imgUser.setVisibility(View.VISIBLE);
-
-            Glide.with(CreateLeadActivity.this).load("").into(binding.imgUser);
-
             if (surveyQuestions.containsKey(surveyPage)) {
                 Map<Integer, String> data = surveyQuestions.get(surveyPage);
                 if (data != null) {
                     if (data.containsKey(questionPage)) {
                         Glide.with(CreateLeadActivity.this).load(data.get(questionPage)).into(binding.imgUser);
+                        imagePath = data.get(questionPage);
                     }
                 }
             } else if (answeredQuestions.containsKey(questionPage)) {
                 Glide.with(CreateLeadActivity.this).load(answeredQuestions.get(questionPage)).into(binding.imgUser);
+                imagePath = answeredQuestions.get(questionPage);
             }
         }
     }
@@ -664,16 +794,49 @@ public class CreateLeadActivity extends AppCompatActivity {
             binding.edtAnswer.setVisibility(View.VISIBLE);
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
 
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.edtAnswer.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
+
         } else if (question.getFieldType().equals("textField")) {
 
             binding.edtAnswer.setVisibility(View.VISIBLE);
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
+
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.edtAnswer.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
 
         } else if (question.getFieldType().equals("textArea")) {
 
             binding.edtAnswer.setVisibility(View.VISIBLE);
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.edtAnswer.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
 
 
         } else if (question.getFieldType().equals("number")) {
@@ -682,11 +845,33 @@ public class CreateLeadActivity extends AppCompatActivity {
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_NUMBER);
 
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.edtAnswer.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
+
         } else if (question.getFieldType().equals("decimal")) {
 
             binding.edtAnswer.setVisibility(View.VISIBLE);
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.edtAnswer.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
 
         } else if (question.getFieldType().equals("checkbox")) {
 
@@ -709,17 +894,64 @@ public class CreateLeadActivity extends AppCompatActivity {
 
             binding.tvDate.setVisibility(View.VISIBLE);
 
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.tvDate.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.tvDate.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
+
+
         } else if (question.getFieldType().equals("time")) {
 
             binding.tvTime.setVisibility(View.VISIBLE);
+
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.tvTime.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.tvTime.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
 
         } else if (question.getFieldType().equals("geopoint")) {
 
             binding.tvDate.setVisibility(View.VISIBLE);
             binding.tvDate.setText(LocationInfo.location.getLongitude() + "," + LocationInfo.location.getLatitude());
 
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.tvDate.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.tvDate.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
+
         } else if (question.getFieldType().equals("image")) {
             binding.imgUser.setVisibility(View.VISIBLE);
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        Glide.with(this).load(data.get(questionToFollowPage)).into(binding.imgUser);
+                        imagePath = data.get(questionToFollowPage);
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+
+                Glide.with(this).load(answeredToFollowQuestions.get(questionToFollowPage)).into(binding.imgUser);
+                imagePath = answeredToFollowQuestions.get(questionToFollowPage);
+            }
         }
     }
 
@@ -926,8 +1158,58 @@ public class CreateLeadActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        manageResumeForm();
         super.onDestroy();
-        disposable.clear();
+    }
+
+    synchronized private void manageResumeForm() {
+        if (!isFormSubmitted) {
+            if (!surveyQuestions.isEmpty()) {
+                LeadFormResumeEntity entity = new LeadFormResumeEntity();
+                entity.setMainId(0);
+                entity.setSurveyQuestions(new Gson().toJson(surveyQuestions));
+                entity.setOptionQuestions(optionQuestions.isEmpty() ? "" : new Gson().toJson(optionQuestions));
+                disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                        .saveLeadFormResume(entity))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableCompletableObserver() {
+                            @Override
+                            public void onComplete() {
+                                //Toast.makeText(CreateCustomerActivity.this, "Customer Resume Saved to local", Toast.LENGTH_SHORT).show();
+                                finish();
+                                Log.i("leadForm", "Customer Resume form saved to local");
+                                disposable.clear();
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.i("leadFormResume", "Error  ==  " + e.getMessage());
+                                Toast.makeText(CreateLeadActivity.this, "Error  ==  " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                disposable.clear();
+                            }
+                        }));
+            }
+        } else {
+            if (leadFormResumeEntity != null) {
+                disposable.add(Completable.fromAction(() -> localDatabase.getDAO().removeLeadFormResume(leadFormResumeEntity))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableCompletableObserver() {
+
+                            @Override
+                            public void onComplete() {
+                                Log.i("leadFormResume", "formDeleted");
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.i("leadFormResume", "Error = > " + e.getMessage());
+                                disposable.clear();
+                            }
+                        }));
+            }
+        }
     }
 
 }

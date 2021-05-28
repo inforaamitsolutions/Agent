@@ -17,10 +17,15 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.codeclinic.agent.R;
+import com.codeclinic.agent.adapter.FormSummaryModel;
+import com.codeclinic.agent.adapter.SummaryFormAdapter;
 import com.codeclinic.agent.database.business.BusinessDataFinalFormEntity;
+import com.codeclinic.agent.database.business.BusinessFormResumeEntity;
 import com.codeclinic.agent.databinding.ActivityBusinessDataUpdateBinding;
 import com.codeclinic.agent.model.businesDataUpdate.BusinessDataOptionsListModel;
 import com.codeclinic.agent.model.businesDataUpdate.BusinessDataQuestionListModel;
@@ -33,6 +38,7 @@ import com.codeclinic.agent.utils.Connection_Detector;
 import com.codeclinic.agent.utils.LocationInfo;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,10 +47,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
@@ -65,9 +73,11 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
 
     private final CompositeDisposable disposable = new CompositeDisposable();
     private final Map<Integer, List<BusinessDataQuestionListModel>> questionList = new HashMap<>();
-    private final Map<Integer, Map<Integer, String>> surveyQuestions = new HashMap<>();
-    private final Map<Integer, Map<Integer, String>> optionQuestions = new HashMap<>();
-    boolean isSubmitForm = false;
+
+    BusinessFormResumeEntity businessFormResumeEntity;
+    boolean isSubmitForm = false, isFormSubmitted = false;
+    List<FormSummaryModel> summaryList = new ArrayList<>();
+    private HashMap<Integer, Map<Integer, String>> surveyQuestions = new LinkedHashMap<>();
     private ActivityBusinessDataUpdateBinding binding;
     private String imagePath, customerID;
     private int surveyPage = 0, questionPage = 0, questionToFollowPage = -1, radioButtonTextSize, edtHeight;
@@ -75,6 +85,7 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
     private List<BusinessDataSurveyDefinitionPageModel> surveyPagesList = new ArrayList<>();
     private Map<Integer, String> answeredQuestions = new HashMap<>();
     private Map<Integer, String> answeredToFollowQuestions = new HashMap<>();
+    private HashMap<Integer, Map<Integer, String>> optionQuestions = new LinkedHashMap<>();
     private LinearLayout.LayoutParams layoutParams;
 
     @SuppressLint("SetTextI18n")
@@ -87,6 +98,9 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
         binding.headerLayout.txtHeading.setText("Business Data Update");
 
         LocationInfo.getLastLocation(this, null);
+
+        binding.recyclerViewSummary.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        binding.recyclerViewSummary.setNestedScrollingEnabled(false);
 
         customerID = getIntent().getStringExtra(CustomerID);
 
@@ -154,6 +168,14 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
             }
         });
 
+        binding.btnBack.setOnClickListener(v -> {
+            isSubmitForm = false;
+            binding.llSections.setVisibility(View.VISIBLE);
+            binding.llSummary.setVisibility(View.GONE);
+        });
+
+        binding.btnSubmit.setOnClickListener(v -> submitForm());
+
         binding.tvDate.setOnClickListener(v -> datePicker(binding.tvDate, this));
 
         binding.tvTime.setOnClickListener(v -> {
@@ -176,7 +198,49 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
         layoutParams.setMargins(5, 5, 5, 5);
 
 
-        getSurveyForm();
+        getBusinessFormResume();
+    }
+
+    private boolean checkFormSavedInDB() {
+        return localDatabase.getDAO().isBusinessFormResumeExists();
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void getBusinessFormResume() {
+        disposable.add(Single.fromCallable(this::checkFormSavedInDB)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((isExist) -> {
+                    if (isExist) {
+                        disposable.add(localDatabase.getDAO().getBusinessFormResume()
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(form -> {
+                                            if (form != null) {
+                                                businessFormResumeEntity = form;
+                                                surveyQuestions = new Gson().fromJson(form.getSurveyQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
+                                                }.getType());
+                                                if (!isEmpty(form.getOptionQuestions())) {
+                                                    optionQuestions = new Gson().fromJson(form.getOptionQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
+                                                    }.getType());
+                                                }
+                                                Log.i("businessFormResume", "Data stored is " + new Gson().toJson(surveyQuestions));
+                                            }
+
+                                            getSurveyForm();
+                                        },
+                                        throwable -> {
+                                            if (throwable.getMessage() != null) {
+                                                Log.i("businessFormResume", "Error == " + throwable.getMessage());
+                                            }
+                                            getSurveyForm();
+                                        }
+                                )
+                        );
+                    } else {
+                        getSurveyForm();
+                    }
+                }));
     }
 
     private void getSurveyForm() {
@@ -199,6 +263,136 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
                         }
                 )
         );
+    }
+
+
+    private void saveBusinessDataFormToLocal(String request) {
+        BusinessDataFinalFormEntity businessFinalFormEntity = new BusinessDataFinalFormEntity();
+        businessFinalFormEntity.setMainId(0);
+        businessFinalFormEntity.setRequest(request);
+        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                .saveBusinessDataFinalForm(businessFinalFormEntity))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Toast.makeText(BusinessDataUpdateActivity.this, "Business Data Update Saved to local", Toast.LENGTH_SHORT).show();
+                        finish();
+                        Log.i("BusinessForm", "Business Data Update final form saved to local");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("BusinessForm", "Error  ==  " + e.getMessage());
+                        Toast.makeText(BusinessDataUpdateActivity.this, "Error  ==  " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }));
+    }
+
+    private void moveToNextQuestion() {
+        if (!isSubmitForm) {
+            if (validateAnswer()) {
+                if (surveyPagesList.get(surveyPage).getQuestions().size() > (questionPage + 1)) {
+
+                    addAnswers();
+                    questionPage++;
+                    updatePage();
+
+                } else if (surveyPagesList.size() > (surveyPage + 1)) {
+
+                    addAnswers();
+                    surveyQuestions.put(surveyPage, answeredQuestions);
+                    Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
+                    answeredQuestions = new HashMap<>();
+                    questionPage = 0;
+                    surveyPage++;
+                    updatePage();
+
+                } else {
+
+                    if (binding.llQuestions.getVisibility() == View.VISIBLE) {
+                        binding.llQuestions.setVisibility(View.GONE);
+                        binding.linearUserDetail.setVisibility(View.VISIBLE);
+                    } else {
+                        addAnswers();
+                        surveyQuestions.put(surveyPage, answeredQuestions);
+                        Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
+                        answeredQuestions = new HashMap<>();
+                        questionPage = 0;
+                        isSubmitForm = true;
+                        //submitForm();
+                        renderSummary();
+                    }
+                }
+            }
+        } else {
+            //submitForm();
+            renderSummary();
+        }
+    }
+
+    private void renderSummary() {
+        binding.llSections.setVisibility(View.GONE);
+        binding.llSummary.setVisibility(View.VISIBLE);
+        //binding.loadingView.loader.setVisibility(View.VISIBLE);
+        summaryList.clear();
+        for (int i = 0; i < surveyPagesList.size(); i++) {
+
+            Map<Integer, String> mapAnswered = surveyQuestions.get(i);
+
+            FormSummaryModel section = new FormSummaryModel();
+            section.setAnswer("");
+            section.setQuestion("");
+            section.setSection(surveyPagesList.get(i).getPageName());
+            summaryList.add(section);
+
+            for (Map.Entry<Integer, String> entry : mapAnswered.entrySet()) {
+                String value = entry.getValue();
+
+                FormSummaryModel object = new FormSummaryModel();
+                object.setQuestion(surveyPagesList.get(i).getQuestions().get(entry.getKey()).getQuestionText());
+                object.setAnswer(value);
+                object.setSection("");
+                summaryList.add(object);
+
+
+                if ((surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_one")
+                        || surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_multiple"))) {
+                    List<BusinessDataOptionsListModel> options = surveyPagesList.get(i).getQuestions().get(entry.getKey()).getOptions();
+
+                    for (int j = 0; j < options.size(); j++) {
+
+                        if (options.get(j).getQuestionToFollow() != null && value.equals(options.get(j).getValue())) {
+
+                            if (options.get(j).getQuestionToFollow().size() != 0) {
+
+                                Map<Integer, String> questionToFollowAnswered = optionQuestions.get(entry.getKey());
+
+                                if (questionToFollowAnswered != null) {
+                                    for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
+                                        FormSummaryModel subQuestions = new FormSummaryModel();
+                                        subQuestions.setQuestion(options.get(j).getQuestionToFollow().get(item.getKey()).getQuestionText());
+                                        subQuestions.setAnswer(item.getValue());
+                                        subQuestions.setSection("");
+                                        summaryList.add(subQuestions);
+                                    }
+                                }
+
+                            }
+
+                        }
+
+                    }
+                }
+            }
+        }
+
+        Log.i("formReq", "Summary List is => " + new Gson().toJson(summaryList));
+
+        binding.recyclerViewSummary.setAdapter(new SummaryFormAdapter(summaryList, this));
+
+
     }
 
     private void submitForm() {
@@ -297,70 +491,6 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
         }
     }
 
-    private void saveBusinessDataFormToLocal(String request) {
-        BusinessDataFinalFormEntity businessFinalFormEntity = new BusinessDataFinalFormEntity();
-        businessFinalFormEntity.setMainId(0);
-        businessFinalFormEntity.setRequest(request);
-        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
-                .saveBusinessDataFinalForm(businessFinalFormEntity))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        Toast.makeText(BusinessDataUpdateActivity.this, "Business Data Update Saved to local", Toast.LENGTH_SHORT).show();
-                        finish();
-                        Log.i("BusinessForm", "Business Data Update final form saved to local");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.i("BusinessForm", "Error  ==  " + e.getMessage());
-                        Toast.makeText(BusinessDataUpdateActivity.this, "Error  ==  " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }));
-    }
-
-    private void moveToNextQuestion() {
-        if (!isSubmitForm) {
-            if (validateAnswer()) {
-                if (surveyPagesList.get(surveyPage).getQuestions().size() > (questionPage + 1)) {
-
-                    addAnswers();
-                    questionPage++;
-                    updatePage();
-
-                } else if (surveyPagesList.size() > (surveyPage + 1)) {
-
-                    addAnswers();
-                    surveyQuestions.put(surveyPage, answeredQuestions);
-                    Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
-                    answeredQuestions = new HashMap<>();
-                    questionPage = 0;
-                    surveyPage++;
-                    updatePage();
-
-                } else {
-
-                    if (binding.llQuestions.getVisibility() == View.VISIBLE) {
-                        binding.llQuestions.setVisibility(View.GONE);
-                        binding.linearUserDetail.setVisibility(View.VISIBLE);
-                    } else {
-                        addAnswers();
-                        surveyQuestions.put(surveyPage, answeredQuestions);
-                        Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
-                        answeredQuestions = new HashMap<>();
-                        questionPage = 0;
-                        isSubmitForm = true;
-                        submitForm();
-                    }
-                }
-            }
-        } else {
-            submitForm();
-        }
-    }
-
     @SuppressLint("SetTextI18n")
     private void updatePage() {
 
@@ -382,6 +512,7 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
         binding.edtAnswer.getText().clear();
 
         BusinessDataQuestionListModel question = questionList.get(surveyPage).get(questionPage);
+        Glide.with(BusinessDataUpdateActivity.this).load("").into(binding.imgUser);
 
         RelativeLayout.LayoutParams lp;
         if (question.getFieldType().equals("textArea")) {
@@ -557,17 +688,18 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
 
             binding.imgUser.setVisibility(View.VISIBLE);
 
-            Glide.with(BusinessDataUpdateActivity.this).load("").into(binding.imgUser);
-
+            binding.imgUser.setVisibility(View.VISIBLE);
             if (surveyQuestions.containsKey(surveyPage)) {
                 Map<Integer, String> data = surveyQuestions.get(surveyPage);
                 if (data != null) {
                     if (data.containsKey(questionPage)) {
                         Glide.with(BusinessDataUpdateActivity.this).load(data.get(questionPage)).into(binding.imgUser);
+                        imagePath = data.get(questionPage);
                     }
                 }
             } else if (answeredQuestions.containsKey(questionPage)) {
                 Glide.with(BusinessDataUpdateActivity.this).load(answeredQuestions.get(questionPage)).into(binding.imgUser);
+                imagePath = answeredQuestions.get(questionPage);
             }
         }
     }
@@ -653,16 +785,49 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
             binding.edtAnswer.setVisibility(View.VISIBLE);
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
 
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.edtAnswer.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
+
         } else if (question.getFieldType().equals("textField")) {
 
             binding.edtAnswer.setVisibility(View.VISIBLE);
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
+
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.edtAnswer.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
 
         } else if (question.getFieldType().equals("textArea")) {
 
             binding.edtAnswer.setVisibility(View.VISIBLE);
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.edtAnswer.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
 
 
         } else if (question.getFieldType().equals("number")) {
@@ -671,11 +836,33 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_NUMBER);
 
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.edtAnswer.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
+
         } else if (question.getFieldType().equals("decimal")) {
 
             binding.edtAnswer.setVisibility(View.VISIBLE);
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.edtAnswer.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.edtAnswer.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
 
         } else if (question.getFieldType().equals("checkbox")) {
 
@@ -698,17 +885,64 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
 
             binding.tvDate.setVisibility(View.VISIBLE);
 
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.tvDate.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.tvDate.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
+
+
         } else if (question.getFieldType().equals("time")) {
 
-            binding.tvDate.setVisibility(View.VISIBLE);
+            binding.tvTime.setVisibility(View.VISIBLE);
+
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.tvTime.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.tvTime.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
 
         } else if (question.getFieldType().equals("geopoint")) {
 
             binding.tvDate.setVisibility(View.VISIBLE);
             binding.tvDate.setText(LocationInfo.location.getLongitude() + "," + LocationInfo.location.getLatitude());
 
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        binding.tvDate.setText(data.get(questionToFollowPage));
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+                binding.tvDate.setText(answeredToFollowQuestions.get(questionToFollowPage));
+            }
+
         } else if (question.getFieldType().equals("image")) {
             binding.imgUser.setVisibility(View.VISIBLE);
+            if (optionQuestions.containsKey(questionPage)) {
+                Map<Integer, String> data = optionQuestions.get(questionPage);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        Glide.with(this).load(data.get(questionToFollowPage)).into(binding.imgUser);
+                        imagePath = data.get(questionToFollowPage);
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+
+                Glide.with(this).load(answeredToFollowQuestions.get(questionToFollowPage)).into(binding.imgUser);
+                imagePath = answeredToFollowQuestions.get(questionToFollowPage);
+            }
         }
     }
 
@@ -911,8 +1145,58 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        manageResumeForm();
         super.onDestroy();
-        disposable.clear();
+    }
+
+    synchronized private void manageResumeForm() {
+        if (!isFormSubmitted) {
+            if (!surveyQuestions.isEmpty()) {
+                BusinessFormResumeEntity entity = new BusinessFormResumeEntity();
+                entity.setMainId(0);
+                entity.setSurveyQuestions(new Gson().toJson(surveyQuestions));
+                entity.setOptionQuestions(optionQuestions.isEmpty() ? "" : new Gson().toJson(optionQuestions));
+                disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                        .saveBusinessFormResume(entity))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableCompletableObserver() {
+                            @Override
+                            public void onComplete() {
+                                //Toast.makeText(CreateCustomerActivity.this, "Customer Resume Saved to local", Toast.LENGTH_SHORT).show();
+                                finish();
+                                Log.i("businessForm", "Resume form saved to local");
+                                disposable.clear();
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.i("businessForm", "Error  ==  " + e.getMessage());
+                                Toast.makeText(BusinessDataUpdateActivity.this, "Error  ==  " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                disposable.clear();
+                            }
+                        }));
+            }
+        } else {
+            if (businessFormResumeEntity != null) {
+                disposable.add(Completable.fromAction(() -> localDatabase.getDAO().removeBusinessFormResume(businessFormResumeEntity))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableCompletableObserver() {
+
+                            @Override
+                            public void onComplete() {
+                                Log.i("businessFormResume", "formDeleted");
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.i("businessFormResume", "Error = > " + e.getMessage());
+                                disposable.clear();
+                            }
+                        }));
+            }
+        }
     }
 
 }
