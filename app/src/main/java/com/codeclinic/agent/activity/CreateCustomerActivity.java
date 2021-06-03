@@ -176,7 +176,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
                     || questionList.get(surveyPage).get(questionPage).getFieldType().equals("select_multiple"))) {
                 List<CustomerQuestionToFollowModel> questionToFollowList = questionList.get(surveyPage).get(questionPage).getOptions().get(binding.spLabel.getSelectedItemPosition()).getQuestionToFollow();
 
-                if (questionToFollowList != null && binding.llQuestions.getVisibility() == View.VISIBLE) {
+
+                if (questionToFollowList != null && binding.llSections.getVisibility() == View.VISIBLE) {
                     if (questionToFollowList.size() != 0) {
                         if (questionToFollowPage == -1) {
                             questionToFollowPage = 0;
@@ -188,8 +189,9 @@ public class CreateCustomerActivity extends AppCompatActivity {
                                 updateQuestionToFollowPage();
                             }
                         } else if (validateQueToFollowAnswer(questionToFollowList)) {
+                            int optionPageKey = questionList.get(surveyPage).get(questionPage).getOptions().get(binding.spLabel.getSelectedItemPosition()).getId();
                             addAnswersToFollowAnswers();
-                            optionQuestions.put(questionPage, answeredToFollowQuestions);
+                            optionQuestions.put(optionPageKey, answeredToFollowQuestions);
                             Log.i("optionsQuestions", new Gson().toJson(optionQuestions));
                             answeredToFollowQuestions = new HashMap<>();
                             questionToFollowPage = -1;
@@ -249,6 +251,10 @@ public class CreateCustomerActivity extends AppCompatActivity {
         ViewGroup viewGroup = findViewById(android.R.id.content);
         CheckCustomerDialogBinding dialogBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.check_customer_dialog, viewGroup, false);
 
+        dialogBinding.imgClose.setOnClickListener(v -> {
+            alertDialog.dismiss();
+            finish();
+        });
 
         dialogBinding.btnConfirm.setOnClickListener(view -> {
             if (isEmpty(dialogBinding.edtMobileNo.getText().toString())) {
@@ -273,6 +279,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
                                 loadingDialog.hideProgressDialog();
                                 if (response != null) {
                                     Toast.makeText(CreateCustomerActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
+                                    binding.edtMobileNo.setText(dialogBinding.edtMobileNo.getText().toString());
+                                    binding.edtDocumentNo.setText(dialogBinding.edtDocumentNo.getText().toString());
                                     if (response.getMessage().equals("existing_mobiloan_customer") || response.getMessage().equals("existing_mymobi_customer")) {
                                         binding.rbYes.setChecked(true);
                                         binding.rbNo.setVisibility(View.GONE);
@@ -473,15 +481,17 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
                             if (options.get(j).getQuestionToFollow().size() != 0) {
 
-                                Map<Integer, String> questionToFollowAnswered = optionQuestions.get(entry.getKey());
+                                if (optionQuestions.containsKey(options.get(j).getId())) {
+                                    Map<Integer, String> questionToFollowAnswered = optionQuestions.get(options.get(j).getId());
 
-                                if (questionToFollowAnswered != null) {
-                                    for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
-                                        FormSummaryModel subQuestions = new FormSummaryModel();
-                                        subQuestions.setQuestion(options.get(j).getQuestionToFollow().get(item.getKey()).getQuestionText());
-                                        subQuestions.setAnswer(item.getValue());
-                                        subQuestions.setSection("");
-                                        summaryList.add(subQuestions);
+                                    if (questionToFollowAnswered != null) {
+                                        for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
+                                            FormSummaryModel subQuestions = new FormSummaryModel();
+                                            subQuestions.setQuestion(options.get(j).getQuestionToFollow().get(item.getKey()).getQuestionText());
+                                            subQuestions.setAnswer(item.getValue());
+                                            subQuestions.setSection("");
+                                            summaryList.add(subQuestions);
+                                        }
                                     }
                                 }
 
@@ -541,14 +551,16 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
                                 if (options.get(j).getQuestionToFollow().size() != 0) {
 
-                                    Map<Integer, String> questionToFollowAnswered = optionQuestions.get(entry.getKey());
+                                    if (options.get(j).getQuestionToFollow().size() != 0) {
+                                        Map<Integer, String> questionToFollowAnswered = optionQuestions.get(options.get(j).getId());
 
-                                    if (questionToFollowAnswered != null) {
-                                        for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
-                                            JSONObject jObject = new JSONObject();
-                                            jObject.put("fieldName", options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName());
-                                            jObject.put("responseText", item.getValue());
-                                            jsonArray.put(jObject);
+                                        if (questionToFollowAnswered != null) {
+                                            for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
+                                                JSONObject jObject = new JSONObject();
+                                                jObject.put("fieldName", options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName());
+                                                jObject.put("responseText", item.getValue());
+                                                jsonArray.put(jObject);
+                                            }
                                         }
                                     }
 
@@ -609,7 +621,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
     }
 
     @SuppressLint("SetTextI18n")
-    private void updatePage() {
+    synchronized private void updatePage() {
 
         binding.tvTitle.setText(surveyPagesList.get(surveyPage).getTitle());
         binding.tvQuestion.setText(questionList.get(surveyPage).get(questionPage).getQuestionText());
@@ -853,7 +865,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
         }
     }
 
-    private void addAnswers() {
+    synchronized private void addAnswers() {
         CustomerQuestionsListModel question = questionList.get(surveyPage).get(questionPage);
 
         if (question.getFieldType().equals("select_one")
@@ -910,12 +922,13 @@ public class CreateCustomerActivity extends AppCompatActivity {
     }
 
     @SuppressLint("SetTextI18n")
-    private void updateQuestionToFollowPage() {
+    synchronized private void updateQuestionToFollowPage() {
         int pos = binding.spLabel.getSelectedItemPosition();
 
         CustomerQuestionToFollowModel question = questionList.get(surveyPage).get(questionPage).getOptions().get(pos).getQuestionToFollow().get(questionToFollowPage);
         binding.tvQuestionToFollow.setText(question.getQuestionText());
 
+        int optionPageKey = questionList.get(surveyPage).get(questionPage).getOptions().get(pos).getId();
 
         binding.tvQuestionToFollow.setVisibility(View.VISIBLE);
         binding.rlSpinner.setVisibility(View.GONE);
@@ -954,8 +967,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
             binding.edtAnswer.setVisibility(View.VISIBLE);
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.edtAnswer.setText(data.get(questionToFollowPage));
@@ -970,8 +983,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
             binding.edtAnswer.setVisibility(View.VISIBLE);
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.edtAnswer.setText(data.get(questionToFollowPage));
@@ -987,8 +1000,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.edtAnswer.setText(data.get(questionToFollowPage));
@@ -1005,8 +1018,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.edtAnswer.setText(data.get(questionToFollowPage));
@@ -1022,8 +1035,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.edtAnswer.setText(data.get(questionToFollowPage));
@@ -1039,8 +1052,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.edtAnswer.setText(data.get(questionToFollowPage));
@@ -1071,8 +1084,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
             binding.tvDate.setVisibility(View.VISIBLE);
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.tvDate.setText(data.get(questionToFollowPage));
@@ -1087,8 +1100,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
             binding.tvTime.setVisibility(View.VISIBLE);
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.tvTime.setText(data.get(questionToFollowPage));
@@ -1103,8 +1116,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
             binding.tvDate.setVisibility(View.VISIBLE);
             binding.tvDate.setText(LocationInfo.location.getLongitude() + "," + LocationInfo.location.getLatitude());
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.tvDate.setText(data.get(questionToFollowPage));
@@ -1116,8 +1129,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
         } else if (question.getFieldType().equals("image")) {
             binding.imgUser.setVisibility(View.VISIBLE);
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         Glide.with(this).load(data.get(questionToFollowPage)).into(binding.imgUser);
@@ -1131,8 +1144,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
             }
         } else if (question.getFieldType().equals("file")) {
             binding.llFile.setVisibility(View.VISIBLE);
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.tvFileName.setText(data.get(questionToFollowPage) + "");
@@ -1146,7 +1159,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
         }
     }
 
-    private void addAnswersToFollowAnswers() {
+    synchronized private void addAnswersToFollowAnswers() {
 
         int pos = binding.spLabel.getSelectedItemPosition();
         CustomerQuestionToFollowModel question = questionList.get(surveyPage).get(questionPage).getOptions().get(pos).getQuestionToFollow().get(questionToFollowPage);

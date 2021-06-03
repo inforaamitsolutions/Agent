@@ -1,6 +1,7 @@
 package com.codeclinic.agent.utils;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -40,8 +41,8 @@ public class AccessMediaUtil extends AppCompatActivity {
     }
 
     public void selectImage() {
-        dispatchPickFromGalleryIntent();
-      /*  final CharSequence[] options = {"Take Photo", "Choose from Gallery", "Cancel"};
+        //dispatchPickFromGalleryIntent();
+        final CharSequence[] options = {"Take Photo", "Choose from Gallery", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add Photo !!");
         builder.setCancelable(false);
@@ -55,7 +56,7 @@ public class AccessMediaUtil extends AppCompatActivity {
                 onBackPressed();
             }
         });
-        builder.show();*/
+        builder.show();
     }
 
     private void dispatchPickFromGalleryIntent() {
@@ -128,6 +129,7 @@ public class AccessMediaUtil extends AppCompatActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            onBackPressed();
         }
     }
 

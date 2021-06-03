@@ -148,8 +148,9 @@ public class CreateLeadActivity extends AppCompatActivity {
                                 updateQuestionToFollowPage();
                             }
                         } else if (validateQueToFollowAnswer(questionToFollowList)) {
+                            int optionPageKey = questionList.get(surveyPage).get(questionPage).getOptions().get(binding.spLabel.getSelectedItemPosition()).getId();
                             addAnswersToFollowAnswers();
-                            optionQuestions.put(questionPage, answeredToFollowQuestions);
+                            optionQuestions.put(optionPageKey, answeredToFollowQuestions);
                             Log.i("optionsQuestions", new Gson().toJson(optionQuestions));
                             answeredToFollowQuestions = new HashMap<>();
                             questionToFollowPage = -1;
@@ -376,17 +377,18 @@ public class CreateLeadActivity extends AppCompatActivity {
 
                                 if (options.get(j).getQuestionToFollow().size() != 0) {
 
-                                    Map<Integer, String> questionToFollowAnswered = optionQuestions.get(entry.getKey());
+                                    if (optionQuestions.containsKey(options.get(j).getId())) {
+                                        Map<Integer, String> questionToFollowAnswered = optionQuestions.get(options.get(j).getId());
 
-                                    if (questionToFollowAnswered != null) {
-                                        for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
-                                            JSONObject jObject = new JSONObject();
-                                            jObject.put("fieldName", options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName());
-                                            jObject.put("responseText", item.getValue());
-                                            jsonArray.put(jObject);
+                                        if (questionToFollowAnswered != null) {
+                                            for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
+                                                JSONObject jObject = new JSONObject();
+                                                jObject.put("fieldName", options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName());
+                                                jObject.put("responseText", item.getValue());
+                                                jsonArray.put(jObject);
+                                            }
                                         }
                                     }
-
                                 }
 
                             }
@@ -469,18 +471,19 @@ public class CreateLeadActivity extends AppCompatActivity {
 
                             if (options.get(j).getQuestionToFollow().size() != 0) {
 
-                                Map<Integer, String> questionToFollowAnswered = optionQuestions.get(entry.getKey());
+                                if (optionQuestions.containsKey(options.get(j).getId())) {
+                                    Map<Integer, String> questionToFollowAnswered = optionQuestions.get(options.get(j).getId());
 
-                                if (questionToFollowAnswered != null) {
-                                    for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
-                                        FormSummaryModel subQuestions = new FormSummaryModel();
-                                        subQuestions.setQuestion(options.get(j).getQuestionToFollow().get(item.getKey()).getQuestionText());
-                                        subQuestions.setAnswer(item.getValue());
-                                        subQuestions.setSection("");
-                                        summaryList.add(subQuestions);
+                                    if (questionToFollowAnswered != null) {
+                                        for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
+                                            FormSummaryModel subQuestions = new FormSummaryModel();
+                                            subQuestions.setQuestion(options.get(j).getQuestionToFollow().get(item.getKey()).getQuestionText());
+                                            subQuestions.setAnswer(item.getValue());
+                                            subQuestions.setSection("");
+                                            summaryList.add(subQuestions);
+                                        }
                                     }
                                 }
-
                             }
 
                         }
@@ -775,6 +778,9 @@ public class CreateLeadActivity extends AppCompatActivity {
     private void updateQuestionToFollowPage() {
         int pos = binding.spLabel.getSelectedItemPosition();
         LeadQuestionToFollowModel question = questionList.get(surveyPage).get(questionPage).getOptions().get(pos).getQuestionToFollow().get(questionToFollowPage);
+
+        int optionPageKey = questionList.get(surveyPage).get(questionPage).getOptions().get(pos).getId();
+
         binding.tvQuestionToFollow.setText(question.getQuestionText());
         binding.tvQuestionToFollow.setVisibility(View.VISIBLE);
         binding.edtAnswer.getText().clear();
@@ -810,8 +816,8 @@ public class CreateLeadActivity extends AppCompatActivity {
             binding.edtAnswer.setVisibility(View.VISIBLE);
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.edtAnswer.setText(data.get(questionToFollowPage));
@@ -826,8 +832,8 @@ public class CreateLeadActivity extends AppCompatActivity {
             binding.edtAnswer.setVisibility(View.VISIBLE);
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.edtAnswer.setText(data.get(questionToFollowPage));
@@ -843,8 +849,8 @@ public class CreateLeadActivity extends AppCompatActivity {
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.edtAnswer.setText(data.get(questionToFollowPage));
@@ -861,8 +867,8 @@ public class CreateLeadActivity extends AppCompatActivity {
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.edtAnswer.setText(data.get(questionToFollowPage));
@@ -878,8 +884,8 @@ public class CreateLeadActivity extends AppCompatActivity {
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.edtAnswer.setText(data.get(questionToFollowPage));
@@ -895,8 +901,8 @@ public class CreateLeadActivity extends AppCompatActivity {
 
             binding.edtAnswer.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.edtAnswer.setText(data.get(questionToFollowPage));
@@ -927,8 +933,8 @@ public class CreateLeadActivity extends AppCompatActivity {
 
             binding.tvDate.setVisibility(View.VISIBLE);
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.tvDate.setText(data.get(questionToFollowPage));
@@ -943,8 +949,8 @@ public class CreateLeadActivity extends AppCompatActivity {
 
             binding.tvTime.setVisibility(View.VISIBLE);
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.tvTime.setText(data.get(questionToFollowPage));
@@ -959,8 +965,8 @@ public class CreateLeadActivity extends AppCompatActivity {
             binding.tvDate.setVisibility(View.VISIBLE);
             binding.tvDate.setText(LocationInfo.location.getLongitude() + "," + LocationInfo.location.getLatitude());
 
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         binding.tvDate.setText(data.get(questionToFollowPage));
@@ -972,8 +978,8 @@ public class CreateLeadActivity extends AppCompatActivity {
 
         } else if (question.getFieldType().equals("image")) {
             binding.imgUser.setVisibility(View.VISIBLE);
-            if (optionQuestions.containsKey(questionPage)) {
-                Map<Integer, String> data = optionQuestions.get(questionPage);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
                     if (data.containsKey(questionToFollowPage)) {
                         Glide.with(this).load(data.get(questionToFollowPage)).into(binding.imgUser);
