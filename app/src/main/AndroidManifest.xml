@@ -26,6 +26,7 @@
         android:theme="@style/Theme.Agent"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
+        <activity android:name=".activity.SignatureActivity" />
         <activity android:name=".activity.SupplierUpdateActivity" />
         <activity android:name=".activity.SubmitFormsActivity" />
         <activity android:name=".activity.InteractionFiltersActivity" />

@@ -429,6 +429,18 @@
                                     android:textSize="16dp"
                                     android:visibility="gone" />
 
+                                <TextView
+                                    android:id="@+id/tvSignature"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="45dp"
+                                    android:background="@drawable/button_bg"
+                                    android:backgroundTint="#F4F4F4"
+                                    android:gravity="center_vertical"
+                                    android:hint="Add Digital Signature"
+                                    android:padding="10dp"
+                                    android:textSize="16dp"
+                                    android:visibility="gone" />
+
                                 <RadioGroup
                                     android:id="@+id/radioGroup"
                                     android:layout_width="wrap_content"
@@ -443,6 +455,15 @@
                                     android:layout_height="100dp"
                                     android:layout_centerHorizontal="true"
                                     android:background="@drawable/avatar"
+                                    android:scaleType="centerCrop"
+                                    android:visibility="gone" />
+
+                                <ImageView
+                                    android:id="@+id/imgSignature"
+                                    android:layout_width="100dp"
+                                    android:layout_height="100dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:background="@drawable/signature_icon"
                                     android:scaleType="centerCrop"
                                     android:visibility="gone" />
 

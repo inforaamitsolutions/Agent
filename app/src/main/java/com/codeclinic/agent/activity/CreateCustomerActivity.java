@@ -72,7 +72,9 @@ import static com.codeclinic.agent.utils.CommonMethods.birthDatePicker;
 import static com.codeclinic.agent.utils.CommonMethods.datePicker;
 import static com.codeclinic.agent.utils.CommonMethods.isPermissionGranted;
 import static com.codeclinic.agent.utils.Constants.ACCESS_CAMERA_GALLERY;
+import static com.codeclinic.agent.utils.Constants.ACCESS_SIGNATURE;
 import static com.codeclinic.agent.utils.Constants.PICTURE_PATH;
+import static com.codeclinic.agent.utils.Constants.SIGNATURE_PATH;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 public class CreateCustomerActivity extends AppCompatActivity {
@@ -80,7 +82,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
     CompositeDisposable disposable = new CompositeDisposable();
     CustomerFormResumeEntity customerFormResumeEntity;
-    String imagePath, filePath;
+    String imagePath, filePath, signaturePath;
     int surveyPage = 0, questionPage = 0, questionToFollowPage = -1, radioButtonTextSize, edtHeight;
     ArrayAdapter spAdapter;
     AlertDialog alertDialog;
@@ -122,6 +124,13 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
         binding.imgUser.setOnClickListener(v -> {
             selectImage();
+        });
+
+        binding.imgSignature.setOnClickListener(v -> {
+            if (isPermissionGranted(this)) {
+                Intent gallery_Intent = new Intent(getApplicationContext(), SignatureActivity.class);
+                startActivityForResult(gallery_Intent, ACCESS_SIGNATURE);
+            }
         });
 
         chooseFile();
@@ -634,6 +643,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
         binding.tvTime.setVisibility(View.GONE);
         binding.radioGroup.setVisibility(View.GONE);
         binding.imgUser.setVisibility(View.GONE);
+        binding.imgSignature.setVisibility(View.GONE);
         binding.llFile.setVisibility(View.GONE);
         binding.tvQuestionToFollow.setVisibility(View.GONE);
         binding.tvQuestionToFollow.setText("");
@@ -846,6 +856,24 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 Glide.with(CreateCustomerActivity.this).load(answeredQuestions.get(questionPage)).into(binding.imgUser);
                 imagePath = answeredQuestions.get(questionPage);
             }
+        } else if (question.getFieldType().equals("signature")) {
+
+            binding.imgSignature.setVisibility(View.VISIBLE);
+
+            Glide.with(CreateCustomerActivity.this).load("").into(binding.imgSignature);
+
+            if (surveyQuestions.containsKey(surveyPage)) {
+                Map<Integer, String> data = surveyQuestions.get(surveyPage);
+                if (data != null) {
+                    if (data.containsKey(questionPage)) {
+                        Glide.with(CreateCustomerActivity.this).load(data.get(questionPage)).into(binding.imgSignature);
+                        signaturePath = data.get(questionPage);
+                    }
+                }
+            } else if (answeredQuestions.containsKey(questionPage)) {
+                Glide.with(CreateCustomerActivity.this).load(answeredQuestions.get(questionPage)).into(binding.imgSignature);
+                signaturePath = answeredQuestions.get(questionPage);
+            }
         } else if (question.getFieldType().equals("file")) {
 
             binding.llFile.setVisibility(View.VISIBLE);
@@ -906,6 +934,13 @@ public class CreateCustomerActivity extends AppCompatActivity {
             imagePath = "";
 
 
+        } else if (question.getFieldType().equals("signature")) {
+
+            Log.i("answered", signaturePath + "");
+            answeredQuestions.put(questionPage, signaturePath);
+            signaturePath = "";
+
+
         } else if (question.getFieldType().equals("file")) {
 
             Log.i("answered", filePath + "");
@@ -938,12 +973,14 @@ public class CreateCustomerActivity extends AppCompatActivity {
         binding.tvTime.setVisibility(View.GONE);
         binding.radioGroup.setVisibility(View.GONE);
         binding.imgUser.setVisibility(View.GONE);
+        binding.imgSignature.setVisibility(View.GONE);
         binding.llFile.setVisibility(View.GONE);
         binding.edtAnswer.getText().clear();
         binding.tvFileName.setText("");
         binding.tvDate.setText("");
         binding.tvTime.setText("");
         Glide.with(CreateCustomerActivity.this).load("").into(binding.imgUser);
+        Glide.with(CreateCustomerActivity.this).load("").into(binding.imgSignature);
 
 
         RelativeLayout.LayoutParams lp;
@@ -1142,6 +1179,21 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 Glide.with(this).load(answeredToFollowQuestions.get(questionToFollowPage)).into(binding.imgUser);
                 imagePath = answeredToFollowQuestions.get(questionToFollowPage);
             }
+        } else if (question.getFieldType().equals("signature")) {
+            binding.imgSignature.setVisibility(View.VISIBLE);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        Glide.with(this).load(data.get(questionToFollowPage)).into(binding.imgSignature);
+                        signaturePath = data.get(questionToFollowPage);
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+
+                Glide.with(this).load(answeredToFollowQuestions.get(questionToFollowPage)).into(binding.imgSignature);
+                signaturePath = answeredToFollowQuestions.get(questionToFollowPage);
+            }
         } else if (question.getFieldType().equals("file")) {
             binding.llFile.setVisibility(View.VISIBLE);
             if (optionQuestions.containsKey(optionPageKey)) {
@@ -1202,6 +1254,12 @@ public class CreateCustomerActivity extends AppCompatActivity {
             Log.i("followUpAnswered", imagePath + "");
             answeredToFollowQuestions.put(questionToFollowPage, imagePath);
             imagePath = "";
+
+        } else if (question.getFieldType().equals("signature")) {
+
+            Log.i("followUpAnswered", signaturePath + "");
+            answeredToFollowQuestions.put(questionToFollowPage, signaturePath);
+            signaturePath = "";
 
         } else if (question.getFieldType().equals("file")) {
 
@@ -1347,8 +1405,13 @@ public class CreateCustomerActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && data != null) {
-            imagePath = data.getStringExtra(PICTURE_PATH);
-            Glide.with(this).load(imagePath).into(binding.imgUser);
+            if (requestCode == ACCESS_CAMERA_GALLERY) {
+                imagePath = data.getStringExtra(PICTURE_PATH);
+                Glide.with(this).load(imagePath).into(binding.imgUser);
+            } else {
+                signaturePath = data.getStringExtra(SIGNATURE_PATH);
+                Glide.with(this).load(signaturePath).into(binding.imgSignature);
+            }
         }
     }
 
