@@ -97,7 +97,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
     Map<Integer, String> answeredToFollowQuestions = new HashMap<>();
     LinearLayout.LayoutParams layoutParams;
 
-    boolean isSubmitForm = false, isFormSubmitted = false;
+    boolean isSubmitForm = false, isFormSubmitted = false, isSignatureSelection = false;
     private ChooserDialog chooserDialog;
     private LoadingDialog loadingDialog;
 
@@ -123,17 +123,17 @@ public class CreateCustomerActivity extends AppCompatActivity {
         });
 
         binding.imgUser.setOnClickListener(v -> {
+            isSignatureSelection = false;
             selectImage();
         });
 
         binding.imgSignature.setOnClickListener(v -> {
-            if (isPermissionGranted(this)) {
-                Intent gallery_Intent = new Intent(getApplicationContext(), SignatureActivity.class);
-                startActivityForResult(gallery_Intent, ACCESS_SIGNATURE);
-            }
+            isSignatureSelection = true;
+            selectImage();
         });
 
         chooseFile();
+
         binding.llFile.setOnClickListener(v -> {
             chooserDialog.show();
         });
@@ -1317,6 +1317,10 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 && isEmpty(imagePath)) {
             Toast.makeText(this, "Please add image", Toast.LENGTH_SHORT).show();
             return false;
+        } else if (question.getFieldType().equals("signature")
+                && isEmpty(signaturePath)) {
+            Toast.makeText(this, "Please add signature", Toast.LENGTH_SHORT).show();
+            return false;
         } else if (question.getFieldType().equals("file")
                 && isEmpty(filePath)) {
             Toast.makeText(this, "Please attach file", Toast.LENGTH_SHORT).show();
@@ -1366,6 +1370,10 @@ public class CreateCustomerActivity extends AppCompatActivity {
         } else if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("image")
                 && isEmpty(imagePath)) {
             Toast.makeText(this, "Please add image", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("signature")
+                && isEmpty(signaturePath)) {
+            Toast.makeText(this, "Please add signature", Toast.LENGTH_SHORT).show();
             return false;
         } else if (questionToFollowList.get(questionToFollowPage).getFieldType().equals("file")
                 && isEmpty(filePath)) {
@@ -1417,8 +1425,13 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
     public void selectImage() {
         if (isPermissionGranted(this)) {
-            Intent gallery_Intent = new Intent(getApplicationContext(), AccessMediaUtil.class);
-            startActivityForResult(gallery_Intent, ACCESS_CAMERA_GALLERY);
+            if (isSignatureSelection) {
+                Intent gallery_Intent = new Intent(getApplicationContext(), SignatureActivity.class);
+                startActivityForResult(gallery_Intent, ACCESS_SIGNATURE);
+            } else {
+                Intent gallery_Intent = new Intent(getApplicationContext(), AccessMediaUtil.class);
+                startActivityForResult(gallery_Intent, ACCESS_CAMERA_GALLERY);
+            }
         }
     }
 
