@@ -65,6 +65,7 @@ import static com.codeclinic.agent.database.LocalDatabase.localDatabase;
 import static com.codeclinic.agent.utils.CommonMethods.datePicker;
 import static com.codeclinic.agent.utils.CommonMethods.isPermissionGranted;
 import static com.codeclinic.agent.utils.Constants.ACCESS_CAMERA_GALLERY;
+import static com.codeclinic.agent.utils.Constants.ACCESS_SIGNATURE;
 import static com.codeclinic.agent.utils.Constants.CustomerID;
 import static com.codeclinic.agent.utils.Constants.PICTURE_PATH;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
@@ -75,11 +76,11 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
     private final Map<Integer, List<BusinessDataQuestionListModel>> questionList = new HashMap<>();
 
     BusinessFormResumeEntity businessFormResumeEntity;
-    boolean isSubmitForm = false, isFormSubmitted = false;
+    boolean isSubmitForm = false, isFormSubmitted = false, isSignatureSelection = false;
     List<FormSummaryModel> summaryList = new ArrayList<>();
     private HashMap<Integer, Map<Integer, String>> surveyQuestions = new LinkedHashMap<>();
     private ActivityBusinessDataUpdateBinding binding;
-    private String imagePath, customerID;
+    private String imagePath, customerID, signaturePath;
     private int surveyPage = 0, questionPage = 0, questionToFollowPage = -1, radioButtonTextSize, edtHeight;
     private ArrayAdapter spAdapter;
     private List<BusinessDataSurveyDefinitionPageModel> surveyPagesList = new ArrayList<>();
@@ -109,6 +110,12 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
         });
 
         binding.imgUser.setOnClickListener(v -> {
+            isSignatureSelection = false;
+            selectImage();
+        });
+
+        binding.imgSignature.setOnClickListener(v -> {
+            isSignatureSelection = true;
             selectImage();
         });
 
@@ -515,6 +522,7 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
 
         BusinessDataQuestionListModel question = questionList.get(surveyPage).get(questionPage);
         Glide.with(BusinessDataUpdateActivity.this).load("").into(binding.imgUser);
+        Glide.with(BusinessDataUpdateActivity.this).load("").into(binding.imgSignature);
 
         RelativeLayout.LayoutParams lp;
         if (question.getFieldType().equals("textArea")) {
@@ -719,6 +727,24 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
                 Glide.with(BusinessDataUpdateActivity.this).load(answeredQuestions.get(questionPage)).into(binding.imgUser);
                 imagePath = answeredQuestions.get(questionPage);
             }
+        } else if (question.getFieldType().equals("signature")) {
+
+            binding.imgSignature.setVisibility(View.VISIBLE);
+
+            Glide.with(BusinessDataUpdateActivity.this).load("").into(binding.imgSignature);
+
+            if (surveyQuestions.containsKey(surveyPage)) {
+                Map<Integer, String> data = surveyQuestions.get(surveyPage);
+                if (data != null) {
+                    if (data.containsKey(questionPage)) {
+                        Glide.with(BusinessDataUpdateActivity.this).load(data.get(questionPage)).into(binding.imgSignature);
+                        signaturePath = data.get(questionPage);
+                    }
+                }
+            } else if (answeredQuestions.containsKey(questionPage)) {
+                Glide.with(BusinessDataUpdateActivity.this).load(answeredQuestions.get(questionPage)).into(binding.imgSignature);
+                signaturePath = answeredQuestions.get(questionPage);
+            }
         }
     }
 
@@ -764,6 +790,13 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
             imagePath = "";
 
 
+        } else if (question.getFieldType().equals("signature")) {
+
+            Log.i("answered", signaturePath + "");
+            answeredQuestions.put(questionPage, signaturePath);
+            signaturePath = "";
+
+
         } else {
             Log.i("answered", binding.edtAnswer.getText().toString() + "");
             answeredQuestions.put(questionPage, binding.edtAnswer.getText().toString());
@@ -785,6 +818,7 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
         binding.tvDate.setText("");
         binding.tvTime.setText("");
         Glide.with(BusinessDataUpdateActivity.this).load("").into(binding.imgUser);
+        Glide.with(BusinessDataUpdateActivity.this).load("").into(binding.imgSignature);
 
         binding.rlSpinner.setVisibility(View.GONE);
         binding.rlQueToFollowSpinner.setVisibility(View.GONE);
@@ -981,6 +1015,21 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
                 Glide.with(this).load(answeredToFollowQuestions.get(questionToFollowPage)).into(binding.imgUser);
                 imagePath = answeredToFollowQuestions.get(questionToFollowPage);
             }
+        } else if (question.getFieldType().equals("signature")) {
+            binding.imgSignature.setVisibility(View.VISIBLE);
+            if (optionQuestions.containsKey(optionPageKey)) {
+                Map<Integer, String> data = optionQuestions.get(optionPageKey);
+                if (data != null) {
+                    if (data.containsKey(questionToFollowPage)) {
+                        Glide.with(this).load(data.get(questionToFollowPage)).into(binding.imgSignature);
+                        signaturePath = data.get(questionToFollowPage);
+                    }
+                }
+            } else if (answeredToFollowQuestions.containsKey(questionToFollowPage)) {
+
+                Glide.with(this).load(answeredToFollowQuestions.get(questionToFollowPage)).into(binding.imgSignature);
+                signaturePath = answeredToFollowQuestions.get(questionToFollowPage);
+            }
         }
     }
 
@@ -1027,6 +1076,12 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
             Log.i("followUpAnswered", imagePath + "");
             answeredToFollowQuestions.put(questionToFollowPage, imagePath);
             imagePath = "";
+
+        } else if (question.getFieldType().equals("signature")) {
+
+            Log.i("followUpAnswered", signaturePath + "");
+            answeredToFollowQuestions.put(questionToFollowPage, signaturePath);
+            signaturePath = "";
 
         } else {
             Log.i("followUpAnswered", binding.edtAnswer.getText().toString() + "");
@@ -1078,6 +1133,10 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
             } else if (question.getFieldType().equals("image")
                     && isEmpty(imagePath)) {
                 Toast.makeText(this, "Please add image", Toast.LENGTH_SHORT).show();
+                return false;
+            } else if (question.getFieldType().equals("signature")
+                    && isEmpty(signaturePath)) {
+                Toast.makeText(this, "Please add signature", Toast.LENGTH_SHORT).show();
                 return false;
             }
         } else if (binding.linearUserDetail.getVisibility() == View.VISIBLE) {
@@ -1138,6 +1197,10 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
                     && isEmpty(imagePath)) {
                 Toast.makeText(this, "Please add image", Toast.LENGTH_SHORT).show();
                 return false;
+            } else if (questionToFollowList.getFieldType().equals("signature")
+                    && isEmpty(signaturePath)) {
+                Toast.makeText(this, "Please add signature", Toast.LENGTH_SHORT).show();
+                return false;
             }
         } else if (binding.linearUserDetail.getVisibility() == View.VISIBLE) {
             if (isEmpty(binding.edtFirstName.getText().toString())) {
@@ -1166,11 +1229,15 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
 
     public void selectImage() {
         if (isPermissionGranted(this)) {
-            Intent gallery_Intent = new Intent(getApplicationContext(), AccessMediaUtil.class);
-            startActivityForResult(gallery_Intent, ACCESS_CAMERA_GALLERY);
+            if (isSignatureSelection) {
+                Intent gallery_Intent = new Intent(getApplicationContext(), SignatureActivity.class);
+                startActivityForResult(gallery_Intent, ACCESS_SIGNATURE);
+            } else {
+                Intent gallery_Intent = new Intent(getApplicationContext(), AccessMediaUtil.class);
+                startActivityForResult(gallery_Intent, ACCESS_CAMERA_GALLERY);
+            }
         }
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @androidx.annotation.NonNull String[] permissions, @androidx.annotation.NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

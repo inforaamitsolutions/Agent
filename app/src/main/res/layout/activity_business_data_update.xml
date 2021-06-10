@@ -240,6 +240,15 @@
                                     android:scaleType="centerCrop"
                                     android:visibility="gone" />
 
+                                <ImageView
+                                    android:id="@+id/imgSignature"
+                                    android:layout_width="100dp"
+                                    android:layout_height="100dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:background="@drawable/signature_icon"
+                                    android:scaleType="centerCrop"
+                                    android:visibility="gone" />
+
                             </RelativeLayout>
 
 
