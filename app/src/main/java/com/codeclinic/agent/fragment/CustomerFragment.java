@@ -228,7 +228,7 @@ public class CustomerFragment extends Fragment {
         List<String> defaultSearches = new ArrayList<>();
         defaultSearches.add("--Select--");
         defaultSearches.add("Customer ID");
-        defaultSearches.add("Business Name");
+        defaultSearches.add("Business/Customer Name");
         defaultSearches.add("Customer Document Number");
         defaultSearches.add("Customer Phone Number");
         defaultSearches.add("Others");
@@ -293,7 +293,7 @@ public class CustomerFragment extends Fragment {
                 Toast.makeText(getActivity(), "Please enter customer id", Toast.LENGTH_SHORT).show();
             } else if (binding.searchChildView.spDefaultSearch.getSelectedItemPosition() == 2
                     && isEmpty(binding.searchChildView.edtSearch.getText().toString())) {
-                Toast.makeText(getActivity(), "Please enter customer business name", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Please enter customer or business name", Toast.LENGTH_SHORT).show();
             } else if (binding.searchChildView.spDefaultSearch.getSelectedItemPosition() == 3
                     && isEmpty(binding.searchChildView.edtSearch.getText().toString())) {
                 Toast.makeText(getActivity(), "Please enter document number", Toast.LENGTH_SHORT).show();

@@ -141,9 +141,11 @@ public class CreateCustomerActivity extends AppCompatActivity {
         binding.btnConfirm.setOnClickListener(v -> {
             if (isEmpty(binding.edtFullName.getText().toString())) {
                 Toast.makeText(this, "Please enter full name", Toast.LENGTH_SHORT).show();
-            } /*else if (!binding.edtFullName.getText().toString().matches("^(\\\\w.+\\\\s).+$")) {
+            } else if (binding.edtFullName.getText().length() < 3) {
+                Toast.makeText(this, "Please enter min of three characters", Toast.LENGTH_SHORT).show();
+            } else if (!binding.edtFullName.getText().toString().matches("^([a-zA-Z0-9.]+[ ]).+$")) {
                 Toast.makeText(this, "Please enter valid name", Toast.LENGTH_SHORT).show();
-            }*/ else if (isEmpty(binding.edtMobileNo.getText().toString())) {
+            } else if (isEmpty(binding.edtMobileNo.getText().toString())) {
                 Toast.makeText(this, "Please enter mobile number", Toast.LENGTH_SHORT).show();
             } else if (!binding.edtMobileNo.getText().toString().matches("^(?:254|\\\\+254|0)((?:7|1)[0-9]{8})$")) {
                 Toast.makeText(this, "Please enter valid mobile number", Toast.LENGTH_SHORT).show();
