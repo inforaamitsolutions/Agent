@@ -322,6 +322,7 @@ public class CreateLeadActivity extends AppCompatActivity {
                     questionPage = 0;
                     surveyPage++;
                     updatePage();
+                    manageResumeForm();
 
                 } else {
 
@@ -337,6 +338,7 @@ public class CreateLeadActivity extends AppCompatActivity {
                         isSubmitForm = true;
                         //submitForm();
                         renderSummary();
+                        manageResumeForm();
                     }
                 }
             }
@@ -430,6 +432,8 @@ public class CreateLeadActivity extends AppCompatActivity {
                         public void onSuccess(@NonNull LeadSubmitFormModel response) {
                             binding.loadingView.loader.setVisibility(View.GONE);
                             if (response.getSuccessStatus().equals("success")) {
+                                isFormSubmitted = true;
+                                manageResumeForm();
                                 finish();
                             }
                             Toast.makeText(CreateLeadActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
@@ -1269,7 +1273,7 @@ public class CreateLeadActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        manageResumeForm();
+        //manageResumeForm();
         super.onDestroy();
     }
 
@@ -1290,14 +1294,14 @@ public class CreateLeadActivity extends AppCompatActivity {
                                 //Toast.makeText(CreateCustomerActivity.this, "Customer Resume Saved to local", Toast.LENGTH_SHORT).show();
                                 finish();
                                 Log.i("leadForm", "Customer Resume form saved to local");
-                                disposable.clear();
+                                //disposable.clear();
                             }
 
                             @Override
                             public void onError(Throwable e) {
                                 Log.i("leadFormResume", "Error  ==  " + e.getMessage());
                                 Toast.makeText(CreateLeadActivity.this, "Error  ==  " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                disposable.clear();
+                                //disposable.clear();
                             }
                         }));
             }
@@ -1311,6 +1315,7 @@ public class CreateLeadActivity extends AppCompatActivity {
                             @Override
                             public void onComplete() {
                                 Log.i("leadFormResume", "formDeleted");
+                                disposable.clear();
                             }
 
                             @Override

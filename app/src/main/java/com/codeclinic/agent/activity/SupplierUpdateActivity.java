@@ -353,6 +353,8 @@ public class SupplierUpdateActivity extends AppCompatActivity {
                         public void onSuccess(@NonNull BusinessDataSubmitModel response) {
                             binding.loadingView.loader.setVisibility(View.GONE);
                             if (response.getSuccessStatus().equals("success")) {
+                                isFormSubmitted = true;
+                                manageResumeForm();
                                 finish();
                             }
                             Toast.makeText(SupplierUpdateActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
@@ -412,6 +414,7 @@ public class SupplierUpdateActivity extends AppCompatActivity {
                     questionPage = 0;
                     surveyPage++;
                     updatePage();
+                    manageResumeForm();
 
                 } else {
 
@@ -426,6 +429,7 @@ public class SupplierUpdateActivity extends AppCompatActivity {
                         questionPage = 0;
                         isSubmitForm = true;
                         renderSummary();
+                        manageResumeForm();
                     }
                 }
             }
@@ -1250,7 +1254,7 @@ public class SupplierUpdateActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        manageResumeForm();
+        //manageResumeForm();
         super.onDestroy();
     }
 
@@ -1271,14 +1275,14 @@ public class SupplierUpdateActivity extends AppCompatActivity {
                                 //Toast.makeText(CreateCustomerActivity.this, "Customer Resume Saved to local", Toast.LENGTH_SHORT).show();
                                 finish();
                                 Log.i("supplierForm", "Resume form saved to local");
-                                disposable.clear();
+//                                disposable.clear();
                             }
 
                             @Override
                             public void onError(Throwable e) {
                                 Log.i("supplierForm", "Error  ==  " + e.getMessage());
                                 Toast.makeText(SupplierUpdateActivity.this, "Error  ==  " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                disposable.clear();
+                                //disposable.clear();
                             }
                         }));
             }
@@ -1292,6 +1296,7 @@ public class SupplierUpdateActivity extends AppCompatActivity {
                             @Override
                             public void onComplete() {
                                 Log.i("supplierFormResume", "formDeleted");
+                                disposable.clear();
                             }
 
                             @Override

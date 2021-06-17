@@ -443,6 +443,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 surveyPage++;
                 updatePage();
 
+                manageResumeForm();
+
             } else {
 
                 addAnswers();
@@ -452,6 +454,9 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 questionPage = 0;
                 isSubmitForm = true;
                 renderSummary();
+
+                manageResumeForm();
+
             }
         }
     }
@@ -606,8 +611,9 @@ public class CreateCustomerActivity extends AppCompatActivity {
                         public void onSuccess(@NonNull CustomerSubmitFormModel response) {
                             binding.loadingView.loader.setVisibility(View.GONE);
                             if (response.getSuccessStatus().equals("success")) {
-                                finish();
                                 isFormSubmitted = true;
+                                manageResumeForm();
+                                finish();
                             }
                             Toast.makeText(CreateCustomerActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
                         }
@@ -1449,12 +1455,6 @@ public class CreateCustomerActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        manageResumeForm();
-        super.onDestroy();
-    }
-
     synchronized private void manageResumeForm() {
         if (!isFormSubmitted) {
             if (!surveyQuestions.isEmpty()) {
@@ -1476,9 +1476,9 @@ public class CreateCustomerActivity extends AppCompatActivity {
                             @Override
                             public void onComplete() {
                                 //Toast.makeText(CreateCustomerActivity.this, "Customer Resume Saved to local", Toast.LENGTH_SHORT).show();
-                                finish();
+                                //finish();
                                 Log.i("customerForm", "Customer Resume form saved to local");
-                                disposable.clear();
+                                //disposable.clear();
 
 
                             }
@@ -1487,7 +1487,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
                             public void onError(Throwable e) {
                                 Log.i("customerFormResume", "Error  ==  " + e.getMessage());
                                 Toast.makeText(CreateCustomerActivity.this, "Error  ==  " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                disposable.clear();
+                                //disposable.clear();
                             }
                         }));
             }
@@ -1501,6 +1501,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
                             @Override
                             public void onComplete() {
                                 Log.i("customerFormResume", "formDeleted");
+                                disposable.clear();
                             }
 
                             @Override
