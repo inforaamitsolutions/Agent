@@ -293,6 +293,8 @@ public class CreateLeadActivity extends AppCompatActivity {
                     public void onComplete() {
                         Toast.makeText(CreateLeadActivity.this, "Lead Saved to local", Toast.LENGTH_SHORT).show();
                         Log.i("leadForm", "lead final form saved to local");
+                        isFormSubmitted = true;
+                        manageResumeForm();
                         finish();
                     }
 

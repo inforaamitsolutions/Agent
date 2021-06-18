@@ -138,6 +138,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
             chooserDialog.show();
         });
 
+        binding.edtMobileNo.setEnabled(false);
+        binding.edtDocumentNo.setEnabled(false);
         binding.btnConfirm.setOnClickListener(v -> {
             if (isEmpty(binding.edtFullName.getText().toString())) {
                 Toast.makeText(this, "Please enter full name", Toast.LENGTH_SHORT).show();
@@ -413,6 +415,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
                     @Override
                     public void onComplete() {
                         Toast.makeText(CreateCustomerActivity.this, "Customer Saved to local", Toast.LENGTH_SHORT).show();
+                        isFormSubmitted = true;
+                        manageResumeForm();
                         finish();
                         Log.i("customerForm", "Customer final form saved to local");
                     }

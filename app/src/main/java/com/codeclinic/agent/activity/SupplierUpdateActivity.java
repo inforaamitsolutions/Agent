@@ -384,6 +384,8 @@ public class SupplierUpdateActivity extends AppCompatActivity {
                     @Override
                     public void onComplete() {
                         Toast.makeText(SupplierUpdateActivity.this, "Supplier Update Saved to local", Toast.LENGTH_SHORT).show();
+                        isFormSubmitted = true;
+                        manageResumeForm();
                         finish();
                         Log.i("SupplierForm", "Supplier Update final form saved to local");
                     }

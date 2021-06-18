@@ -286,6 +286,8 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
                     @Override
                     public void onComplete() {
                         Toast.makeText(BusinessDataUpdateActivity.this, "Business Data Update Saved to local", Toast.LENGTH_SHORT).show();
+                        isFormSubmitted = true;
+                        manageResumeForm();
                         finish();
                         Log.i("BusinessForm", "Business Data Update final form saved to local");
                     }
