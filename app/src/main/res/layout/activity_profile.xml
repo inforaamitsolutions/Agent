@@ -761,12 +761,13 @@
                                     <TextView
                                         android:id="@+id/tvDirection"
                                         android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
+                                        android:layout_height="wrap_content"
                                         android:layout_marginRight="10dp"
                                         android:layout_weight="1"
                                         android:gravity="right"
-                                        android:hint="Direction"
-                                        android:singleLine="true"
+                                        android:hint="Directions"
+                                        android:maxLength="250"
+                                        android:singleLine="false"
                                         android:textColor="@color/black"
                                         android:textSize="13dp" />
                                 </LinearLayout>

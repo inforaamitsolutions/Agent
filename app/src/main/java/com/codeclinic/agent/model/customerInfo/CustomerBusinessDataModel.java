@@ -34,7 +34,7 @@ public class CustomerBusinessDataModel {
     @SerializedName("stockFrequency")
     @Expose
     private String stockFrequency;
-    @SerializedName("business_zone")
+    @SerializedName("businessZone")
     @Expose
     private String businessZone;
     @SerializedName("lend")
@@ -79,6 +79,7 @@ public class CustomerBusinessDataModel {
     @SerializedName("businessType")
     @Expose
     private String businessType;
+
 
     public String getOtherIncomeAmount() {
         return otherIncomeAmount;

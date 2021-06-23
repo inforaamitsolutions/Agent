@@ -95,6 +95,7 @@ public class SupplierUpdateActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_supplier_update);
 
         binding.headerLayout.imgBack.setVisibility(View.VISIBLE);
+
         binding.headerLayout.txtHeading.setText("Supplier Data Update");
 
         LocationInfo.getLastLocation(this, null);
@@ -120,9 +121,9 @@ public class SupplierUpdateActivity extends AppCompatActivity {
 
         binding.btnPrevious.setOnClickListener(v -> {
             questionToFollowPage = -1;
-            if (binding.llQuestions.getVisibility() == View.GONE) {
-                binding.llQuestions.setVisibility(View.VISIBLE);
-                binding.linearUserDetail.setVisibility(View.GONE);
+            if (binding.llSections.getVisibility() == View.GONE) {
+                binding.llSections.setVisibility(View.VISIBLE);
+                binding.llSummary.setVisibility(View.GONE);
                 isSubmitForm = false;
                 questionPage = surveyPagesList.get(surveyPage).getQuestions().size() - 1;
             } else {
@@ -144,7 +145,7 @@ public class SupplierUpdateActivity extends AppCompatActivity {
                 List<SupplierQuestionToFollowModel> questionToFollowList =
                         questionList.get(surveyPage).get(questionPage).getOptions().get(binding.spLabel.getSelectedItemPosition()).getQuestionToFollow();
 
-                if (questionToFollowList != null && binding.llQuestions.getVisibility() == View.VISIBLE) {
+                if (questionToFollowList != null && binding.llSections.getVisibility() == View.VISIBLE) {
                     if (questionToFollowList.size() != 0) {
                         if (questionToFollowPage == -1) {
                             questionToFollowPage = 0;
@@ -420,19 +421,20 @@ public class SupplierUpdateActivity extends AppCompatActivity {
 
                 } else {
 
-                    if (binding.llQuestions.getVisibility() == View.VISIBLE) {
-                        binding.llQuestions.setVisibility(View.GONE);
+                   /* if (binding.llSections.getVisibility() == View.VISIBLE) {
+                        binding.llSections.setVisibility(View.GONE);
                         binding.linearUserDetail.setVisibility(View.VISIBLE);
                     } else {
-                        addAnswers();
-                        surveyQuestions.put(surveyPage, answeredQuestions);
-                        Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
-                        answeredQuestions = new HashMap<>();
-                        questionPage = 0;
-                        isSubmitForm = true;
-                        renderSummary();
-                        manageResumeForm();
-                    }
+
+                    }*/
+                    addAnswers();
+                    surveyQuestions.put(surveyPage, answeredQuestions);
+                    Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
+                    answeredQuestions = new HashMap<>();
+                    questionPage = 0;
+                    isSubmitForm = true;
+                    renderSummary();
+                    manageResumeForm();
                 }
             }
         } else {
@@ -1095,7 +1097,7 @@ public class SupplierUpdateActivity extends AppCompatActivity {
     }
 
     private boolean validateAnswer() {
-        if (binding.llQuestions.getVisibility() == View.VISIBLE) {
+        if (binding.llSections.getVisibility() == View.VISIBLE) {
 
             SupplierQuestionListModel question = questionList.get(surveyPage).get(questionPage);
 
@@ -1160,7 +1162,7 @@ public class SupplierUpdateActivity extends AppCompatActivity {
 
     private boolean validateQueToFollowAnswer(List<SupplierQuestionToFollowModel> questionToFollow) {
         SupplierQuestionToFollowModel questionToFollowList = questionToFollow.get(questionToFollowPage);
-        if (binding.llQuestions.getVisibility() == View.VISIBLE) {
+        if (binding.llSections.getVisibility() == View.VISIBLE) {
             if (questionToFollowList.getFieldType().equals("text") || questionToFollowList.getFieldType().equals("textfield")
                     || questionToFollowList.getFieldType().equals("textArea") || questionToFollowList.getFieldType().equals("decimal")
                     || questionToFollowList.getFieldType().equals("number") || questionToFollowList.getFieldType().equals("integer")

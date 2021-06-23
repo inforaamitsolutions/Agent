@@ -13,6 +13,9 @@ public class StaffModel {
     @SerializedName("emailAddress")
     @Expose
     private String emailAddress;
+    @SerializedName("userName")
+    @Expose
+    private String userName;
     @SerializedName("firstName")
     @Expose
     private String firstName;
@@ -63,6 +66,14 @@ public class StaffModel {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getFirstName() {

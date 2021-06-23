@@ -58,6 +58,11 @@ public interface API {
     @GET("baseapi/userservice/manage-users/findUserAndStaffByUserName")
     Single<UserModel> USER_MODEL_SINGLE_CALL(@Header("Authorization") String header, @Query("userName") String params);
 
+    //Get User Credentials API
+    @Headers("Content-Type: application/json")
+    @POST("baseapi/userservice/userauthentication/refreshAccessToken")
+    Single<LoginModel> REFRESH_TOKEN_SINGLE_CALL(@Body String params);
+
 
     /****************************************** Performance Data Forms  *****************************************************/
 

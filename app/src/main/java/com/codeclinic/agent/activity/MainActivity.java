@@ -294,10 +294,19 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
         viewModel.isSessionClear.observe(this, isClear -> {
             if (isClear != null) {
-                Toast.makeText(this, "Session time-out you have to login again", Toast.LENGTH_LONG).show();
-                sessionManager.logoutUser();
-                finishAffinity();
-                startActivity(new Intent(this, LoginActivity.class));
+                Toast.makeText(this, "Please wait Session is refreshing", Toast.LENGTH_LONG).show();
+                loadingDialog.showProgressDialog("");
+                viewModel.callRefreshToken();
+            }
+        });
+
+        viewModel.refreshToken.observe(this, refresh -> {
+            loadingDialog.hideProgressDialog();
+            if (refresh != null) {
+                if (refresh) {
+                    finishAffinity();
+                    startActivity(new Intent(this, MainActivity.class));
+                }
             }
         });
 

@@ -121,9 +121,9 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
 
         binding.btnPrevious.setOnClickListener(v -> {
             questionToFollowPage = -1;
-            if (binding.llQuestions.getVisibility() == View.GONE) {
-                binding.llQuestions.setVisibility(View.VISIBLE);
-                binding.linearUserDetail.setVisibility(View.GONE);
+            if (binding.llSections.getVisibility() == View.GONE) {
+                binding.llSections.setVisibility(View.VISIBLE);
+                binding.llSummary.setVisibility(View.GONE);
                 isSubmitForm = false;
                 questionPage = surveyPagesList.get(surveyPage).getQuestions().size() - 1;
             } else {
@@ -145,7 +145,7 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
                 List<BusinessDataQuestionToFollowModel> questionToFollowList =
                         questionList.get(surveyPage).get(questionPage).getOptions().get(binding.spLabel.getSelectedItemPosition()).getQuestionToFollow();
 
-                if (questionToFollowList != null && binding.llQuestions.getVisibility() == View.VISIBLE) {
+                if (questionToFollowList != null && binding.llSections.getVisibility() == View.VISIBLE) {
                     if (questionToFollowList.size() != 0) {
                         if (questionToFollowPage == -1) {
                             questionToFollowPage = 0;
@@ -321,20 +321,21 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
                     manageResumeForm();
                 } else {
 
-                    if (binding.llQuestions.getVisibility() == View.VISIBLE) {
+                   /* if (binding.llQuestions.getVisibility() == View.VISIBLE) {
                         binding.llQuestions.setVisibility(View.GONE);
                         binding.linearUserDetail.setVisibility(View.VISIBLE);
                     } else {
-                        addAnswers();
-                        surveyQuestions.put(surveyPage, answeredQuestions);
-                        Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
-                        answeredQuestions = new HashMap<>();
-                        questionPage = 0;
-                        isSubmitForm = true;
-                        //submitForm();
-                        renderSummary();
-                        manageResumeForm();
-                    }
+
+                    }*/
+                    addAnswers();
+                    surveyQuestions.put(surveyPage, answeredQuestions);
+                    Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
+                    answeredQuestions = new HashMap<>();
+                    questionPage = 0;
+                    isSubmitForm = true;
+                    //submitForm();
+                    renderSummary();
+                    manageResumeForm();
                 }
             }
         } else {
@@ -413,9 +414,9 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
         try {
             jsonObject.put("customerId", customerID);
             jsonObject.put("customerRole", "MYMOBI_INDIVIDUAL_CUSTOMER");
-            jsonObject.put("firstName", binding.edtFirstName.getText().toString());
-            jsonObject.put("lastName", binding.edtLastName.getText().toString());
-            jsonObject.put("middleName", binding.edtMiddleName.getText().toString());
+            jsonObject.put("firstName", "");
+            jsonObject.put("lastName", "");
+            jsonObject.put("middleName", "");
             jsonObject.put("staffId", sessionManager.getUserDetails().get(SessionManager.UserID));
             jsonObject.put("status", "COMPLETED");
             jsonObject.put("surveyName", "business_data_update_form");
@@ -1097,7 +1098,7 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
     }
 
     private boolean validateAnswer() {
-        if (binding.llQuestions.getVisibility() == View.VISIBLE) {
+        if (binding.llSections.getVisibility() == View.VISIBLE) {
 
             BusinessDataQuestionListModel question = questionList.get(surveyPage).get(questionPage);
 
@@ -1162,7 +1163,7 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
 
     private boolean validateQueToFollowAnswer(List<BusinessDataQuestionToFollowModel> questionToFollow) {
         BusinessDataQuestionToFollowModel questionToFollowList = questionToFollow.get(questionToFollowPage);
-        if (binding.llQuestions.getVisibility() == View.VISIBLE) {
+        if (binding.llSections.getVisibility() == View.VISIBLE) {
             if (questionToFollowList.getFieldType().equals("text") || questionToFollowList.getFieldType().equals("textfield")
                     || questionToFollowList.getFieldType().equals("textArea") || questionToFollowList.getFieldType().equals("decimal")
                     || questionToFollowList.getFieldType().equals("number") || questionToFollowList.getFieldType().equals("integer")

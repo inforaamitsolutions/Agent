@@ -18,6 +18,7 @@ import com.codeclinic.agent.model.LoanAccountsModel;
 import com.codeclinic.agent.model.LoanProductListModel;
 import com.codeclinic.agent.model.LoanProductsModel;
 import com.codeclinic.agent.model.LoanStatusModel;
+import com.codeclinic.agent.model.LoginModel;
 import com.codeclinic.agent.model.MarketListModel;
 import com.codeclinic.agent.model.MarketModel;
 import com.codeclinic.agent.model.PerformanceModel;
@@ -51,6 +52,7 @@ import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.SessionManager;
 import com.google.gson.Gson;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -69,6 +71,8 @@ import static com.codeclinic.agent.utils.Constants.HOME_FRAGMENT;
 import static com.codeclinic.agent.utils.Constants.LEAD_FRAGMENT;
 import static com.codeclinic.agent.utils.Constants.LOAN_FRAGMENT;
 import static com.codeclinic.agent.utils.SessionManager.AccessToken;
+import static com.codeclinic.agent.utils.SessionManager.RefreshToken;
+import static com.codeclinic.agent.utils.SessionManager.UserName;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 public class MainViewModel extends AndroidViewModel {
@@ -85,6 +89,7 @@ public class MainViewModel extends AndroidViewModel {
     public final MutableLiveData<LoadingResult> formFetchingComplete = new MutableLiveData<>();
 
     public MutableLiveData<Boolean> isSessionClear = new MutableLiveData<>();
+    public MutableLiveData<Boolean> refreshToken = new MutableLiveData<>();
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -128,6 +133,35 @@ public class MainViewModel extends AndroidViewModel {
                             isSessionClear.postValue(true);
                         }
                         formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", true));
+                    }
+                }));
+    }
+
+    public void callRefreshToken() {
+        /*"Customer Registration Form"*/
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("refreshToken", sessionManager.getTokenDetails().get(RefreshToken));
+            jsonObject.put("userName", sessionManager.getUserDetails().get(UserName));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        disposable.add(RestClass.getClient().REFRESH_TOKEN_SINGLE_CALL(jsonObject.toString())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<LoginModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull LoginModel response) {
+                        sessionManager.setUserSession("Bearer " + response.getAccessToken(), sessionManager.getUserDetails().get(UserName),
+                                response.getExpiresIn() + "", response.getRefreshToken(), response.getRefreshExpiresIn() + "");
+                        refreshToken.postValue(true);
+
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("refreshToken", "Server Error " + e.getMessage());
+                        refreshToken.postValue(false);
                     }
                 }));
     }

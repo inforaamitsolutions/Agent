@@ -16,7 +16,6 @@ import com.codeclinic.agent.model.LoginModel;
 import com.codeclinic.agent.model.user.StaffModel;
 import com.codeclinic.agent.model.user.UserModel;
 import com.codeclinic.agent.retrofit.RestClass;
-import com.codeclinic.agent.utils.LogoutService;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -105,8 +104,7 @@ public class LoginActivity extends AppCompatActivity {
                             if (user != null) {
                                 Log.i("userDetails", "Data ==> " + new Gson().toJson(user));
                                 sessionManager.setUserSession("Bearer " + login.getAccessToken(), binding.edtUserName.getText().toString(), login.getExpiresIn() + "", login.getRefreshToken(), login.getRefreshExpiresIn() + "");
-                                sessionManager.setUserCredentials(user.getId() + "", user.getEmailAddress(), user.getOtherName(), user.getFirstName(), user.getLastName(), user.getOtherName(), user.getMobileNumber() + "");
-                                startService(new Intent(LoginActivity.this, LogoutService.class));
+                                sessionManager.setUserCredentials(user.getId() + "", user.getEmailAddress(), user.getUserName(), user.getFirstName(), user.getLastName(), user.getOtherName(), user.getMobileNumber() + "");
                                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                 finish();
                             } else {
