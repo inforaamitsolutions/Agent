@@ -433,8 +433,8 @@ public class SupplierUpdateActivity extends AppCompatActivity {
                     answeredQuestions = new HashMap<>();
                     questionPage = 0;
                     isSubmitForm = true;
-                    renderSummary();
                     manageResumeForm();
+                    renderSummary();
                 }
             }
         } else {

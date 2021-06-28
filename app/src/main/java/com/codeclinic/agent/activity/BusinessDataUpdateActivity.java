@@ -334,8 +334,8 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
                     questionPage = 0;
                     isSubmitForm = true;
                     //submitForm();
-                    renderSummary();
                     manageResumeForm();
+                    renderSummary();
                 }
             }
         } else {
