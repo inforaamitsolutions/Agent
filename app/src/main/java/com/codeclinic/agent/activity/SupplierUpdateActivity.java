@@ -1277,7 +1277,6 @@ public class SupplierUpdateActivity extends AppCompatActivity {
                             @Override
                             public void onComplete() {
                                 //Toast.makeText(CreateCustomerActivity.this, "Customer Resume Saved to local", Toast.LENGTH_SHORT).show();
-                                finish();
                                 Log.i("supplierForm", "Resume form saved to local");
 //                                disposable.clear();
                             }

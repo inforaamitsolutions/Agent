@@ -339,8 +339,8 @@ public class CreateLeadActivity extends AppCompatActivity {
                         questionPage = 0;
                         isSubmitForm = true;
                         //submitForm();
-                        renderSummary();
                         manageResumeForm();
+                        renderSummary();
                     }
                 }
             }
@@ -1294,7 +1294,6 @@ public class CreateLeadActivity extends AppCompatActivity {
                             @Override
                             public void onComplete() {
                                 //Toast.makeText(CreateCustomerActivity.this, "Customer Resume Saved to local", Toast.LENGTH_SHORT).show();
-                                finish();
                                 Log.i("leadForm", "Customer Resume form saved to local");
                                 //disposable.clear();
                             }
