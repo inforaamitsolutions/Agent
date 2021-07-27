@@ -101,7 +101,7 @@ public class SessionManager {
         editor.putString(RefreshToken, refreshToken);
         editor.putString(RefreshExpiresIn, refreshExpiresIn);
         editor.putBoolean(IS_LOGIN, true);
-        editor.commit();
+        editor.apply();
     }
 
     public HashMap<String, String> getTokenDetails() {
@@ -125,6 +125,7 @@ public class SessionManager {
         editor.putString(OtherName, other_name);
         editor.putString(PhoneNumber, phone_no);
         editor.commit();
+        editor.apply();
     }
 
     public HashMap<String, String> getUserDetails() {

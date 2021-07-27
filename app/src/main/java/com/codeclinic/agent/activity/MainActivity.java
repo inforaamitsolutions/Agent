@@ -304,10 +304,17 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             loadingDialog.hideProgressDialog();
             if (refresh != null) {
                 if (refresh) {
+                  /*  finishAffinity();
+                    startActivity(new Intent(this, MainActivity.class));*/
+                    sessionManager.logoutUser();
                     finishAffinity();
-                    startActivity(new Intent(this, MainActivity.class));
+                    startActivity(new Intent(this, LoginActivity.class));
                 }
-            }
+            } /*else {
+                sessionManager.logoutUser();
+                finishAffinity();
+                startActivity(new Intent(this, LoginActivity.class));
+            }*/
         });
 
         viewModel.formFetchingComplete.observe(this, isComplete -> {

@@ -478,7 +478,8 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
         Log.i("formReq", jsonObject.toString());
 
         if (Connection_Detector.isInternetAvailable(this)) {
-            disposable.add(RestClass.getClient().BUSINESS_DATA_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
+            disposable.add(RestClass.getClient().BUSINESS_DATA_SUBMIT_FORM_MODEL_SINGLE_CALL(
+                    sessionManager.getTokenDetails().get(SessionManager.AccessToken)
                     , jsonObject.toString())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

@@ -63,6 +63,11 @@ public interface API {
     @POST("baseapi/userservice/userauthentication/refreshAccessToken")
     Single<LoginModel> REFRESH_TOKEN_SINGLE_CALL(@Body String params);
 
+    //Refresh Token Credentials API
+    @Headers("Content-Type: application/json")
+    @POST("baseapi/userservice/userauthentication/refreshAccessToken")
+    Single<LoginModel> refreshTokenAPI(@Body String params);
+
 
     /****************************************** Performance Data Forms  *****************************************************/
 

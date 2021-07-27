@@ -22,11 +22,11 @@ public class App extends Application {
         //create session
         new SessionManager(this);
 
-        //create Retrofit singleton instance
-        RestClass.createRetrofitInstance();
-
         //create Local Database
         LocalDatabase.createInstance(this);
+
+        //create Retrofit singleton instance
+        RestClass.createRetrofitInstance();
 
     }
 }

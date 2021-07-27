@@ -429,7 +429,12 @@ public class CommonMethods {
     }
 
     public static File compressImage(Uri photoURI, Compressor compressor) throws Exception {
-        return compressor.setMaxWidth(400).setMaxHeight(400).setQuality(50).setCompressFormat(Bitmap.CompressFormat.JPEG).setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath()).compressToFile(new File(photoURI.getPath()));
+        return compressor.setMaxWidth(400)
+                .setMaxHeight(400)
+                .setQuality(50)
+                .setCompressFormat(Bitmap.CompressFormat.JPEG).
+                        setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath())
+                .compressToFile(new File(photoURI.getPath()));
     }
 
     @SuppressLint("SimpleDateFormat")

@@ -16,10 +16,13 @@ public class RestClass {
     private static API api = null;
 
     public static void createRetrofitInstance() {
-        OkHttpClient httpClient = new OkHttpClient.Builder().connectTimeout(120, TimeUnit.SECONDS)
+        OkHttpClient httpClient = new OkHttpClient.Builder()
+                .connectTimeout(120, TimeUnit.SECONDS)
                 .readTimeout(120, TimeUnit.SECONDS)
                 .writeTimeout(120, TimeUnit.SECONDS)
+                .authenticator(new TokenAuthenticator())
                 .build();
+
         Retrofit retrofit = new Retrofit.Builder()
                 .client(httpClient)
                 .baseUrl(BASE_URL)
