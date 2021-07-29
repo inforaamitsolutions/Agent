@@ -354,42 +354,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((isExist) -> {
                     if (isExist) {
-                        disposable.add(localDatabase.getDAO().getCustomerFormResume()
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(form -> {
-                                            if (form != null) {
-                                                customerFormResumeEntity = form;
-                                                surveyQuestions = new Gson().fromJson(form.getSurveyQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
-                                                }.getType());
-                                                if (!isEmpty(form.getOptionQuestions())) {
-                                                    optionQuestions = new Gson().fromJson(form.getOptionQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
-                                                    }.getType());
-                                                }
-                                                Log.i("customerFormResume", "Data stored is " + new Gson().toJson(surveyQuestions));
-                                            }
-                                            binding.edtFullName.setText(form.getName() + "");
-                                            binding.edtDocumentNo.setText(form.getIdNumber() + "");
-                                            binding.edtMobileNo.setText(form.getNumber());
-                                            binding.tvBirthDate.setText(form.getBirthDate() + "");
-                                            binding.tvAge.setText(form.getAge() + "");
-                                            if (form.getExist().equals("yes")) {
-                                                binding.rbYes.setChecked(true);
-                                                binding.rbNo.setVisibility(View.GONE);
-                                            } else {
-                                                binding.rbYes.setVisibility(View.GONE);
-                                                binding.rbNo.setChecked(true);
-                                            }
-                                            getSurveyForm();
-                                        },
-                                        throwable -> {
-                                            if (throwable.getMessage() != null) {
-                                                Log.i("customerFormResume", "Error == " + throwable.getMessage());
-                                            }
-                                            getSurveyForm();
-                                        }
-                                )
-                        );
+                        askToContinueDraftForm();
                     } else {
                         if (Connection_Detector.isInternetAvailable(this)) {
                             checkCustomerExistDialog();
@@ -397,6 +362,57 @@ public class CreateCustomerActivity extends AppCompatActivity {
                         getSurveyForm();
                     }
                 }));
+    }
+
+    private void askToContinueDraftForm() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("We found old form which was not submitted yet exist ,Do you want to continue with the same form?");
+        builder.setPositiveButton("Yes", (dialog, id) -> {
+            extractCustomerFromLocal();
+        });
+        builder.setNegativeButton("No", (dialog, id) -> {
+            dialog.dismiss();
+        });
+        builder.create();
+    }
+
+    private void extractCustomerFromLocal() {
+        disposable.add(localDatabase.getDAO().getCustomerFormResume()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(form -> {
+                            if (form != null) {
+                                customerFormResumeEntity = form;
+                                surveyQuestions = new Gson().fromJson(form.getSurveyQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
+                                }.getType());
+                                if (!isEmpty(form.getOptionQuestions())) {
+                                    optionQuestions = new Gson().fromJson(form.getOptionQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
+                                    }.getType());
+                                }
+                                Log.i("customerFormResume", "Data stored is " + new Gson().toJson(surveyQuestions));
+                            }
+                            binding.edtFullName.setText(form.getName() + "");
+                            binding.edtDocumentNo.setText(form.getIdNumber() + "");
+                            binding.edtMobileNo.setText(form.getNumber());
+                            binding.tvBirthDate.setText(form.getBirthDate() + "");
+                            binding.tvAge.setText(form.getAge() + "");
+                            if (form.getExist().equals("yes")) {
+                                binding.rbYes.setChecked(true);
+                                binding.rbNo.setVisibility(View.GONE);
+                            } else {
+                                binding.rbYes.setVisibility(View.GONE);
+                                binding.rbNo.setChecked(true);
+                            }
+                            getSurveyForm();
+                        },
+                        throwable -> {
+                            if (throwable.getMessage() != null) {
+                                Log.i("customerFormResume", "Error == " + throwable.getMessage());
+                            }
+                            getSurveyForm();
+                        }
+                )
+        );
     }
 
     private boolean checkFormSavedInDB() {
