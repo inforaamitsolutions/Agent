@@ -1,6 +1,7 @@
 package com.codeclinic.agent.activity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -221,35 +222,53 @@ public class SupplierUpdateActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((isExist) -> {
                     if (isExist) {
-                        disposable.add(localDatabase.getDAO().getSupplierFormResume()
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(form -> {
-                                            if (form != null) {
-                                                supplierFormResumeEntity = form;
-                                                surveyQuestions = new Gson().fromJson(form.getSurveyQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
-                                                }.getType());
-                                                if (!isEmpty(form.getOptionQuestions())) {
-                                                    optionQuestions = new Gson().fromJson(form.getOptionQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
-                                                    }.getType());
-                                                }
-                                                Log.i("supplierFormResume", "Data stored is " + new Gson().toJson(surveyQuestions));
-                                            }
-
-                                            getSurveyForm();
-                                        },
-                                        throwable -> {
-                                            if (throwable.getMessage() != null) {
-                                                Log.i("supplierFormResume", "Error == " + throwable.getMessage());
-                                            }
-                                            getSurveyForm();
-                                        }
-                                )
-                        );
+                        askToContinueDraftForm();
                     } else {
                         getSurveyForm();
                     }
                 }));
+    }
+
+    private void askToContinueDraftForm() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("We found an old form which was not submitted yet exist, Do you want to continue with the same form?");
+        builder.setPositiveButton("Yes", (dialog, id) -> {
+            extractFromLocal();
+        });
+        builder.setNegativeButton("No", (dialog, id) -> {
+            dialog.dismiss();
+        });
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+    private void extractFromLocal() {
+        disposable.add(localDatabase.getDAO().getSupplierFormResume()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(form -> {
+                            if (form != null) {
+                                supplierFormResumeEntity = form;
+                                surveyQuestions = new Gson().fromJson(form.getSurveyQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
+                                }.getType());
+                                if (!isEmpty(form.getOptionQuestions())) {
+                                    optionQuestions = new Gson().fromJson(form.getOptionQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
+                                    }.getType());
+                                }
+                                Log.i("supplierFormResume", "Data stored is " + new Gson().toJson(surveyQuestions));
+                            }
+
+                            getSurveyForm();
+                        },
+                        throwable -> {
+                            if (throwable.getMessage() != null) {
+                                Log.i("supplierFormResume", "Error == " + throwable.getMessage());
+                            }
+                            getSurveyForm();
+                        }
+                )
+        );
     }
 
     private void getSurveyForm() {

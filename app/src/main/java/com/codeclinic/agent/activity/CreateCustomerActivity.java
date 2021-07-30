@@ -373,7 +373,9 @@ public class CreateCustomerActivity extends AppCompatActivity {
         builder.setNegativeButton("No", (dialog, id) -> {
             dialog.dismiss();
         });
-        builder.create();
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.show();
     }
 
     private void extractCustomerFromLocal() {
