@@ -296,26 +296,26 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             if (isClear != null) {
                 Toast.makeText(this, "Please wait Session is refreshing", Toast.LENGTH_LONG).show();
                 loadingDialog.showProgressDialog("");
-                viewModel.callRefreshToken();
+                //viewModel.callRefreshToken();
             }
         });
 
-        viewModel.refreshToken.observe(this, refresh -> {
+        /*viewModel.refreshToken.observe(this, refresh -> {
             loadingDialog.hideProgressDialog();
             if (refresh != null) {
                 if (refresh) {
-                  /*  finishAffinity();
-                    startActivity(new Intent(this, MainActivity.class));*/
+                  *//*  finishAffinity();
+                    startActivity(new Intent(this, MainActivity.class));*//*
                     sessionManager.logoutUser();
                     finishAffinity();
                     startActivity(new Intent(this, LoginActivity.class));
                 }
-            } /*else {
+            } *//*else {
                 sessionManager.logoutUser();
                 finishAffinity();
                 startActivity(new Intent(this, LoginActivity.class));
-            }*/
-        });
+            }*//*
+        });*/
 
         viewModel.formFetchingComplete.observe(this, isComplete -> {
             loadingDialog.hideProgressDialog();
