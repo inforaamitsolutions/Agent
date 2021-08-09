@@ -160,7 +160,6 @@ public class CustomerFragment extends Fragment {
             }
         });
 
-        viewModel.getStatusAPI();
         viewModel.statusesList.observe(getActivity(), list -> {
             if (list != null) {
                 statusList.clear();
@@ -190,7 +189,6 @@ public class CustomerFragment extends Fragment {
             }
         });
 
-        viewModel.getSegmentsAPI();
         viewModel.productSegmentList.observe(getActivity(), list -> {
             if (list != null) {
                 productSegmentList.clear();

@@ -290,7 +290,6 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             }
         });
 
-        setupViewPager();
 
         viewModel.isSessionClear.observe(this, isClear -> {
             if (isClear != null) {
@@ -322,7 +321,9 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             if (isComplete != null) {
                 Toast.makeText(this, " " + isComplete.getMessage(), Toast.LENGTH_LONG).show();
             }
-
+            if (!viewModel.isViewPagerInitialized) {
+                setupViewPager();
+            }
         });
 
 
@@ -332,6 +333,8 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
                 .subscribe((isExist) -> {
                     if (!isExist) {
                         fetchFormsOnline();
+                    } else {
+                        setupViewPager();
                     }
                 }));
 
@@ -343,10 +346,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-// Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.search_menu, menu);
-        //getMenuInflater().inflate(R.menu.notification_menu, menu);
-        //getMenuInflater().inflate(R.menu.profile_menu, menu);
         return true;
     }
 
@@ -400,18 +400,8 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
                 }
             }
         }
-
-        if (Connection_Detector.isInternetAvailable(this)) {
-
-            viewModel.getStaffAPI();
-            viewModel.getZonesAPI();
-            viewModel.getLoanProductAPI();
-            viewModel.getSuppliersAPI();
-            viewModel.getLoanStatusAPI();
-        }
-
-
         binding.tabLayout.addOnTabSelectedListener(this);
+        viewModel.isViewPagerInitialized = true;
     }
 
     public View getTabView(int position) {
@@ -474,5 +464,6 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     protected void onDestroy() {
         super.onDestroy();
         disposable.clear();
+        disposable.dispose();
     }
 }

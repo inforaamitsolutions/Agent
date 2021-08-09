@@ -6,6 +6,13 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class StaffListModel {
+    public StaffListModel() {
+    }
+
+    public StaffListModel(String firstName) {
+        this.firstName = firstName;
+    }
+
     @SerializedName("id")
     @Expose
     private Integer id;
@@ -166,6 +173,9 @@ public class StaffListModel {
         if (designations != null) {
             return firstName + lastName + otherName + designations.get(0).getDesignationName();
         } else {
+            if (lastName == null && otherName == null) {
+                return firstName;
+            }
             return firstName + lastName + otherName;
         }
     }

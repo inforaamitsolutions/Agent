@@ -73,6 +73,7 @@ public class HomeFragment extends Fragment {
                     Toast.makeText(getActivity(), " " + performanceModel.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
+            viewModel.getAllRequiredFiltersData();
         });
 
         binding.periodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

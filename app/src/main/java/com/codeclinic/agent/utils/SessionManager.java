@@ -6,10 +6,6 @@ import android.content.SharedPreferences.Editor;
 
 import java.util.HashMap;
 
-/**
- * Created by Inforaam on 6/29/2017.
- */
-
 public class SessionManager {
 
     /*Tokens*/
@@ -18,6 +14,8 @@ public class SessionManager {
     public static final String ExpiresIn = "expiresIn";
     public static final String RefreshToken = "refreshToken";
     public static final String RefreshExpiresIn = "refreshExpiresIn";
+    public static final String tokenSetTime = "tokenSetTime";
+    public static final String tokenRenewTime = "tokenRenewTime";
 
     /*User Details*/
     public static final String UserID = "userId";
@@ -94,7 +92,7 @@ public class SessionManager {
         return prefCredentials.getBoolean(IS_REMEMBER_ME, false);
     }
 
-    public void setUserSession(String accessToken,String uName ,String expiresIn, String refreshToken, String refreshExpiresIn) {
+    public void setUserSession(String accessToken, String uName, String expiresIn, String refreshToken, String refreshExpiresIn) {
         editor.putString(AccessToken, accessToken);
         editor.putString(UName, uName);
         editor.putString(ExpiresIn, expiresIn);
@@ -124,7 +122,6 @@ public class SessionManager {
         editor.putString(LastName, last_name);
         editor.putString(OtherName, other_name);
         editor.putString(PhoneNumber, phone_no);
-        editor.commit();
         editor.apply();
     }
 
@@ -140,6 +137,15 @@ public class SessionManager {
         user.put(PhoneNumber, pref.getString(PhoneNumber, null));
 
         return user;
+    }
+
+    public Long getTokenTime() {
+        return pref.getLong(tokenRenewTime, System.currentTimeMillis());
+    }
+
+    public void setTokenTime() {
+        editor.putLong(tokenRenewTime, System.currentTimeMillis());
+        editor.apply();
     }
 
     public boolean isFirstTimeLaunch() {

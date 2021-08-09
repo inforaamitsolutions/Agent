@@ -1263,6 +1263,7 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
             }
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @androidx.annotation.NonNull String[] permissions, @androidx.annotation.NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -1309,25 +1310,44 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
                         }));
             }
         } else {
-            if (businessFormResumeEntity != null) {
-                disposable.add(Completable.fromAction(() -> localDatabase.getDAO().removeBusinessFormResume(businessFormResumeEntity))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeWith(new DisposableCompletableObserver() {
+            removeBusinessForm();
+        }
+    }
 
-                            @Override
-                            public void onComplete() {
-                                Log.i("businessFormResume", "formDeleted");
-                                disposable.clear();
+    private void removeBusinessForm() {
+        disposable.add(localDatabase.getDAO().getBusinessFormResume()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::removeFormFromLocal,
+                        throwable -> {
+                            if (throwable.getMessage() != null) {
+                                Log.i("BusinessFormResume", "Error == " + throwable.getMessage());
                             }
+                        }
+                )
+        );
+    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.i("businessFormResume", "Error = > " + e.getMessage());
-                                disposable.clear();
-                            }
-                        }));
-            }
+    private void removeFormFromLocal(BusinessFormResumeEntity entity) {
+        if (entity != null) {
+            disposable.add(Completable.fromAction(() -> localDatabase.getDAO().removeBusinessFormResume(entity))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableCompletableObserver() {
+
+                        @Override
+                        public void onComplete() {
+                            Log.i("businessFormResume", "formDeleted");
+                            disposable.clear();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.i("businessFormResume", "Error = > " + e.getMessage());
+                            disposable.clear();
+                        }
+                    }));
+
         }
     }
 

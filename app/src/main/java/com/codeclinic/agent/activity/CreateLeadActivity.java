@@ -242,6 +242,7 @@ public class CreateLeadActivity extends AppCompatActivity {
         });
         builder.setNegativeButton("No", (dialog, id) -> {
             dialog.dismiss();
+
         });
         AlertDialog dialog = builder.create();
         dialog.setCancelable(false);
@@ -1326,25 +1327,43 @@ public class CreateLeadActivity extends AppCompatActivity {
                         }));
             }
         } else {
-            if (leadFormResumeEntity != null) {
-                disposable.add(Completable.fromAction(() -> localDatabase.getDAO().removeLeadFormResume(leadFormResumeEntity))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeWith(new DisposableCompletableObserver() {
+            removeLeadForm();
+        }
+    }
 
-                            @Override
-                            public void onComplete() {
-                                Log.i("leadFormResume", "formDeleted");
-                                disposable.clear();
+    private void removeLeadForm() {
+        disposable.add(localDatabase.getDAO().getLeadFormResume()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::removeFormFromLocal,
+                        throwable -> {
+                            if (throwable.getMessage() != null) {
+                                Log.i("leadFormResume", "Error == " + throwable.getMessage());
                             }
+                        }
+                )
+        );
+    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.i("leadFormResume", "Error = > " + e.getMessage());
-                                disposable.clear();
-                            }
-                        }));
-            }
+    private void removeFormFromLocal(LeadFormResumeEntity entity) {
+        if (entity != null) {
+            disposable.add(Completable.fromAction(() -> localDatabase.getDAO().removeLeadFormResume(entity))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableCompletableObserver() {
+
+                        @Override
+                        public void onComplete() {
+                            Log.i("leadFormResume", "formDeleted");
+                            disposable.clear();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.i("leadFormResume", "Error = > " + e.getMessage());
+                            disposable.clear();
+                        }
+                    }));
         }
     }
 

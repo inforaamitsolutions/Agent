@@ -1309,25 +1309,42 @@ public class SupplierUpdateActivity extends AppCompatActivity {
                         }));
             }
         } else {
-            if (supplierFormResumeEntity != null) {
-                disposable.add(Completable.fromAction(() -> localDatabase.getDAO().removeSupplierFormResume(supplierFormResumeEntity))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeWith(new DisposableCompletableObserver() {
+            removeSupplierForm();
+        }
+    }
 
-                            @Override
-                            public void onComplete() {
-                                Log.i("supplierFormResume", "formDeleted");
-                                disposable.clear();
+    private void removeSupplierForm() {
+        disposable.add(localDatabase.getDAO().getSupplierFormResume()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::removeFormFromLocal,
+                        throwable -> {
+                            if (throwable.getMessage() != null) {
+                                Log.i("supplierFormResume", "Error == " + throwable.getMessage());
                             }
+                        }
+                )
+        );
+    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.i("suFormResume", "Error = > " + e.getMessage());
-                                disposable.clear();
-                            }
-                        }));
-            }
+    private void removeFormFromLocal(SupplierFormResumeEntity entity) {
+        if (entity != null) {
+            disposable.add(Completable.fromAction(() -> localDatabase.getDAO().removeSupplierFormResume(entity))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableCompletableObserver() {
+                        @Override
+                        public void onComplete() {
+                            Log.i("supplierFormResume", "formDeleted");
+                            disposable.clear();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.i("supplierFormResume", "Error = > " + e.getMessage());
+                            disposable.clear();
+                        }
+                    }));
         }
     }
 

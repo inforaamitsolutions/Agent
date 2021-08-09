@@ -372,6 +372,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
         });
         builder.setNegativeButton("No", (dialog, id) -> {
             dialog.dismiss();
+            checkCustomerExistDialog();
         });
         AlertDialog dialog = builder.create();
         dialog.setCancelable(false);
@@ -1416,14 +1417,14 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
     private void chooseFile() {
 
-        chooserDialog = new ChooserDialog(this, R.style.FileChooserStyle);
+        chooserDialog = new ChooserDialog(this, R.style.Theme_Agent);
 
         chooserDialog
                 .withResources(
                         R.string.fileChooser,
-                        R.string.title_choose, R.string.dialog_cancel)
-                .withOptionResources(R.string.option_create_folder, R.string.options_delete,
-                        R.string.new_folder_cancel, R.string.new_folder_ok)
+                        R.string.titleChoose, R.string.dialogCancel)
+                .withOptionResources(R.string.optionCreateFolder, R.string.optionDelete,
+                        R.string.newFolderCancel, R.string.newFolderOk)
                 .disableTitle(false)
                 .enableOptions(false)
                 .titleFollowsDir(false)
@@ -1514,25 +1515,43 @@ public class CreateCustomerActivity extends AppCompatActivity {
                         }));
             }
         } else {
-            if (customerFormResumeEntity != null) {
-                disposable.add(Completable.fromAction(() -> localDatabase.getDAO().removeCustomerFormResume(customerFormResumeEntity))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeWith(new DisposableCompletableObserver() {
+            removeCustomerForm();
+        }
+    }
 
-                            @Override
-                            public void onComplete() {
-                                Log.i("customerFormResume", "formDeleted");
-                                disposable.clear();
+    private void removeCustomerForm() {
+        disposable.add(localDatabase.getDAO().getCustomerFormResume()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::removeFormFromLocal,
+                        throwable -> {
+                            if (throwable.getMessage() != null) {
+                                Log.i("customerFormResume", "Error == " + throwable.getMessage());
                             }
+                        }
+                )
+        );
+    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.i("customerFormResume", "Error = > " + e.getMessage());
-                                disposable.clear();
-                            }
-                        }));
-            }
+    private void removeFormFromLocal(CustomerFormResumeEntity entity) {
+        if (entity != null) {
+            disposable.add(Completable.fromAction(() -> localDatabase.getDAO().removeCustomerFormResume(entity))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableCompletableObserver() {
+
+                        @Override
+                        public void onComplete() {
+                            Log.i("customerFormResume", "formDeleted");
+                            disposable.clear();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.i("customerFormResume", "Error = > " + e.getMessage());
+                            disposable.clear();
+                        }
+                    }));
         }
     }
 

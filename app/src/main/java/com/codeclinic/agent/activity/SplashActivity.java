@@ -30,6 +30,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         //Log.i("dbURL", DebugDB.getAddressLog() + " ");
+        //Log.i("currentTime", System.currentTimeMillis()+"");
 
         enableLocationSettings();
     }

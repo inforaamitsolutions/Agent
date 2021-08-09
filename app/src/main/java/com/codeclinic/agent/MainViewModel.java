@@ -90,6 +90,7 @@ public class MainViewModel extends AndroidViewModel {
 
     public MutableLiveData<Boolean> isSessionClear = new MutableLiveData<>();
     public MutableLiveData<Boolean> refreshToken = new MutableLiveData<>();
+    public boolean isViewPagerInitialized = false;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -342,22 +343,6 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-
-    /****************************** Manage Filters Data Section *********************************************/
-
-    public MutableLiveData<List<String>> loanStatusList = new MutableLiveData<>();
-    public MutableLiveData<List<StaffListModel>> staffList = new MutableLiveData<>();
-    public MutableLiveData<List<StatusListModel>> statusesList = new MutableLiveData<>();
-    public MutableLiveData<List<ProductSegmentListModel>> productSegmentList = new MutableLiveData<>();
-    public MutableLiveData<List<ZoneListModel>> zoneList = new MutableLiveData<>();
-    public MutableLiveData<List<MarketListModel>> marketList = new MutableLiveData<>();
-    public MutableLiveData<LeadModel> lead = new MutableLiveData<>();
-    public MutableLiveData<CustomerModel> customer = new MutableLiveData<>();
-    public MutableLiveData<LoanAccountsModel> loanAccounts = new MutableLiveData<>();
-    public MutableLiveData<LoanAccountsByNoModel> loanAccountsByNo = new MutableLiveData<>();
-    public MutableLiveData<List<LoanProductListModel>> productList = new MutableLiveData<>();
-    public MutableLiveData<List<SupplierListModel>> supplierList = new MutableLiveData<>();
-
     public void getPerformanceDataAPI(Map<String, String> params) {
         disposable.add(RestClass.getClient().PERFORMANCE_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken), params)
                 .subscribeOn(Schedulers.io())
@@ -381,9 +366,36 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
+    /****************************** Manage Filters Data Section *********************************************/
+
+    public MutableLiveData<List<String>> loanStatusList = new MutableLiveData<>();
+    public MutableLiveData<List<StaffListModel>> staffList = new MutableLiveData<>();
+    public MutableLiveData<List<StatusListModel>> statusesList = new MutableLiveData<>();
+    public MutableLiveData<List<ProductSegmentListModel>> productSegmentList = new MutableLiveData<>();
+    public MutableLiveData<List<ZoneListModel>> zoneList = new MutableLiveData<>();
+    public MutableLiveData<List<MarketListModel>> marketList = new MutableLiveData<>();
+    public MutableLiveData<LeadModel> lead = new MutableLiveData<>();
+    public MutableLiveData<CustomerModel> customer = new MutableLiveData<>();
+    public MutableLiveData<LoanAccountsModel> loanAccounts = new MutableLiveData<>();
+    public MutableLiveData<LoanAccountsByNoModel> loanAccountsByNo = new MutableLiveData<>();
+    public MutableLiveData<List<LoanProductListModel>> productList = new MutableLiveData<>();
+    public MutableLiveData<List<SupplierListModel>> supplierList = new MutableLiveData<>();
+
+
     public MutableLiveData<List<TimeLineStatusListModel>> timeLineStatusList = new MutableLiveData<>();
 
-    public void getStatusAPI() {
+
+    public void getAllRequiredFiltersData() {
+        getStaffAPI();
+        getZonesAPI();
+        getLoanProductAPI();
+        getSuppliersAPI();
+        getLoanStatusAPI();
+        getStatusAPI();
+        getSegmentsAPI();
+    }
+
+    public synchronized void getStatusAPI() {
         disposable.add(RestClass.getClient().FETCH_STATUSES_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -403,7 +415,7 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public void getMarketsAPI(String parentId) {
+    public synchronized void getMarketsAPI(String parentId) {
         disposable.add(RestClass.getClient().FETCH_MARKETS_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken), parentId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -423,7 +435,7 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public void getSegmentsAPI() {
+    public synchronized void getSegmentsAPI() {
         disposable.add(RestClass.getClient().FETCH_SEGMENTS_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -443,7 +455,7 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public void getZonesAPI() {
+    public synchronized void getZonesAPI() {
         disposable.add(RestClass.getClient().FETCH_ZONES_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -463,7 +475,7 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public void getLeadsAPI(JSONObject jsonObject) {
+    public synchronized void getLeadsAPI(JSONObject jsonObject) {
         disposable.add(RestClass.getClient().GET_LEAD_LIST_MODEL_SINGLE_CALL(
                 sessionManager.getTokenDetails().get(AccessToken), jsonObject.toString())
                 .subscribeOn(Schedulers.io())
@@ -484,7 +496,7 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public void getCustomersAPI(JSONObject jsonObject) {
+    public synchronized void getCustomersAPI(JSONObject jsonObject) {
         disposable.add(RestClass.getClient().GET_CUSTOMER_LIST_MODEL_SINGLE_CALL(
                 sessionManager.getTokenDetails().get(AccessToken), jsonObject.toString())
                 .subscribeOn(Schedulers.io())
@@ -504,7 +516,7 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public void getStaffAPI() {
+    public synchronized void getStaffAPI() {
         disposable.add(RestClass.getClient().FETCH_STAFF_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -524,7 +536,7 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public void getLoanProductAPI() {
+    public synchronized void getLoanProductAPI() {
         disposable.add(RestClass.getClient().FETCH_LOAN_PRODUCT_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -544,7 +556,7 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public void getSuppliersAPI() {
+    public synchronized void getSuppliersAPI() {
         disposable.add(RestClass.getClient().FETCH_SUPPLIER_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -564,7 +576,7 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public void getLoanStatusAPI() {
+    public synchronized void getLoanStatusAPI() {
         disposable.add(RestClass.getClient().FETCH_LOAN_STATUS_MODEL_SINGLE(sessionManager.getTokenDetails().get(AccessToken))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -584,7 +596,7 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public void getTimeLoanStatusAPI(String productID) {
+    public synchronized void getTimeLoanStatusAPI(String productID) {
         disposable.add(RestClass.getClient().FETCH_TIMELINE_STATUS_MODEL_SINGLE(
                 sessionManager.getTokenDetails().get(AccessToken)
                 , productID)

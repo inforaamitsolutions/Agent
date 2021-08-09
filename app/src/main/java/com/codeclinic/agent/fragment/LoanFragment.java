@@ -101,53 +101,6 @@ public class LoanFragment extends Fragment {
         /********************************************* Mandatory Fields *********************************************************/
 
 
-        viewModel.zoneList.observe(getActivity(), list -> {
-            if (list != null) {
-                ArrayAdapter<ZoneListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, list);
-                binding.searchChildView.spZone.setAdapter(adapter);
-                binding.searchChildView.spZone.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        Log.i("parentId", "" + list.get(i).getId());
-                        if (zoneIds.contains(list.get(i).getId() + "")) {
-                            zoneIds.remove(list.get(i).getId() + "");
-                        } else {
-                            zoneIds.add(list.get(i).getId() + "");
-                        }
-                        viewModel.getMarketsAPI(list.get(i).getId() + "");
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
-
-                    }
-                });
-            }
-        });
-
-        viewModel.marketList.observe(getActivity(), list -> {
-            if (list != null) {
-                ArrayAdapter<MarketListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, list);
-                binding.searchChildView.spMarket.setAdapter(adapter);
-                binding.searchChildView.spMarket.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        Log.i("marketId", "" + list.get(i).getId());
-                        if (marketIds.contains(list.get(i).getId() + "")) {
-                            marketIds.remove(list.get(i).getId() + "");
-                        } else {
-                            marketIds.add(list.get(i).getId() + "");
-                        }
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
-
-                    }
-                });
-            }
-        });
-
         viewModel.productList.observe(getActivity(), list -> {
             if (list != null) {
                 ArrayAdapter<LoanProductListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, list);
@@ -245,8 +198,62 @@ public class LoanFragment extends Fragment {
 
         viewModel.staffList.observe(getActivity(), list -> {
             if (list != null) {
+                list.add(0, new StaffListModel("--Select--"));
                 ArrayAdapter<StaffListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, list);
                 binding.searchChildView.spStaff.setAdapter(adapter);
+            }
+        });
+
+        viewModel.zoneList.observe(getActivity(), list -> {
+            if (list != null) {
+                list.add(0, new ZoneListModel("--Select--"));
+                ArrayAdapter<ZoneListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, list);
+                binding.searchChildView.spZone.setAdapter(adapter);
+                binding.searchChildView.spZone.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                        if (i != 0) {
+                            Log.i("parentId", "" + list.get(i).getId());
+                            if (zoneIds.contains(list.get(i).getId() + "")) {
+                                zoneIds.remove(list.get(i).getId() + "");
+                            } else {
+                                zoneIds.add(list.get(i).getId() + "");
+                            }
+                            viewModel.getMarketsAPI(list.get(i).getId() + "");
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+
+                    }
+                });
+            }
+        });
+
+        viewModel.marketList.observe(getActivity(), list -> {
+            if (list != null) {
+                list.add(0, new MarketListModel("--Select--"));
+                ArrayAdapter<MarketListModel> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, list);
+                binding.searchChildView.spMarket.setAdapter(adapter);
+                binding.searchChildView.spMarket.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                        if (i != 0) {
+                            Log.i("marketId", "" + list.get(i).getId());
+                            if (marketIds.contains(list.get(i).getId() + "")) {
+                                marketIds.remove(list.get(i).getId() + "");
+                            } else {
+                                marketIds.add(list.get(i).getId() + "");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+
+                    }
+                });
             }
         });
 
@@ -412,7 +419,9 @@ public class LoanFragment extends Fragment {
 
                         JSONArray jsonGroupArray = new JSONArray();
                         if (binding.searchChildView.spAssignedTo.getSelectedItemPosition() == 1) {
-                            jsonObject.put("staff", viewModel.staffList.getValue().get(binding.searchChildView.spStaff.getSelectedItemPosition()).getId());
+                            if (binding.searchChildView.spStaff.getSelectedItemPosition() != 0) {
+                                jsonObject.put("staff", viewModel.staffList.getValue().get(binding.searchChildView.spStaff.getSelectedItemPosition()).getId());
+                            }
                         } else if (binding.searchChildView.spAssignedTo.getSelectedItemPosition() == 2) {
                            /* jsonGroupArray.put(viewModel.zoneList.getValue().get(binding.searchChildView.spZone.getSelectedItemPosition()).getId());
                             jsonGroupArray.put(viewModel.marketList.getValue().get(binding.searchChildView.spMarket.getSelectedItemPosition()).getId());*/
@@ -422,7 +431,9 @@ public class LoanFragment extends Fragment {
                             for (int i = 0; i < marketIds.size(); i++) {
                                 jsonGroupArray.put(Integer.parseInt(marketIds.get(i)));
                             }
-                            jsonObject.put("groupIds", jsonGroupArray);
+                            if (jsonGroupArray.length() != 0) {
+                                jsonObject.put("groupIds", jsonGroupArray);
+                            }
                         } /*else {
                             jsonObject.put("staff", sessionManager.getUserDetails().get(SessionManager.UserID));
                         }*/
