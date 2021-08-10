@@ -100,6 +100,7 @@ public class SessionManager {
         editor.putString(RefreshExpiresIn, refreshExpiresIn);
         editor.putBoolean(IS_LOGIN, true);
         editor.apply();
+        setTokenTime();
     }
 
     public HashMap<String, String> getTokenDetails() {

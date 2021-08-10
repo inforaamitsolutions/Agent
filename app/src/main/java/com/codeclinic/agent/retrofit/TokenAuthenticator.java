@@ -29,13 +29,14 @@ public class TokenAuthenticator implements Authenticator {
         String oldToken = sessionManager.getTokenDetails().get(AccessToken);
         assert oldToken != null;
         String newToken = callRefreshTokenAPI(response);
+
         return response.request().newBuilder()
                 .header("Authorization", isEmpty(newToken) ? oldToken : newToken)
                 .build();
 
     }
 
-    private synchronized String callRefreshTokenAPI(Response response) {
+    private String callRefreshTokenAPI(Response response) {
         String newToken = "";
         if (!isAPICalled) {
             isAPICalled = true;

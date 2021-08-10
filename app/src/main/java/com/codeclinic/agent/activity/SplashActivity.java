@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -30,7 +31,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         //Log.i("dbURL", DebugDB.getAddressLog() + " ");
-        //Log.i("currentTime", System.currentTimeMillis()+"");
+
 
         enableLocationSettings();
     }
@@ -93,12 +94,18 @@ public class SplashActivity extends AppCompatActivity {
     private void proceedToLogin() {
         if (askLocationPermission(SplashActivity.this)) {
             LocationInfo.getLastLocation(this, null);
-            if (sessionManager.isLoggedIn()) {
-                startActivity(new Intent(this, MainActivity.class));
-            } else {
-                startActivity(new Intent(this, LoginActivity.class));
-            }
-            finish();
+            /*long diff = System.currentTimeMillis() - sessionManager.getTokenTime();
+            Toast.makeText(SplashActivity.this, ""+diff, Toast.LENGTH_LONG).show();*/
+            new Handler().postDelayed(() -> {
+
+                if (sessionManager.isLoggedIn()) {
+                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                } else {
+                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+                }
+                finish();
+            }, 800);
+
         }
     }
 }
