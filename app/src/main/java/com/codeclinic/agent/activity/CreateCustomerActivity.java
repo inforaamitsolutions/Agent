@@ -255,6 +255,14 @@ public class CreateCustomerActivity extends AppCompatActivity {
         layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.setMargins(5, 5, 5, 5);
 
+
+        binding.tvUpdateDocument.setOnClickListener(v -> {
+            checkCustomerExistDialog();
+        });
+        binding.tvUpdateMobile.setOnClickListener(v -> {
+            checkCustomerExistDialog();
+        });
+
         getCustomerFormResume();
     }
 
@@ -268,6 +276,9 @@ public class CreateCustomerActivity extends AppCompatActivity {
             alertDialog.dismiss();
             finish();
         });
+
+        dialogBinding.edtMobileNo.setText(binding.edtMobileNo.getText().toString());
+        dialogBinding.edtDocumentNo.setText(binding.edtDocumentNo.getText().toString());
 
         dialogBinding.btnConfirm.setOnClickListener(view -> {
             if (isEmpty(dialogBinding.edtMobileNo.getText().toString())) {
@@ -295,9 +306,11 @@ public class CreateCustomerActivity extends AppCompatActivity {
                                     binding.edtMobileNo.setText(dialogBinding.edtMobileNo.getText().toString());
                                     binding.edtDocumentNo.setText(dialogBinding.edtDocumentNo.getText().toString());
                                     if (response.getMessage().equals("existing_mobiloan_customer") || response.getMessage().equals("existing_mymobi_customer")) {
+                                        binding.rbYes.setVisibility(View.VISIBLE);
                                         binding.rbYes.setChecked(true);
                                         binding.rbNo.setVisibility(View.GONE);
                                     } else {
+                                        binding.rbNo.setVisibility(View.VISIBLE);
                                         binding.rbNo.setChecked(true);
                                         binding.rbYes.setVisibility(View.GONE);
                                     }
@@ -399,6 +412,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
                             binding.edtMobileNo.setText(form.getNumber());
                             binding.tvBirthDate.setText(form.getBirthDate() + "");
                             binding.tvAge.setText(form.getAge() + "");
+                            binding.tvUpdateMobile.setVisibility(View.VISIBLE);
+                            binding.tvUpdateDocument.setVisibility(View.VISIBLE);
                             if (form.getExist().equals("yes")) {
                                 binding.rbYes.setChecked(true);
                                 binding.rbNo.setVisibility(View.GONE);

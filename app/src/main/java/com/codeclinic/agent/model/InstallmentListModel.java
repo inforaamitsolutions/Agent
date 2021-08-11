@@ -24,31 +24,31 @@ public class InstallmentListModel {
     private Integer paidPrinciple;
     @SerializedName("expectedInterest")
     @Expose
-    private Integer expectedInterest;
+    private double expectedInterest;
     @SerializedName("paidInterest")
     @Expose
-    private Integer paidInterest;
+    private double paidInterest;
     @SerializedName("expectedCharges")
     @Expose
-    private Integer expectedCharges;
+    private double expectedCharges;
     @SerializedName("paidCharges")
     @Expose
-    private Integer paidCharges;
+    private double paidCharges;
     @SerializedName("expectedPenalties")
     @Expose
-    private Integer expectedPenalties;
+    private double expectedPenalties;
     @SerializedName("paidPenalties")
     @Expose
-    private Integer paidPenalties;
+    private double paidPenalties;
     @SerializedName("scheduledPayment")
     @Expose
-    private Integer scheduledPayment;
+    private double scheduledPayment;
     @SerializedName("expectedTotal")
     @Expose
-    private Integer expectedTotal;
+    private double expectedTotal;
     @SerializedName("paidTotal")
     @Expose
-    private Integer paidTotal;
+    private double paidTotal;
     @SerializedName("commenceDate")
     @Expose
     private String commenceDate;
@@ -113,78 +113,6 @@ public class InstallmentListModel {
         this.paidPrinciple = paidPrinciple;
     }
 
-    public Integer getExpectedInterest() {
-        return expectedInterest;
-    }
-
-    public void setExpectedInterest(Integer expectedInterest) {
-        this.expectedInterest = expectedInterest;
-    }
-
-    public Integer getPaidInterest() {
-        return paidInterest;
-    }
-
-    public void setPaidInterest(Integer paidInterest) {
-        this.paidInterest = paidInterest;
-    }
-
-    public Integer getExpectedCharges() {
-        return expectedCharges;
-    }
-
-    public void setExpectedCharges(Integer expectedCharges) {
-        this.expectedCharges = expectedCharges;
-    }
-
-    public Integer getPaidCharges() {
-        return paidCharges;
-    }
-
-    public void setPaidCharges(Integer paidCharges) {
-        this.paidCharges = paidCharges;
-    }
-
-    public Integer getExpectedPenalties() {
-        return expectedPenalties;
-    }
-
-    public void setExpectedPenalties(Integer expectedPenalties) {
-        this.expectedPenalties = expectedPenalties;
-    }
-
-    public Integer getPaidPenalties() {
-        return paidPenalties;
-    }
-
-    public void setPaidPenalties(Integer paidPenalties) {
-        this.paidPenalties = paidPenalties;
-    }
-
-    public Integer getScheduledPayment() {
-        return scheduledPayment;
-    }
-
-    public void setScheduledPayment(Integer scheduledPayment) {
-        this.scheduledPayment = scheduledPayment;
-    }
-
-    public Integer getExpectedTotal() {
-        return expectedTotal;
-    }
-
-    public void setExpectedTotal(Integer expectedTotal) {
-        this.expectedTotal = expectedTotal;
-    }
-
-    public Integer getPaidTotal() {
-        return paidTotal;
-    }
-
-    public void setPaidTotal(Integer paidTotal) {
-        this.paidTotal = paidTotal;
-    }
-
     public String getCommenceDate() {
         return commenceDate;
     }
@@ -223,5 +151,77 @@ public class InstallmentListModel {
 
     public void setInstallmentDays(Integer installmentDays) {
         this.installmentDays = installmentDays;
+    }
+
+    public double getExpectedInterest() {
+        return expectedInterest;
+    }
+
+    public void setExpectedInterest(double expectedInterest) {
+        this.expectedInterest = expectedInterest;
+    }
+
+    public double getPaidInterest() {
+        return paidInterest;
+    }
+
+    public void setPaidInterest(double paidInterest) {
+        this.paidInterest = paidInterest;
+    }
+
+    public double getExpectedCharges() {
+        return expectedCharges;
+    }
+
+    public void setExpectedCharges(double expectedCharges) {
+        this.expectedCharges = expectedCharges;
+    }
+
+    public double getPaidCharges() {
+        return paidCharges;
+    }
+
+    public void setPaidCharges(double paidCharges) {
+        this.paidCharges = paidCharges;
+    }
+
+    public double getExpectedPenalties() {
+        return expectedPenalties;
+    }
+
+    public void setExpectedPenalties(double expectedPenalties) {
+        this.expectedPenalties = expectedPenalties;
+    }
+
+    public double getPaidPenalties() {
+        return paidPenalties;
+    }
+
+    public void setPaidPenalties(double paidPenalties) {
+        this.paidPenalties = paidPenalties;
+    }
+
+    public double getScheduledPayment() {
+        return scheduledPayment;
+    }
+
+    public void setScheduledPayment(double scheduledPayment) {
+        this.scheduledPayment = scheduledPayment;
+    }
+
+    public double getExpectedTotal() {
+        return expectedTotal;
+    }
+
+    public void setExpectedTotal(double expectedTotal) {
+        this.expectedTotal = expectedTotal;
+    }
+
+    public double getPaidTotal() {
+        return paidTotal;
+    }
+
+    public void setPaidTotal(double paidTotal) {
+        this.paidTotal = paidTotal;
     }
 }

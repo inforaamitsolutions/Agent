@@ -25,7 +25,7 @@ public class LoanAccountListModel {
     private Integer loanAccountId;
     @SerializedName("loanAmount")
     @Expose
-    private Integer loanAmount;
+    private double loanAmount;
     @SerializedName("applicationId")
     @Expose
     private Integer applicationId;
@@ -34,16 +34,16 @@ public class LoanAccountListModel {
     private String applicationStatus;
     @SerializedName("loanInterest")
     @Expose
-    private Integer loanInterest;
+    private double loanInterest;
     @SerializedName("loanCharges")
     @Expose
-    private Integer loanCharges;
+    private double loanCharges;
     @SerializedName("loanPenalty")
     @Expose
-    private Integer loanPenalty;
+    private double loanPenalty;
     @SerializedName("runningBalance")
     @Expose
-    private Integer runningBalance;
+    private double runningBalance;
     @SerializedName("commencementDate")
     @Expose
     private String commencementDate;
@@ -120,13 +120,6 @@ public class LoanAccountListModel {
         this.loanAccountId = loanAccountId;
     }
 
-    public Integer getLoanAmount() {
-        return loanAmount;
-    }
-
-    public void setLoanAmount(Integer loanAmount) {
-        this.loanAmount = loanAmount;
-    }
 
     public Integer getApplicationId() {
         return applicationId;
@@ -142,38 +135,6 @@ public class LoanAccountListModel {
 
     public void setApplicationStatus(String applicationStatus) {
         this.applicationStatus = applicationStatus;
-    }
-
-    public Integer getLoanInterest() {
-        return loanInterest;
-    }
-
-    public void setLoanInterest(Integer loanInterest) {
-        this.loanInterest = loanInterest;
-    }
-
-    public Integer getLoanCharges() {
-        return loanCharges;
-    }
-
-    public void setLoanCharges(Integer loanCharges) {
-        this.loanCharges = loanCharges;
-    }
-
-    public Integer getLoanPenalty() {
-        return loanPenalty;
-    }
-
-    public void setLoanPenalty(Integer loanPenalty) {
-        this.loanPenalty = loanPenalty;
-    }
-
-    public Integer getRunningBalance() {
-        return runningBalance;
-    }
-
-    public void setRunningBalance(Integer runningBalance) {
-        this.runningBalance = runningBalance;
     }
 
     public String getCommencementDate() {
@@ -246,5 +207,45 @@ public class LoanAccountListModel {
 
     public void setCustomerPhoneNumber(String customerPhoneNumber) {
         this.customerPhoneNumber = customerPhoneNumber;
+    }
+
+    public double getLoanAmount() {
+        return loanAmount;
+    }
+
+    public void setLoanAmount(double loanAmount) {
+        this.loanAmount = loanAmount;
+    }
+
+    public double getLoanInterest() {
+        return loanInterest;
+    }
+
+    public void setLoanInterest(double loanInterest) {
+        this.loanInterest = loanInterest;
+    }
+
+    public double getLoanCharges() {
+        return loanCharges;
+    }
+
+    public void setLoanCharges(double loanCharges) {
+        this.loanCharges = loanCharges;
+    }
+
+    public double getLoanPenalty() {
+        return loanPenalty;
+    }
+
+    public void setLoanPenalty(double loanPenalty) {
+        this.loanPenalty = loanPenalty;
+    }
+
+    public double getRunningBalance() {
+        return runningBalance;
+    }
+
+    public void setRunningBalance(double runningBalance) {
+        this.runningBalance = runningBalance;
     }
 }

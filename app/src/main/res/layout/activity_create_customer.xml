@@ -149,8 +149,8 @@
                                 android:backgroundTint="#F4F4F4"
                                 android:hint="Enter full name"
                                 android:inputType="text"
-                                android:padding="10dp"
                                 android:maxLength="100"
+                                android:padding="10dp"
                                 android:visibility="visible" />
 
                             <TextView
@@ -163,17 +163,39 @@
                                 android:textSize="15dp"
                                 android:textStyle="bold" />
 
-                            <EditText
-                                android:id="@+id/edtMobileNo"
+                            <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="5dp"
-                                android:background="@drawable/button_bg"
-                                android:backgroundTint="#F4F4F4"
-                                android:hint="Enter mobile number"
-                                android:inputType="number"
-                                android:padding="10dp"
-                                android:visibility="visible" />
+                                android:layout_marginTop="5dp">
+
+                                <EditText
+                                    android:id="@+id/edtMobileNo"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/button_bg"
+                                    android:backgroundTint="#F4F4F4"
+                                    android:hint="Enter mobile number"
+                                    android:inputType="number"
+                                    android:paddingVertical="10dp"
+                                    android:paddingStart="10dp"
+                                    android:paddingEnd="70dp"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:id="@+id/tvUpdateMobile"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:background="?selectableItemBackground"
+                                    android:padding="10dp"
+                                    android:text="Update"
+                                    android:textColor="@color/colorPrimary"
+                                    android:textStyle="bold"
+                                    android:visibility="gone" />
+
+
+                            </RelativeLayout>
 
 
                             <TextView
@@ -186,17 +208,37 @@
                                 android:textSize="15dp"
                                 android:textStyle="bold" />
 
-                            <EditText
-                                android:id="@+id/edtDocumentNo"
+                            <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="5dp"
-                                android:background="@drawable/button_bg"
-                                android:backgroundTint="#F4F4F4"
-                                android:hint="Enter document number"
-                                android:inputType="number"
-                                android:padding="10dp"
-                                android:visibility="visible" />
+                                android:layout_marginTop="5dp">
+
+                                <EditText
+                                    android:id="@+id/edtDocumentNo"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/button_bg"
+                                    android:backgroundTint="#F4F4F4"
+                                    android:hint="Enter document number"
+                                    android:inputType="number"
+                                    android:paddingVertical="10dp"
+                                    android:paddingStart="10dp"
+                                    android:paddingEnd="70dp"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:id="@+id/tvUpdateDocument"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:background="?selectableItemBackground"
+                                    android:padding="10dp"
+                                    android:text="Update"
+                                    android:textColor="@color/colorPrimary"
+                                    android:textStyle="bold"
+                                    android:visibility="gone" />
+                            </RelativeLayout>
 
                             <TextView
                                 android:layout_width="match_parent"

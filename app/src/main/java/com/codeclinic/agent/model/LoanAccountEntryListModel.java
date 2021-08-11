@@ -18,7 +18,7 @@ public class LoanAccountEntryListModel {
     private String transactionType;
     @SerializedName("amount")
     @Expose
-    private Integer amount;
+    private double amount;
     @SerializedName("referenceNo")
     @Expose
     private String referenceNo;
@@ -73,13 +73,6 @@ public class LoanAccountEntryListModel {
         this.transactionType = transactionType;
     }
 
-    public Integer getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Integer amount) {
-        this.amount = amount;
-    }
 
     public String getReferenceNo() {
         return referenceNo;
@@ -135,5 +128,13 @@ public class LoanAccountEntryListModel {
 
     public void setNarrative(Object narrative) {
         this.narrative = narrative;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 }
