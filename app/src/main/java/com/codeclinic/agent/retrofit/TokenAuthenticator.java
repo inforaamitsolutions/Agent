@@ -1,5 +1,11 @@
 package com.codeclinic.agent.retrofit;
 
+import static android.text.TextUtils.isEmpty;
+import static com.codeclinic.agent.utils.SessionManager.AccessToken;
+import static com.codeclinic.agent.utils.SessionManager.RefreshToken;
+import static com.codeclinic.agent.utils.SessionManager.UName;
+import static com.codeclinic.agent.utils.SessionManager.sessionManager;
+
 import android.util.Log;
 
 import com.codeclinic.agent.model.LoginModel;
@@ -12,12 +18,6 @@ import okhttp3.Authenticator;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.Route;
-
-import static android.text.TextUtils.isEmpty;
-import static com.codeclinic.agent.utils.SessionManager.AccessToken;
-import static com.codeclinic.agent.utils.SessionManager.RefreshToken;
-import static com.codeclinic.agent.utils.SessionManager.UName;
-import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 public class TokenAuthenticator implements Authenticator {
 
@@ -71,9 +71,9 @@ public class TokenAuthenticator implements Authenticator {
             }
         }
 
-        if (!isEmpty(newToken)) {
+      /*  if (!isEmpty(newToken)) {
             isAPICalled = false;
-        }
+        }*/
 
         return newToken;
     }

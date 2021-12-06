@@ -1,9 +1,13 @@
 package com.codeclinic.agent.activity;
 
+import static com.codeclinic.agent.utils.CommonMethods.askLocationPermission;
+import static com.codeclinic.agent.utils.SessionManager.sessionManager;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -17,9 +21,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
-
-import static com.codeclinic.agent.utils.CommonMethods.askLocationPermission;
-import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -96,8 +97,16 @@ public class SplashActivity extends AppCompatActivity {
             /*long diff = System.currentTimeMillis() - sessionManager.getTokenTime();
             Toast.makeText(SplashActivity.this, ""+diff, Toast.LENGTH_LONG).show();*/
             /*new Handler().postDelayed(() -> { }, 800);*/
+
+            long timeDiff = System.currentTimeMillis() - sessionManager.getTokenTime();
+            Log.i("timeDiff", timeDiff + "");
             if (sessionManager.isLoggedIn()) {
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                if ((timeDiff > 3600000 || timeDiff == 0)) {
+                    sessionManager.logoutUser();
+                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+                } else {
+                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                }
             } else {
                 startActivity(new Intent(SplashActivity.this, LoginActivity.class));
             }
