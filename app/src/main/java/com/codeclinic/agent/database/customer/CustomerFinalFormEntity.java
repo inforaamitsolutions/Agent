@@ -14,6 +14,14 @@ public class CustomerFinalFormEntity {
     @Expose
     private long mainId;
 
+    @ColumnInfo(name = "name")
+    @Expose
+    private String name;
+
+    @ColumnInfo(name = "number")
+    @Expose
+    private String number;
+
     @ColumnInfo(name = "request")
     @Expose
     private String request;
@@ -24,6 +32,22 @@ public class CustomerFinalFormEntity {
 
     public void setMainId(long mainId) {
         this.mainId = mainId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
     }
 
     public String getRequest() {

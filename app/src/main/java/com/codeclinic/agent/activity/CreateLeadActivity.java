@@ -1,5 +1,14 @@
 package com.codeclinic.agent.activity;
 
+import static android.text.TextUtils.isEmpty;
+import static com.codeclinic.agent.database.LocalDatabase.localDatabase;
+import static com.codeclinic.agent.utils.CommonMethods.datePicker;
+import static com.codeclinic.agent.utils.CommonMethods.isPermissionGranted;
+import static com.codeclinic.agent.utils.Constants.ACCESS_CAMERA_GALLERY;
+import static com.codeclinic.agent.utils.Constants.ACCESS_SIGNATURE;
+import static com.codeclinic.agent.utils.Constants.PICTURE_PATH;
+import static com.codeclinic.agent.utils.SessionManager.sessionManager;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
@@ -60,15 +69,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-
-import static android.text.TextUtils.isEmpty;
-import static com.codeclinic.agent.database.LocalDatabase.localDatabase;
-import static com.codeclinic.agent.utils.CommonMethods.datePicker;
-import static com.codeclinic.agent.utils.CommonMethods.isPermissionGranted;
-import static com.codeclinic.agent.utils.Constants.ACCESS_CAMERA_GALLERY;
-import static com.codeclinic.agent.utils.Constants.ACCESS_SIGNATURE;
-import static com.codeclinic.agent.utils.Constants.PICTURE_PATH;
-import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 public class CreateLeadActivity extends AppCompatActivity {
 
@@ -241,6 +241,7 @@ public class CreateLeadActivity extends AppCompatActivity {
             extractLeadFromLocal();
         });
         builder.setNegativeButton("No", (dialog, id) -> {
+            getSurveyForm();
             dialog.dismiss();
 
         });
@@ -351,6 +352,7 @@ public class CreateLeadActivity extends AppCompatActivity {
                     if (binding.llQuestions.getVisibility() == View.VISIBLE) {
                         binding.llQuestions.setVisibility(View.GONE);
                         binding.linearUserDetail.setVisibility(View.VISIBLE);
+                        manageResumeForm();
                     } else {
                         addAnswers();
                         surveyQuestions.put(surveyPage, answeredQuestions);

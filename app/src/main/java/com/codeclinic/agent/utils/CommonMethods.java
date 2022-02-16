@@ -300,6 +300,23 @@ public class CommonMethods {
         return Integer.toString(ageInt);
     }
 
+    private static final String[] okFileExtensions = new String[]{
+            "jpg",
+            "png",
+            "gif",
+            "jpeg"
+    };
+
+
+    public static boolean isImage(File file) {
+        for (String extension : okFileExtensions) {
+            if (file.getName().toLowerCase().endsWith(extension)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static ArrayList<Date> getDayForWholeYear(String weekDay) {
         ArrayList<Date> arrList = new ArrayList();
 
