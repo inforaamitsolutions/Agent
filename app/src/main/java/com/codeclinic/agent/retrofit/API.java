@@ -29,6 +29,7 @@ import com.codeclinic.agent.model.lead.LeadSubmitFormModel;
 import com.codeclinic.agent.model.leadInfo.LeadInfoModel;
 import com.codeclinic.agent.model.leadInfo.LeadInteractionHistoryModel;
 import com.codeclinic.agent.model.leadList.LeadModel;
+import com.codeclinic.agent.model.product.ProductModel;
 import com.codeclinic.agent.model.supplier.FetchSupplierFormModel;
 import com.codeclinic.agent.model.user.UserModel;
 
@@ -83,6 +84,15 @@ public interface API {
     @Headers("Content-Type: application/json")
     @GET("baseapi/staffservice/staff-performance/getPerformanceSummary")
     Single<PerformanceModel> PERFORMANCE_MODEL_SINGLE(@Header("Authorization") String header, @QueryMap Map<String, String> paramsMap);
+
+    /****************************************** Get Products And Survey Name  *****************************************************/
+
+
+    //All Products List API
+    @Headers("Content-Type: application/json")
+    @GET("customer/customerState/getProductAndSurveyNameByStaffId")
+    Single<ProductModel> callProductsListAPI(@Header("Authorization") String header, @Query("staffId") String staffID);
+
 
     /****************************************** Dynamic Lead Customer Business and Supplier Forms  *****************************************************/
 

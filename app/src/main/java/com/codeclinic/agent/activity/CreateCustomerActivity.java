@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -31,10 +32,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.codeclinic.agent.MainViewModel;
 import com.codeclinic.agent.R;
 import com.codeclinic.agent.adapter.FormSummaryModel;
 import com.codeclinic.agent.adapter.SummaryFormAdapter;
@@ -42,6 +45,7 @@ import com.codeclinic.agent.database.customer.CustomerFinalFormEntity;
 import com.codeclinic.agent.database.customer.CustomerFormResumeEntity;
 import com.codeclinic.agent.databinding.ActivityCreateCustomerBinding;
 import com.codeclinic.agent.databinding.CheckCustomerDialogBinding;
+import com.codeclinic.agent.databinding.ProductDialogBinding;
 import com.codeclinic.agent.model.CheckCustomerExistModel;
 import com.codeclinic.agent.model.ImageUploadModel;
 import com.codeclinic.agent.model.customer.CustomerOptionsListModel;
@@ -49,6 +53,8 @@ import com.codeclinic.agent.model.customer.CustomerQuestionToFollowModel;
 import com.codeclinic.agent.model.customer.CustomerQuestionsListModel;
 import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
 import com.codeclinic.agent.model.customer.CustomerSurveyDefinitionPageModel;
+import com.codeclinic.agent.model.product.ProductListModel;
+import com.codeclinic.agent.model.product.ProductModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.AccessMediaUtil;
 import com.codeclinic.agent.utils.Connection_Detector;
@@ -96,6 +102,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
     int surveyPage = 0, questionPage = 0, questionToFollowPage = -1, radioButtonTextSize, edtHeight;
     ArrayAdapter spAdapter;
     AlertDialog alertDialog;
+    MainViewModel viewModel;
 
     List<CustomerSurveyDefinitionPageModel> surveyPagesList = new ArrayList<>();
     List<FormSummaryModel> summaryList = new ArrayList<>();
@@ -118,6 +125,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_create_customer);
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         StrictMode
                 .setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
@@ -279,6 +287,105 @@ public class CreateCustomerActivity extends AppCompatActivity {
         getCustomerFormResume();
     }
 
+    @SuppressLint("SetTextI18n")
+    private void getCustomerFormResume() {
+        disposable.add(Single.fromCallable(this::checkFormSavedInDB)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((isExist) -> {
+                    if (isExist) {
+                        askToContinueDraftForm();
+                    } else {
+                        if (Connection_Detector.isInternetAvailable(this)) {
+                            callProductListAPI();
+                        } else {
+                            Toast.makeText(this, "Not able to fetch the product please check the internet connection", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }));
+    }
+
+    public void callProductListAPI() {
+        binding.loadingView.loader.setVisibility(View.VISIBLE);
+
+        String token = sessionManager.getTokenDetails().get(SessionManager.AccessToken);
+        String staffID = sessionManager.getUserDetails().get(SessionManager.UserID);
+        Log.i("reqParams", "Token : " + token + "  \n Staff Id : " + staffID);
+
+
+        disposable.add(RestClass.getClient().callProductsListAPI(token, staffID)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<ProductModel>() {
+                    @Override
+                    public void onSuccess(@NonNull ProductModel productModel) {
+                        binding.loadingView.loader.setVisibility(View.GONE);
+                        if (productModel.getSuccessStatus().equals("success")) {
+                            showProductDialog(productModel.getBody());
+                        } else {
+                            Toast.makeText(CreateCustomerActivity.this, productModel.getMessage() + " ", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        binding.loadingView.loader.setVisibility(View.GONE);
+                        Log.i("response", e.getMessage() + "");
+                        Toast.makeText(CreateCustomerActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }));
+    }
+
+    public void showProductDialog(List<ProductListModel> products) {
+
+        ViewGroup viewGroup = findViewById(android.R.id.content);
+        ProductDialogBinding dialogBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.product_dialog, viewGroup, false);
+
+        dialogBinding.imgClose.setOnClickListener(v -> {
+            alertDialog.dismiss();
+            finish();
+        });
+
+
+        ArrayAdapter<ProductListModel> spAdapter = new ArrayAdapter<>(CreateCustomerActivity.this, R.layout.spinner_item_view, products);
+        dialogBinding.spProduct.setAdapter(spAdapter);
+        dialogBinding.spProduct.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        viewModel.formFetchingComplete.observe(this, result -> {
+            dialogBinding.btnDone.setVisibility(result.isLoading() ? View.GONE : View.VISIBLE);
+            if (result.getMessage().equals("Done")) {
+                alertDialog.dismiss();
+                if (Connection_Detector.isInternetAvailable(this)) {
+                    checkCustomerExistDialog();
+                }
+                getSurveyForm();
+            }
+        });
+
+
+        dialogBinding.btnDone.setOnClickListener(v -> {
+            viewModel.callCustomerFormWithProduct(products.get(dialogBinding.spProduct.getSelectedItemPosition()).getSurveyActions().get(0).getSurveyName());
+        });
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(dialogBinding.getRoot());
+
+        alertDialog = builder.create();
+        alertDialog.setCancelable(false);
+        alertDialog.show();
+
+    }
+
     @SuppressLint("CheckResult")
     public void checkCustomerExistDialog() {
 
@@ -371,23 +478,6 @@ public class CreateCustomerActivity extends AppCompatActivity {
                         }
                 )
         );
-    }
-
-    @SuppressLint("SetTextI18n")
-    private void getCustomerFormResume() {
-        disposable.add(Single.fromCallable(this::checkFormSavedInDB)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((isExist) -> {
-                    if (isExist) {
-                        askToContinueDraftForm();
-                    } else {
-                        if (Connection_Detector.isInternetAvailable(this)) {
-                            checkCustomerExistDialog();
-                        }
-                        getSurveyForm();
-                    }
-                }));
     }
 
     private void askToContinueDraftForm() {
@@ -573,7 +663,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
             }
         }
 
-        Log.i("formReq", "Summary List is => " + new Gson().toJson(summaryList));
+        //Log.i("formReq", "Summary List is => " + new Gson().toJson(summaryList));
 
         binding.recyclerViewSummary.setAdapter(new SummaryFormAdapter(summaryList, this));
 
@@ -604,19 +694,21 @@ public class CreateCustomerActivity extends AppCompatActivity {
                         JSONArray jsonArray = new JSONArray();
 
                         Map<Integer, String> mapAnswered = surveyQuestions.get(i);
-
-
                         assert mapAnswered != null;
                         for (Map.Entry<Integer, String> entry : mapAnswered.entrySet()) {
                             String value = entry.getValue();
                             JSONObject object = new JSONObject();
+
+                            String key = surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldName();
+                            Log.d("answeredValues", "Key : " + key + "  Value : " + value);
+
                             object.put("fieldName", surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldName());
+
                             if (surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("image")
                                     || surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("signature")
                                     || surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("file")
                             ) {
                                 object.put("responseText", uploadImage(value));
-
                             } else {
                                 object.put("responseText", value);
                             }
@@ -624,6 +716,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
                             if ((surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_one")
                                     || surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_multiple"))) {
+
                                 List<CustomerOptionsListModel> options = surveyPagesList.get(i).getQuestions().get(entry.getKey()).getOptions();
 
                                 for (int j = 0; j < options.size(); j++) {
@@ -638,15 +731,19 @@ public class CreateCustomerActivity extends AppCompatActivity {
                                                 if (questionToFollowAnswered != null) {
                                                     for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
                                                         JSONObject jObject = new JSONObject();
+
+                                                        String subKey = options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName();
+                                                        Log.d("answeredValues", "SubKey : " + subKey + "  SubValue : " + value);
+
                                                         jObject.put("fieldName", options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName());
+
                                                         if (options.get(j).getQuestionToFollow().get(item.getKey()).getFieldType().equals("image")
                                                                 || options.get(j).getQuestionToFollow().get(item.getKey()).getFieldType().equals("signature")
                                                                 || options.get(j).getQuestionToFollow().get(item.getKey()).getFieldType().equals("file")
                                                         ) {
                                                             jObject.put("responseText", uploadImage(item.getValue()));
-
                                                         } else {
-                                                            jObject.put("responseText", value);
+                                                            jObject.put("responseText", item.getValue());
                                                         }
                                                         jsonArray.put(jObject);
                                                     }
@@ -660,11 +757,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
                                 }
                             }
                         }
-
                         jsonObject1.put(surveyPagesList.get(i).getPageName(), jsonArray);
-
                     }
-
                     jsonArrayPages.put(jsonObject1);
                     jsonObject.put("pages", jsonArrayPages);
 
@@ -672,7 +766,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                Log.i("formReq", jsonObject.toString());
+                //Log.i("formReq", jsonObject.toString());
+                //logLargeString(jsonObject.toString());
 
                 if (Connection_Detector.isInternetAvailable(CreateCustomerActivity.this)) {
                     disposable.add(RestClass.getClient().CUSTOMER_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
@@ -711,7 +806,18 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
     }
 
-    synchronized String uploadImage(String path) {
+    void logLargeString(String data) {
+        final int CHUNK_SIZE = 4076;  // Typical max logcat payload.4076
+        int offset = 0;
+        while (offset + CHUNK_SIZE <= data.length()) {
+            Log.d("formReq", data.substring(offset, offset += CHUNK_SIZE));
+        }
+        if (offset < data.length()) {
+            Log.d("formReq", data.substring(offset));
+        }
+    }
+
+    String uploadImage(String path) {
 
         RequestBody mobileNo = RequestBody.create(MediaType.parse("text/plain"), binding.edtMobileNo.getText().toString());
         RequestBody businessName = RequestBody.create(MediaType.parse("text/plain"), " ");
@@ -943,7 +1049,13 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
             binding.tvDate.setVisibility(View.VISIBLE);
 
-            binding.tvDate.setText(LocationInfo.location.getLongitude() + "," + LocationInfo.location.getLatitude());
+            if (LocationInfo.location != null) {
+
+                binding.tvDate.setText(LocationInfo.location.getLongitude() + "," + LocationInfo.location.getLatitude());
+            } else {
+                binding.tvDate.setText(0.00 + "," + 0.00);
+
+            }
 
             if (surveyQuestions.containsKey(surveyPage)) {
                 Map<Integer, String> data = surveyQuestions.get(surveyPage);

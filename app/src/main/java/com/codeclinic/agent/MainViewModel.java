@@ -1,5 +1,15 @@
 package com.codeclinic.agent;
 
+import static com.codeclinic.agent.database.LocalDatabase.localDatabase;
+import static com.codeclinic.agent.utils.Constants.CUSTOMER_FRAGMENT;
+import static com.codeclinic.agent.utils.Constants.HOME_FRAGMENT;
+import static com.codeclinic.agent.utils.Constants.LEAD_FRAGMENT;
+import static com.codeclinic.agent.utils.Constants.LOAN_FRAGMENT;
+import static com.codeclinic.agent.utils.SessionManager.AccessToken;
+import static com.codeclinic.agent.utils.SessionManager.RefreshToken;
+import static com.codeclinic.agent.utils.SessionManager.UserName;
+import static com.codeclinic.agent.utils.SessionManager.sessionManager;
+
 import android.app.Application;
 import android.util.Log;
 
@@ -65,16 +75,6 @@ import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.codeclinic.agent.database.LocalDatabase.localDatabase;
-import static com.codeclinic.agent.utils.Constants.CUSTOMER_FRAGMENT;
-import static com.codeclinic.agent.utils.Constants.HOME_FRAGMENT;
-import static com.codeclinic.agent.utils.Constants.LEAD_FRAGMENT;
-import static com.codeclinic.agent.utils.Constants.LOAN_FRAGMENT;
-import static com.codeclinic.agent.utils.SessionManager.AccessToken;
-import static com.codeclinic.agent.utils.SessionManager.RefreshToken;
-import static com.codeclinic.agent.utils.SessionManager.UserName;
-import static com.codeclinic.agent.utils.SessionManager.sessionManager;
-
 public class MainViewModel extends AndroidViewModel {
 
     private final Application application;
@@ -138,6 +138,37 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
+    public void callCustomerFormWithProduct(String surveyName) {
+        /*"Customer Registration Form"*/
+        formFetchingComplete.postValue(new LoadingResult(" ", true));
+        disposable.add(RestClass.getClient().FETCH_CUSTOMER_FORM_MODEL_SINGLE(
+                sessionManager.getTokenDetails().get(AccessToken),
+                surveyName)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<FetchCustomerFormModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull FetchCustomerFormModel response) {
+                        if (response.getBody() != null) {
+                            List<CustomerSurveyDefinitionPageModel> surveyPagesList = response.getBody().getSurveyDefinitionPages();
+                            if (surveyPagesList != null) {
+                                addCustomerSurveyFormWithProduct(response.getBody());
+                            }
+                        } else {
+                            Log.i("customerForm", "Response Error " + response.getSuccessStatus());
+                            formFetchingComplete.postValue(new LoadingResult("Response Error " + response.getSuccessStatus() + " ", false));
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("customerForm", "Server Error " + e.getMessage());
+                        formFetchingComplete.postValue(new LoadingResult("Response Error " + e.getMessage() + " ", false));
+                    }
+                }));
+    }
+
     public void callRefreshToken() {
         /*"Customer Registration Form"*/
         JSONObject jsonObject = new JSONObject();
@@ -163,6 +194,26 @@ public class MainViewModel extends AndroidViewModel {
                     public void onError(@io.reactivex.annotations.NonNull Throwable e) {
                         Log.i("refreshToken", "Server Error " + e.getMessage());
                         refreshToken.postValue(false);
+                    }
+                }));
+    }
+
+    private void addCustomerSurveyFormWithProduct(FetchCustomerFormBodyModel customerForm) {
+        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                .addCustomerSurveyForm(customerForm))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.i("customerForm", "added to local");
+                        formFetchingComplete.postValue(new LoadingResult("Done", false));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("customerForm", "Error  ==  " + e.getMessage());
+                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", false));
                     }
                 }));
     }
