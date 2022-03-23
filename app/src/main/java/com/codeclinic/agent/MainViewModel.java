@@ -99,8 +99,39 @@ public class MainViewModel extends AndroidViewModel {
 
     /****************************** Home Screen Data Section *********************************************/
 
+    public void callRefreshToken() {
+        /*"Customer Registration Form"*/
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("refreshToken", sessionManager.getTokenDetails().get(RefreshToken));
+            jsonObject.put("userName", sessionManager.getUserDetails().get(UserName));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        disposable.add(RestClass.getClient().REFRESH_TOKEN_SINGLE_CALL(jsonObject.toString())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<LoginModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull LoginModel response) {
+                        sessionManager.setUserSession("Bearer " + response.getAccessToken(), sessionManager.getUserDetails().get(UserName),
+                                response.getExpiresIn() + "", response.getRefreshToken(), response.getRefreshExpiresIn() + "");
+                        refreshToken.postValue(true);
+
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("refreshToken", "Server Error " + e.getMessage());
+                        refreshToken.postValue(false);
+                    }
+                }));
+    }
 
     public MutableLiveData<PerformanceModel> performanceData = new MutableLiveData<>();
+
+
+    /************** Customer Form Section ****************/
 
     public void callCustomerForm() {
         /*"Customer Registration Form"*/
@@ -138,6 +169,26 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
+    private void addCustomerSurveyForm(FetchCustomerFormBodyModel customerForm) {
+        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                .addCustomerSurveyForm(customerForm))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.i("customerForm", "added to local");
+                        callLeadForm();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("customerForm", "Error  ==  " + e.getMessage());
+                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", true));
+                    }
+                }));
+    }
+
     public void callCustomerFormWithProduct(String surveyName) {
         /*"Customer Registration Form"*/
         formFetchingComplete.postValue(new LoadingResult(" ", true));
@@ -169,35 +220,6 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    public void callRefreshToken() {
-        /*"Customer Registration Form"*/
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("refreshToken", sessionManager.getTokenDetails().get(RefreshToken));
-            jsonObject.put("userName", sessionManager.getUserDetails().get(UserName));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        disposable.add(RestClass.getClient().REFRESH_TOKEN_SINGLE_CALL(jsonObject.toString())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<LoginModel>() {
-                    @Override
-                    public void onSuccess(@io.reactivex.annotations.NonNull LoginModel response) {
-                        sessionManager.setUserSession("Bearer " + response.getAccessToken(), sessionManager.getUserDetails().get(UserName),
-                                response.getExpiresIn() + "", response.getRefreshToken(), response.getRefreshExpiresIn() + "");
-                        refreshToken.postValue(true);
-
-                    }
-
-                    @Override
-                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-                        Log.i("refreshToken", "Server Error " + e.getMessage());
-                        refreshToken.postValue(false);
-                    }
-                }));
-    }
-
     private void addCustomerSurveyFormWithProduct(FetchCustomerFormBodyModel customerForm) {
         disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
                 .addCustomerSurveyForm(customerForm))
@@ -218,25 +240,8 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
-    private void addCustomerSurveyForm(FetchCustomerFormBodyModel customerForm) {
-        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
-                .addCustomerSurveyForm(customerForm))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        Log.i("customerForm", "added to local");
-                        callLeadForm();
-                    }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.i("customerForm", "Error  ==  " + e.getMessage());
-                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", true));
-                    }
-                }));
-    }
+    /************** Lead Form Section ****************/
 
     public void callLeadForm() {
         disposable.add(RestClass.getClient().FETCH_LEAD_FORM_MODEL_SINGLE(
@@ -290,6 +295,61 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
+    public void callLeadFormWithProduct(String surveyName) {
+        formFetchingComplete.postValue(new LoadingResult(" ", true));
+        disposable.add(RestClass.getClient().FETCH_LEAD_FORM_MODEL_SINGLE(
+                sessionManager.getTokenDetails().get(AccessToken),
+                surveyName)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<FetchLeadFormModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull FetchLeadFormModel response) {
+                        if (response.getBody() != null) {
+                            List<LeadSurveyDefinitionPageModel> surveyPagesList = response.getBody().getSurveyDefinitionPages();
+                            if (surveyPagesList != null) {
+                                addLeadSurveyFormWithProduct(response.getBody());
+                            } else {
+                                formFetchingComplete.postValue(new LoadingResult("Response Error " + response.getSuccessStatus() + " ", false));
+                            }
+
+                        } else {
+                            Log.i("leadForm", "Server Error " + response.getSuccessStatus());
+                            formFetchingComplete.postValue(new LoadingResult("Response Error " + response.getSuccessStatus() + " ", false));
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("leadForm", "Server Error " + e.getMessage());
+                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", false));
+                    }
+                }));
+    }
+
+    private void addLeadSurveyFormWithProduct(FetchLeadFormBodyModel entity) {
+        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                .addLeadSurveyForm(entity))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.i("LeadSurveyForm", "added to local");
+                        formFetchingComplete.postValue(new LoadingResult("Done", false));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("LeadSurveyForm", "Error  ==  " + e.getMessage());
+                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", false));
+                    }
+                }));
+    }
+
+    /************** Business Data Form Section ****************/
+
     public void callBusinessDataForm() {
         disposable.add(RestClass.getClient().FETCH_BUSINESS_DATA_FORM_MODEL_SINGLE(
                 sessionManager.getTokenDetails().get(AccessToken),
@@ -342,6 +402,62 @@ public class MainViewModel extends AndroidViewModel {
                 }));
     }
 
+    public void callBusinessDataFormWithProduct(String surveyName) {
+        formFetchingComplete.postValue(new LoadingResult(" ", true));
+        disposable.add(RestClass.getClient().FETCH_BUSINESS_DATA_FORM_MODEL_SINGLE(
+                sessionManager.getTokenDetails().get(AccessToken),
+                surveyName)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<FetchBusinessDataFormModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull FetchBusinessDataFormModel response) {
+                        if (response.getBody() != null) {
+                            List<BusinessDataSurveyDefinitionPageModel> surveyPagesList = response.getBody().getSurveyDefinitionPages();
+                            if (surveyPagesList != null) {
+                                addBusinessDataSurveyFormWithProduct(response.getBody());
+                            } else {
+                                formFetchingComplete.postValue(new LoadingResult("Response Error " + response.getSuccessStatus() + " ", false));
+                            }
+
+                        } else {
+                            Log.i("BusinessDataForm", "Server Error " + response.getSuccessStatus());
+                            formFetchingComplete.postValue(new LoadingResult("Response Error " + response.getSuccessStatus() + " ", false));
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("BusinessDataForm", "Server Error " + e.getMessage());
+                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", false));
+                    }
+                }));
+    }
+
+    private void addBusinessDataSurveyFormWithProduct(FetchBusinessDataFormBodyModel entity) {
+        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                .addBusinessDataSurveyForm(entity))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.i("BusinessDateSurveyForm", "added to local");
+                        formFetchingComplete.postValue(new LoadingResult("Done", false));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("BusinessDateSurveyForm", "Error  ==  " + e.getMessage());
+                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", false));
+                    }
+                }));
+    }
+
+
+    /************** Supplier Update Form Section ****************/
+
     public void callSupplierForm() {
         disposable.add(RestClass.getClient().FETCH_SUPPLIER_FORM_MODEL_SINGLE(
                 sessionManager.getTokenDetails().get(AccessToken),
@@ -390,6 +506,59 @@ public class MainViewModel extends AndroidViewModel {
                     public void onError(Throwable e) {
                         Log.i("SupplierForm", "Error  ==  " + e.getMessage());
                         formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", true));
+                    }
+                }));
+    }
+
+    public void callSupplierFormWithProduct(String surveyName) {
+        formFetchingComplete.postValue(new LoadingResult(" ", true));
+        disposable.add(RestClass.getClient().FETCH_SUPPLIER_FORM_MODEL_SINGLE(
+                sessionManager.getTokenDetails().get(AccessToken),
+                surveyName)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<FetchSupplierFormModel>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull FetchSupplierFormModel response) {
+                        if (response.getBody() != null) {
+                            List<SupplierSurveyDefinitionPageModel> surveyPagesList = response.getBody().getSurveyDefinitionPages();
+                            if (surveyPagesList != null) {
+                                addSupplierSurveyFormWithProduct(response.getBody());
+                            } else {
+                                formFetchingComplete.postValue(new LoadingResult("Response Error " + response.getSuccessStatus() + " ", false));
+                            }
+
+                        } else {
+                            Log.i("SupplierForm", "Server Error " + response.getSuccessStatus());
+                            formFetchingComplete.postValue(new LoadingResult("Response Error " + response.getSuccessStatus() + " ", false));
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.i("SupplierForm", "Server Error " + e.getMessage());
+                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", false));
+                    }
+                }));
+    }
+
+    private void addSupplierSurveyFormWithProduct(FetchSupplierBodyModel entity) {
+        disposable.add(Completable.fromAction(() -> localDatabase.getDAO()
+                .addSupplierSurveyForm(entity))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.i("SupplierForm", "added to local");
+                        formFetchingComplete.postValue(new LoadingResult("Done", false));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("SupplierForm", "Error  ==  " + e.getMessage());
+                        formFetchingComplete.postValue(new LoadingResult(e.getMessage() + " ", false));
                     }
                 }));
     }

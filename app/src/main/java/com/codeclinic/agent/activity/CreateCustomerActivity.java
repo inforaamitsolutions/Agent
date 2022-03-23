@@ -313,7 +313,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
         Log.i("reqParams", "Token : " + token + "  \n Staff Id : " + staffID);
 
 
-        disposable.add(RestClass.getClient().callProductsListAPI(token, staffID)
+        disposable.add(RestClass.getClient().callProductsListAPI(token, 6 + "")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<ProductModel>() {
@@ -322,6 +322,9 @@ public class CreateCustomerActivity extends AppCompatActivity {
                         binding.loadingView.loader.setVisibility(View.GONE);
                         if (productModel.getSuccessStatus().equals("success")) {
                             showProductDialog(productModel.getBody());
+                        } else if (productModel.getSuccessStatus().equals("error")) {
+                            finish();
+                            Toast.makeText(CreateCustomerActivity.this, productModel.getMessage() + " ", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(CreateCustomerActivity.this, productModel.getMessage() + " ", Toast.LENGTH_SHORT).show();
                         }
@@ -331,6 +334,9 @@ public class CreateCustomerActivity extends AppCompatActivity {
                     public void onError(@NonNull Throwable e) {
                         binding.loadingView.loader.setVisibility(View.GONE);
                         Log.i("response", e.getMessage() + "");
+                        if (e.getMessage().contains("404")) {
+                            finish();
+                        }
                         Toast.makeText(CreateCustomerActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }));
@@ -411,7 +417,6 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 Toast.makeText(this, "Please enter valid ID number", Toast.LENGTH_SHORT).show();
             } else {
                 loadingDialog.showProgressDialog("");
-
                 disposable.add(RestClass.getClient().CHECK_CUSTOMER_EXIST_MODEL_SINGLE(sessionManager.getTokenDetails().get(SessionManager.AccessToken),
                         dialogBinding.edtDocumentNo.getText().toString(),
                         dialogBinding.edtMobileNo.getText().toString())
@@ -488,7 +493,12 @@ public class CreateCustomerActivity extends AppCompatActivity {
         });
         builder.setNegativeButton("No", (dialog, id) -> {
             dialog.dismiss();
-            checkCustomerExistDialog();
+            if (Connection_Detector.isInternetAvailable(this)) {
+                callProductListAPI();
+            } else {
+                Toast.makeText(this, "Not able to fetch the product please check the internet connection", Toast.LENGTH_SHORT).show();
+            }
+
         });
         AlertDialog dialog = builder.create();
         dialog.setCancelable(false);

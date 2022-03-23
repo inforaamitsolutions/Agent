@@ -17,8 +17,10 @@ import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -27,21 +29,26 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.codeclinic.agent.MainViewModel;
 import com.codeclinic.agent.R;
 import com.codeclinic.agent.adapter.FormSummaryModel;
 import com.codeclinic.agent.adapter.SummaryFormAdapter;
 import com.codeclinic.agent.database.lead.LeadFinalFormEntity;
 import com.codeclinic.agent.database.lead.LeadFormResumeEntity;
 import com.codeclinic.agent.databinding.ActivityCreateLeadBinding;
+import com.codeclinic.agent.databinding.ProductDialogBinding;
 import com.codeclinic.agent.model.lead.LeadOptionsListModel;
 import com.codeclinic.agent.model.lead.LeadQuestionToFollowModel;
 import com.codeclinic.agent.model.lead.LeadQuestionsListModel;
 import com.codeclinic.agent.model.lead.LeadSubmitFormModel;
 import com.codeclinic.agent.model.lead.LeadSurveyDefinitionPageModel;
+import com.codeclinic.agent.model.product.ProductListModel;
+import com.codeclinic.agent.model.product.ProductModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.AccessMediaUtil;
 import com.codeclinic.agent.utils.Connection_Detector;
@@ -74,6 +81,9 @@ public class CreateLeadActivity extends AppCompatActivity {
 
     ActivityCreateLeadBinding binding;
 
+    AlertDialog alertDialog;
+    MainViewModel viewModel;
+
     CompositeDisposable disposable = new CompositeDisposable();
     LeadFormResumeEntity leadFormResumeEntity;
 
@@ -99,6 +109,8 @@ public class CreateLeadActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_create_lead);
+
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         binding.headerLayout.imgBack.setVisibility(View.VISIBLE);
         binding.headerLayout.txtHeading.setText("Create Lead");
@@ -229,9 +241,95 @@ public class CreateLeadActivity extends AppCompatActivity {
                     if (isExist) {
                         askToContinueDraftForm();
                     } else {
-                        getSurveyForm();
+                        if (Connection_Detector.isInternetAvailable(this)) {
+                            callProductListAPI();
+                        } else {
+                            Toast.makeText(this, "Not able to fetch the product please check the internet connection", Toast.LENGTH_SHORT).show();
+                        }
+                        //getSurveyForm();
                     }
                 }));
+    }
+
+    public void callProductListAPI() {
+        binding.loadingView.loader.setVisibility(View.VISIBLE);
+
+        String token = sessionManager.getTokenDetails().get(SessionManager.AccessToken);
+        String staffID = sessionManager.getUserDetails().get(SessionManager.UserID);
+        Log.i("reqParams", "Token : " + token + "  \n Staff Id : " + staffID);
+
+
+        disposable.add(RestClass.getClient().callProductsListAPI(token, staffID)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<ProductModel>() {
+                    @Override
+                    public void onSuccess(@NonNull ProductModel productModel) {
+                        binding.loadingView.loader.setVisibility(View.GONE);
+                        if (productModel.getSuccessStatus().equals("success")) {
+                            showProductDialog(productModel.getBody());
+                        } else if (productModel.getSuccessStatus().equals("error")) {
+                            finish();
+                            Toast.makeText(CreateLeadActivity.this, productModel.getMessage() + " ", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(CreateLeadActivity.this, productModel.getMessage() + " ", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        binding.loadingView.loader.setVisibility(View.GONE);
+                        Log.i("response", e.getMessage() + "");
+                        Toast.makeText(CreateLeadActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }));
+    }
+
+    public void showProductDialog(List<ProductListModel> products) {
+
+        ViewGroup viewGroup = findViewById(android.R.id.content);
+        ProductDialogBinding dialogBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.product_dialog, viewGroup, false);
+
+        dialogBinding.imgClose.setOnClickListener(v -> {
+            alertDialog.dismiss();
+            finish();
+        });
+
+
+        ArrayAdapter<ProductListModel> spAdapter = new ArrayAdapter<>(CreateLeadActivity.this, R.layout.spinner_item_view, products);
+        dialogBinding.spProduct.setAdapter(spAdapter);
+        dialogBinding.spProduct.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        viewModel.formFetchingComplete.observe(this, result -> {
+            dialogBinding.btnDone.setVisibility(result.isLoading() ? View.GONE : View.VISIBLE);
+            if (result.getMessage().equals("Done")) {
+                alertDialog.dismiss();
+                getSurveyForm();
+            }
+        });
+
+
+        dialogBinding.btnDone.setOnClickListener(v -> {
+            viewModel.callLeadFormWithProduct(products.get(dialogBinding.spProduct.getSelectedItemPosition()).getSurveyActions().get(1).getSurveyName());
+        });
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(dialogBinding.getRoot());
+
+        alertDialog = builder.create();
+        alertDialog.setCancelable(false);
+        alertDialog.show();
+
     }
 
     private void askToContinueDraftForm() {
@@ -241,8 +339,12 @@ public class CreateLeadActivity extends AppCompatActivity {
             extractLeadFromLocal();
         });
         builder.setNegativeButton("No", (dialog, id) -> {
-            getSurveyForm();
             dialog.dismiss();
+            if (Connection_Detector.isInternetAvailable(this)) {
+                callProductListAPI();
+            } else {
+                Toast.makeText(this, "Not able to fetch the product please check the internet connection", Toast.LENGTH_SHORT).show();
+            }
 
         });
         AlertDialog dialog = builder.create();

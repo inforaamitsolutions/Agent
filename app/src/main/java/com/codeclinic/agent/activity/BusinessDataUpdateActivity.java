@@ -1,5 +1,15 @@
 package com.codeclinic.agent.activity;
 
+import static android.text.TextUtils.isEmpty;
+import static com.codeclinic.agent.database.LocalDatabase.localDatabase;
+import static com.codeclinic.agent.utils.CommonMethods.datePicker;
+import static com.codeclinic.agent.utils.CommonMethods.isPermissionGranted;
+import static com.codeclinic.agent.utils.Constants.ACCESS_CAMERA_GALLERY;
+import static com.codeclinic.agent.utils.Constants.ACCESS_SIGNATURE;
+import static com.codeclinic.agent.utils.Constants.CustomerID;
+import static com.codeclinic.agent.utils.Constants.PICTURE_PATH;
+import static com.codeclinic.agent.utils.SessionManager.sessionManager;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
@@ -8,8 +18,10 @@ import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -18,21 +30,26 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.codeclinic.agent.MainViewModel;
 import com.codeclinic.agent.R;
 import com.codeclinic.agent.adapter.FormSummaryModel;
 import com.codeclinic.agent.adapter.SummaryFormAdapter;
 import com.codeclinic.agent.database.business.BusinessDataFinalFormEntity;
 import com.codeclinic.agent.database.business.BusinessFormResumeEntity;
 import com.codeclinic.agent.databinding.ActivityBusinessDataUpdateBinding;
+import com.codeclinic.agent.databinding.ProductDialogBinding;
 import com.codeclinic.agent.model.businesDataUpdate.BusinessDataOptionsListModel;
 import com.codeclinic.agent.model.businesDataUpdate.BusinessDataQuestionListModel;
 import com.codeclinic.agent.model.businesDataUpdate.BusinessDataQuestionToFollowModel;
 import com.codeclinic.agent.model.businesDataUpdate.BusinessDataSubmitModel;
 import com.codeclinic.agent.model.businesDataUpdate.BusinessDataSurveyDefinitionPageModel;
+import com.codeclinic.agent.model.product.ProductListModel;
+import com.codeclinic.agent.model.product.ProductModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.AccessMediaUtil;
 import com.codeclinic.agent.utils.Connection_Detector;
@@ -61,16 +78,6 @@ import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
-import static android.text.TextUtils.isEmpty;
-import static com.codeclinic.agent.database.LocalDatabase.localDatabase;
-import static com.codeclinic.agent.utils.CommonMethods.datePicker;
-import static com.codeclinic.agent.utils.CommonMethods.isPermissionGranted;
-import static com.codeclinic.agent.utils.Constants.ACCESS_CAMERA_GALLERY;
-import static com.codeclinic.agent.utils.Constants.ACCESS_SIGNATURE;
-import static com.codeclinic.agent.utils.Constants.CustomerID;
-import static com.codeclinic.agent.utils.Constants.PICTURE_PATH;
-import static com.codeclinic.agent.utils.SessionManager.sessionManager;
-
 public class BusinessDataUpdateActivity extends AppCompatActivity {
 
     private final CompositeDisposable disposable = new CompositeDisposable();
@@ -90,11 +97,16 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
     private HashMap<Integer, Map<Integer, String>> optionQuestions = new LinkedHashMap<>();
     private LinearLayout.LayoutParams layoutParams;
 
+    AlertDialog alertDialog;
+    MainViewModel viewModel;
+
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_business_data_update);
+
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         binding.headerLayout.imgBack.setVisibility(View.VISIBLE);
         binding.headerLayout.txtHeading.setText("Business Data Update");
@@ -223,9 +235,95 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
                     if (isExist) {
                         askToContinueDraftForm();
                     } else {
-                        getSurveyForm();
+                        if (Connection_Detector.isInternetAvailable(this)) {
+                            callProductListAPI();
+                        } else {
+                            Toast.makeText(this, "Not able to fetch the product please check the internet connection", Toast.LENGTH_SHORT).show();
+                        }
+                        //getSurveyForm();
                     }
                 }));
+    }
+
+    public void callProductListAPI() {
+        binding.loadingView.loader.setVisibility(View.VISIBLE);
+
+        String token = sessionManager.getTokenDetails().get(SessionManager.AccessToken);
+        String staffID = sessionManager.getUserDetails().get(SessionManager.UserID);
+        Log.i("reqParams", "Token : " + token + "  \n Staff Id : " + staffID);
+
+
+        disposable.add(RestClass.getClient().callProductsListAPI(token, staffID)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<ProductModel>() {
+                    @Override
+                    public void onSuccess(@NonNull ProductModel productModel) {
+                        binding.loadingView.loader.setVisibility(View.GONE);
+                        if (productModel.getSuccessStatus().equals("success")) {
+                            showProductDialog(productModel.getBody());
+                        } else if (productModel.getSuccessStatus().equals("error")) {
+                            finish();
+                            Toast.makeText(BusinessDataUpdateActivity.this, productModel.getMessage() + " ", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(BusinessDataUpdateActivity.this, productModel.getMessage() + " ", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        binding.loadingView.loader.setVisibility(View.GONE);
+                        Log.i("response", e.getMessage() + "");
+                        Toast.makeText(BusinessDataUpdateActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }));
+    }
+
+    public void showProductDialog(List<ProductListModel> products) {
+
+        ViewGroup viewGroup = findViewById(android.R.id.content);
+        ProductDialogBinding dialogBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.product_dialog, viewGroup, false);
+
+        dialogBinding.imgClose.setOnClickListener(v -> {
+            alertDialog.dismiss();
+            finish();
+        });
+
+
+        ArrayAdapter<ProductListModel> spAdapter = new ArrayAdapter<>(BusinessDataUpdateActivity.this, R.layout.spinner_item_view, products);
+        dialogBinding.spProduct.setAdapter(spAdapter);
+        dialogBinding.spProduct.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        viewModel.formFetchingComplete.observe(this, result -> {
+            dialogBinding.btnDone.setVisibility(result.isLoading() ? View.GONE : View.VISIBLE);
+            if (result.getMessage().equals("Done")) {
+                alertDialog.dismiss();
+                getSurveyForm();
+            }
+        });
+
+
+        dialogBinding.btnDone.setOnClickListener(v -> {
+            viewModel.callBusinessDataFormWithProduct(products.get(dialogBinding.spProduct.getSelectedItemPosition()).getSurveyActions().get(2).getSurveyName());
+        });
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(dialogBinding.getRoot());
+
+        alertDialog = builder.create();
+        alertDialog.setCancelable(false);
+        alertDialog.show();
+
     }
 
     private void askToContinueDraftForm() {
@@ -236,6 +334,11 @@ public class BusinessDataUpdateActivity extends AppCompatActivity {
         });
         builder.setNegativeButton("No", (dialog, id) -> {
             dialog.dismiss();
+            if (Connection_Detector.isInternetAvailable(this)) {
+                callProductListAPI();
+            } else {
+                Toast.makeText(this, "Not able to fetch the product please check the internet connection", Toast.LENGTH_SHORT).show();
+            }
         });
         AlertDialog dialog = builder.create();
         dialog.setCancelable(false);
