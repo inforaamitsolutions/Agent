@@ -325,12 +325,9 @@ public class CreateLeadActivity extends AppCompatActivity {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(dialogBinding.getRoot());
-
-
         alertDialog = builder.create();
         alertDialog.setCancelable(false);
         alertDialog.show();
-
     }
 
     private void askToContinueDraftForm() {
