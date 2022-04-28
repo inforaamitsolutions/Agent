@@ -6,6 +6,7 @@ import static com.codeclinic.agent.utils.CommonMethods.datePicker;
 import static com.codeclinic.agent.utils.CommonMethods.isPermissionGranted;
 import static com.codeclinic.agent.utils.Constants.ACCESS_CAMERA_GALLERY;
 import static com.codeclinic.agent.utils.Constants.ACCESS_SIGNATURE;
+import static com.codeclinic.agent.utils.Constants.CreateLead;
 import static com.codeclinic.agent.utils.Constants.PICTURE_PATH;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
@@ -49,6 +50,7 @@ import com.codeclinic.agent.model.lead.LeadSubmitFormModel;
 import com.codeclinic.agent.model.lead.LeadSurveyDefinitionPageModel;
 import com.codeclinic.agent.model.product.ProductListModel;
 import com.codeclinic.agent.model.product.ProductModel;
+import com.codeclinic.agent.model.product.SurveyActionListModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.AccessMediaUtil;
 import com.codeclinic.agent.utils.Connection_Detector;
@@ -103,6 +105,8 @@ public class CreateLeadActivity extends AppCompatActivity {
     LinearLayout.LayoutParams layoutParams;
 
     boolean isSubmitForm = false, isFormSubmitted = false, isSignatureSelection = false;
+
+    String surveyName = "";
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -320,7 +324,14 @@ public class CreateLeadActivity extends AppCompatActivity {
 
 
         dialogBinding.btnDone.setOnClickListener(v -> {
-            viewModel.callLeadFormWithProduct(products.get(dialogBinding.spProduct.getSelectedItemPosition()).getSurveyActions().get(1).getSurveyName());
+            List<SurveyActionListModel> surveyActions = products.get(dialogBinding.spProduct.getSelectedItemPosition()).getSurveyActions();
+            for (int i = 0; i < surveyActions.size(); i++) {
+                if (surveyActions.get(i).getAction().equals(CreateLead)) {
+                    surveyName = surveyActions.get(i).getSurveyName();
+                    break;
+                }
+            }
+            viewModel.callLeadFormWithProduct(surveyName);
         });
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -482,7 +493,8 @@ public class CreateLeadActivity extends AppCompatActivity {
             jsonObject.put("middleName", binding.edtMiddleName.getText().toString());
             jsonObject.put("staffId", sessionManager.getUserDetails().get(SessionManager.UserID));
             jsonObject.put("status", "COMPLETED");
-            jsonObject.put("surveyName", "lead_registration_form");
+            jsonObject.put("surveyName", surveyName);
+            //jsonObject.put("surveyName", "lead_registration_form");
 
             JSONArray jsonArrayPages = new JSONArray();
             JSONObject jsonObject1 = new JSONObject();
@@ -566,7 +578,7 @@ public class CreateLeadActivity extends AppCompatActivity {
                         @Override
                         public void onError(@NonNull Throwable e) {
                             binding.loadingView.loader.setVisibility(View.GONE);
-                            Toast.makeText(CreateLeadActivity.this, "Server Error" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CreateLeadActivity.this, "Server Error " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }));
         } else {

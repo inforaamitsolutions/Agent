@@ -14,8 +14,12 @@ import java.util.List;
 @Entity(tableName = "BusinessDataFormBody")
 public class FetchBusinessDataFormBodyModel {
 
-    @ColumnInfo(name = "bodyId")
+    @ColumnInfo(name = "mainId")
     @PrimaryKey(autoGenerate = false)
+    @Expose
+    private long mainId;
+
+    @ColumnInfo(name = "bodyId")
     @SerializedName("id")
     @Expose
     private Integer id;
@@ -69,6 +73,14 @@ public class FetchBusinessDataFormBodyModel {
     @Expose
     @TypeConverters(BusinessDataSurveyPageConverter.class)
     private List<BusinessDataSurveyDefinitionPageModel> surveyDefinitionPages = null;
+
+    public long getMainId() {
+        return mainId;
+    }
+
+    public void setMainId(long mainId) {
+        this.mainId = mainId;
+    }
 
     public Integer getId() {
         return id;

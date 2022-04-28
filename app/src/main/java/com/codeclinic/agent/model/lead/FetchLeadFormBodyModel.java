@@ -14,8 +14,12 @@ import java.util.List;
 @Entity(tableName = "LeadFormBody")
 public class FetchLeadFormBodyModel {
 
-    @ColumnInfo(name = "bodyId")
+    @ColumnInfo(name = "mainId")
     @PrimaryKey(autoGenerate = false)
+    @Expose
+    private long mainId;
+
+    @ColumnInfo(name = "bodyId")
     @SerializedName("id")
     @Expose
     private Integer id;
@@ -70,6 +74,15 @@ public class FetchLeadFormBodyModel {
     @Expose
     @TypeConverters(LeadSurveyPageTypeConverter.class)
     private List<LeadSurveyDefinitionPageModel> surveyDefinitionPages = null;
+
+
+    public long getMainId() {
+        return mainId;
+    }
+
+    public void setMainId(long mainId) {
+        this.mainId = mainId;
+    }
 
     public Integer getId() {
         return id;

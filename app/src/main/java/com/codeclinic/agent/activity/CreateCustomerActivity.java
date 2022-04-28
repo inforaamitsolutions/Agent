@@ -7,6 +7,7 @@ import static com.codeclinic.agent.utils.CommonMethods.datePicker;
 import static com.codeclinic.agent.utils.CommonMethods.isPermissionGranted;
 import static com.codeclinic.agent.utils.Constants.ACCESS_CAMERA_GALLERY;
 import static com.codeclinic.agent.utils.Constants.ACCESS_SIGNATURE;
+import static com.codeclinic.agent.utils.Constants.CreateCustomer;
 import static com.codeclinic.agent.utils.Constants.PICTURE_PATH;
 import static com.codeclinic.agent.utils.Constants.SIGNATURE_PATH;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
@@ -55,6 +56,7 @@ import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
 import com.codeclinic.agent.model.customer.CustomerSurveyDefinitionPageModel;
 import com.codeclinic.agent.model.product.ProductListModel;
 import com.codeclinic.agent.model.product.ProductModel;
+import com.codeclinic.agent.model.product.SurveyActionListModel;
 import com.codeclinic.agent.retrofit.RestClass;
 import com.codeclinic.agent.utils.AccessMediaUtil;
 import com.codeclinic.agent.utils.Connection_Detector;
@@ -117,6 +119,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
     boolean isSubmitForm = false, isFormSubmitted = false, isSignatureSelection = false;
     private ChooserDialog chooserDialog;
     private LoadingDialog loadingDialog;
+
+    String surveyName = "";
 
 
     @SuppressLint("SetTextI18n")
@@ -313,7 +317,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
         Log.i("reqParams", "Token : " + token + "  \n Staff Id : " + staffID);
 
 
-        disposable.add(RestClass.getClient().callProductsListAPI(token, 6 + "")
+        disposable.add(RestClass.getClient().callProductsListAPI(token, staffID)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<ProductModel>() {
@@ -380,7 +384,14 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
 
         dialogBinding.btnDone.setOnClickListener(v -> {
-            viewModel.callCustomerFormWithProduct(products.get(dialogBinding.spProduct.getSelectedItemPosition()).getSurveyActions().get(0).getSurveyName());
+            List<SurveyActionListModel> surveyActions = products.get(dialogBinding.spProduct.getSelectedItemPosition()).getSurveyActions();
+            for (int i = 0; i < surveyActions.size(); i++) {
+                if (surveyActions.get(i).getAction().equals(CreateCustomer)) {
+                    surveyName = surveyActions.get(i).getSurveyName();
+                    break;
+                }
+            }
+            viewModel.callCustomerFormWithProduct(surveyName);
         });
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -696,7 +707,8 @@ public class CreateCustomerActivity extends AppCompatActivity {
                     jsonObject.put("existingCustomer", binding.rbYes.isChecked() ? "existing" : "new");
                     jsonObject.put("staffId", sessionManager.getUserDetails().get(SessionManager.UserID));
                     jsonObject.put("status", "COMPLETED");
-                    jsonObject.put("surveyName", "customer_registration_form");
+                    jsonObject.put("surveyName", surveyName);
+                    //jsonObject.put("surveyName", "customer_registration_form");
 
                     JSONArray jsonArrayPages = new JSONArray();
                     JSONObject jsonObject1 = new JSONObject();

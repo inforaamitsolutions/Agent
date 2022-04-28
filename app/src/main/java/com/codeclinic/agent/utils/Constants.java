@@ -23,4 +23,9 @@ public class Constants {
     public static String DueFollowUp = "dueFollowUp";
     public static String PromiseToPays = "promiseToPays";
 
+    //Survey actions
+    public static String CreateCustomer = "createCustomer";
+    public static String CreateLead = "createLead";
+    public static String BusinessUpdate = "businessUpdate";
+    public static String SupplierUpdate = "supplierUpdate";
 }

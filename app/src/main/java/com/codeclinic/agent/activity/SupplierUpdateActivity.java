@@ -8,6 +8,7 @@ import static com.codeclinic.agent.utils.Constants.ACCESS_CAMERA_GALLERY;
 import static com.codeclinic.agent.utils.Constants.ACCESS_SIGNATURE;
 import static com.codeclinic.agent.utils.Constants.CustomerID;
 import static com.codeclinic.agent.utils.Constants.PICTURE_PATH;
+import static com.codeclinic.agent.utils.Constants.SupplierUpdate;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 import android.annotation.SuppressLint;
@@ -46,6 +47,7 @@ import com.codeclinic.agent.databinding.ProductDialogBinding;
 import com.codeclinic.agent.model.businesDataUpdate.BusinessDataSubmitModel;
 import com.codeclinic.agent.model.product.ProductListModel;
 import com.codeclinic.agent.model.product.ProductModel;
+import com.codeclinic.agent.model.product.SurveyActionListModel;
 import com.codeclinic.agent.model.supplier.SupplierOptionsListModel;
 import com.codeclinic.agent.model.supplier.SupplierQuestionListModel;
 import com.codeclinic.agent.model.supplier.SupplierQuestionToFollowModel;
@@ -100,6 +102,8 @@ public class SupplierUpdateActivity extends AppCompatActivity {
 
     AlertDialog alertDialog;
     MainViewModel viewModel;
+
+    String surveyName = "";
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -317,7 +321,14 @@ public class SupplierUpdateActivity extends AppCompatActivity {
 
 
         dialogBinding.btnDone.setOnClickListener(v -> {
-            viewModel.callSupplierFormWithProduct(products.get(dialogBinding.spProduct.getSelectedItemPosition()).getSurveyActions().get(3).getSurveyName());
+            List<SurveyActionListModel> surveyActions = products.get(dialogBinding.spProduct.getSelectedItemPosition()).getSurveyActions();
+            for (int i = 0; i < surveyActions.size(); i++) {
+                if (surveyActions.get(i).getAction().equals(SupplierUpdate)) {
+                    surveyName = surveyActions.get(i).getSurveyName();
+                    break;
+                }
+            }
+            viewModel.callSupplierFormWithProduct(surveyName);
         });
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -409,7 +420,8 @@ public class SupplierUpdateActivity extends AppCompatActivity {
             jsonObject.put("middleName", binding.edtMiddleName.getText().toString());
             jsonObject.put("staffId", sessionManager.getUserDetails().get(SessionManager.UserID));
             jsonObject.put("status", "COMPLETED");
-            jsonObject.put("surveyName", "supplier_update_form");
+            jsonObject.put("surveyName", surveyName);
+            //jsonObject.put("surveyName", "supplier_update_form");
 
             JSONArray jsonArrayPages = new JSONArray();
             JSONObject jsonObject1 = new JSONObject();
