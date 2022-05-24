@@ -155,6 +155,10 @@ public class SupplierUpdateActivity extends AppCompatActivity {
                 }
 
             }
+
+            if (surveyQuestions.containsKey(surveyPage)) {
+                answeredQuestions = surveyQuestions.get(surveyPage);
+            }
             updatePage();
         });
 
@@ -366,6 +370,7 @@ public class SupplierUpdateActivity extends AppCompatActivity {
                 .subscribe(form -> {
                             if (form != null) {
                                 supplierFormResumeEntity = form;
+                                surveyName = supplierFormResumeEntity.getSurveyName();
                                 surveyQuestions = new Gson().fromJson(form.getSurveyQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
                                 }.getType());
                                 if (!isEmpty(form.getOptionQuestions())) {
@@ -1403,6 +1408,7 @@ public class SupplierUpdateActivity extends AppCompatActivity {
             if (!surveyQuestions.isEmpty()) {
                 SupplierFormResumeEntity entity = new SupplierFormResumeEntity();
                 entity.setMainId(0);
+                entity.setSurveyName(surveyName);
                 entity.setSurveyQuestions(new Gson().toJson(surveyQuestions));
                 entity.setOptionQuestions(optionQuestions.isEmpty() ? "" : new Gson().toJson(optionQuestions));
                 disposable.add(Completable.fromAction(() -> localDatabase.getDAO()

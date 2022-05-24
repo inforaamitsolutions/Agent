@@ -13,6 +13,10 @@ public class CustomerFormResumeEntity {
     @Expose
     private long mainId;
 
+    @ColumnInfo(name = "surveyName")
+    @Expose
+    private String surveyName;
+
     @ColumnInfo(name = "name")
     @Expose
     private String name;
@@ -51,6 +55,15 @@ public class CustomerFormResumeEntity {
 
     public void setMainId(long mainId) {
         this.mainId = mainId;
+    }
+
+
+    public String getSurveyName() {
+        return surveyName;
+    }
+
+    public void setSurveyName(String surveyName) {
+        this.surveyName = surveyName;
     }
 
     public String getName() {

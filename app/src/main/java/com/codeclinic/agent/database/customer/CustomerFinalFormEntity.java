@@ -18,6 +18,10 @@ public class CustomerFinalFormEntity {
     @Expose
     private String name;
 
+    @ColumnInfo(name = "surveyName")
+    @Expose
+    private String surveyName;
+
     @ColumnInfo(name = "number")
     @Expose
     private String number;
@@ -32,6 +36,15 @@ public class CustomerFinalFormEntity {
 
     public void setMainId(long mainId) {
         this.mainId = mainId;
+    }
+
+
+    public String getSurveyName() {
+        return surveyName;
+    }
+
+    public void setSurveyName(String surveyName) {
+        this.surveyName = surveyName;
     }
 
     public String getName() {

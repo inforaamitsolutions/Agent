@@ -16,6 +16,9 @@ public class LeadFormResumeEntity {
     @ColumnInfo(name = "surveyQue")
     @Expose
     private String surveyQuestions;
+    @ColumnInfo(name = "surveyName")
+    @Expose
+    private String surveyName;
 
     @ColumnInfo(name = "optionQue")
     @Expose
@@ -35,6 +38,14 @@ public class LeadFormResumeEntity {
 
     public void setSurveyQuestions(String surveyQuestions) {
         this.surveyQuestions = surveyQuestions;
+    }
+
+    public String getSurveyName() {
+        return surveyName;
+    }
+
+    public void setSurveyName(String surveyName) {
+        this.surveyName = surveyName;
     }
 
     public String getOptionQuestions() {

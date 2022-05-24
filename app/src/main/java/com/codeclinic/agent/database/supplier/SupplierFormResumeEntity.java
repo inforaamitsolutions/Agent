@@ -17,6 +17,10 @@ public class SupplierFormResumeEntity {
     @Expose
     private String surveyQuestions;
 
+    @ColumnInfo(name = "surveyName")
+    @Expose
+    private String surveyName;
+
     @ColumnInfo(name = "optionQue")
     @Expose
     private String optionQuestions;
@@ -35,6 +39,14 @@ public class SupplierFormResumeEntity {
 
     public void setSurveyQuestions(String surveyQuestions) {
         this.surveyQuestions = surveyQuestions;
+    }
+
+    public String getSurveyName() {
+        return surveyName;
+    }
+
+    public void setSurveyName(String surveyName) {
+        this.surveyName = surveyName;
     }
 
     public String getOptionQuestions() {

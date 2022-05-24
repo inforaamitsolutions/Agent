@@ -154,6 +154,11 @@ public class CreateLeadActivity extends AppCompatActivity {
 
                 }
             }
+
+            if (surveyQuestions.containsKey(surveyPage)) {
+                answeredQuestions = surveyQuestions.get(surveyPage);
+            }
+
             updatePage();
         });
 
@@ -368,6 +373,7 @@ public class CreateLeadActivity extends AppCompatActivity {
                 .subscribe(form -> {
                             if (form != null) {
                                 leadFormResumeEntity = form;
+                                surveyName = leadFormResumeEntity.getSurveyName();
                                 surveyQuestions = new Gson().fromJson(form.getSurveyQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
                                 }.getType());
                                 if (!isEmpty(form.getOptionQuestions())) {
@@ -1418,6 +1424,7 @@ public class CreateLeadActivity extends AppCompatActivity {
             if (!surveyQuestions.isEmpty()) {
                 LeadFormResumeEntity entity = new LeadFormResumeEntity();
                 entity.setMainId(0);
+                entity.setSurveyName(surveyName);
                 entity.setSurveyQuestions(new Gson().toJson(surveyQuestions));
                 entity.setOptionQuestions(optionQuestions.isEmpty() ? "" : new Gson().toJson(optionQuestions));
                 disposable.add(Completable.fromAction(() -> localDatabase.getDAO()

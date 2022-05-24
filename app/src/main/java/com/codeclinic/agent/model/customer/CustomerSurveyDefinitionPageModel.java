@@ -25,7 +25,7 @@ public class CustomerSurveyDefinitionPageModel {
     private Integer id;
 
     @ColumnInfo(name = "surveyTitle")
-    @SerializedName("title")
+    @SerializedName("pageTitle")
     @Expose
     private String title;
 

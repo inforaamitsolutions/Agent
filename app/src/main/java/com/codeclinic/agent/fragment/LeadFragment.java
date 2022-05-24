@@ -1,5 +1,7 @@
 package com.codeclinic.agent.fragment;
 
+import static android.text.TextUtils.isEmpty;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,8 +34,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.text.TextUtils.isEmpty;
 
 public class LeadFragment extends Fragment {
 
@@ -190,6 +190,7 @@ public class LeadFragment extends Fragment {
         binding.searchChildView.spDefaultSearch.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                binding.searchChildView.edtSearch.setText("");
                 if (i == 4) {
                     binding.searchChildView.llAdvancedSearch.setVisibility(View.VISIBLE);
                     binding.searchChildView.llDefaultSearchInputs.setVisibility(View.GONE);

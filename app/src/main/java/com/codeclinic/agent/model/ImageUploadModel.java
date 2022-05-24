@@ -7,6 +7,9 @@ public class ImageUploadModel {
     @SerializedName("successStatus")
     @Expose
     private String successStatus;
+    @SerializedName("message")
+    @Expose
+    private String message;
     @SerializedName("responseCode")
     @Expose
     private Integer responseCode;
@@ -39,6 +42,10 @@ public class ImageUploadModel {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     public String getHttpStatus() {

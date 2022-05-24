@@ -1,5 +1,10 @@
 package com.codeclinic.agent.activity;
 
+import static android.text.TextUtils.isEmpty;
+import static com.codeclinic.agent.utils.CommonMethods.datePicker;
+import static com.codeclinic.agent.utils.Constants.CustomerID;
+import static com.codeclinic.agent.utils.SessionManager.sessionManager;
+
 import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
@@ -28,6 +33,7 @@ import com.codeclinic.agent.model.InteractionCategoryListModel;
 import com.codeclinic.agent.model.InteractionCategoryModel;
 import com.codeclinic.agent.model.SubmitInteractionRecordModel;
 import com.codeclinic.agent.retrofit.RestClass;
+import com.codeclinic.agent.utils.LocationInfo;
 import com.codeclinic.agent.utils.SessionManager;
 
 import org.json.JSONArray;
@@ -44,11 +50,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-
-import static android.text.TextUtils.isEmpty;
-import static com.codeclinic.agent.utils.CommonMethods.datePicker;
-import static com.codeclinic.agent.utils.Constants.CustomerID;
-import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 public class AddInteractionActivity extends AppCompatActivity implements InteractionCategoryListAdapter.SelectCategoryCallBack {
     ActivityAddInteractionBinding binding;
@@ -76,6 +77,9 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
 
         customerID = getIntent().getStringExtra(CustomerID);
         Log.i("customerID", customerID + " ");
+
+
+        LocationInfo.getLastLocation(this, null);
 
         binding.recyclerViewCategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
 
@@ -186,6 +190,21 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
             spAdapter = new ArrayAdapter(AddInteractionActivity.this, R.layout.spinner_item_view, fieldList.get(fieldQuestionPosition).getInteractionFieldOptionList());
             binding.spLabel.setAdapter(spAdapter);
 
+        } else if (fieldList.get(fieldQuestionPosition).getFieldType().equals("geopoint")) {
+
+            binding.tvDate.setVisibility(View.VISIBLE);
+
+            if (LocationInfo.location != null) {
+                if (fieldList.get(fieldQuestionPosition).getName().equals("longitude")) {
+                    binding.tvDate.setText(LocationInfo.location.getLongitude() + "");
+                } else {
+                    binding.tvDate.setText("" + LocationInfo.location.getLatitude());
+                }
+            } else {
+                binding.tvDate.setText(0.00 + "," + 0.00);
+
+            }
+
         } else if (fieldList.get(fieldQuestionPosition).getFieldType().equals("textField")) {
 
             binding.edtAnswer.getText().clear();
@@ -277,6 +296,12 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
             Log.i("answered", binding.tvDate.getText().toString() + "");
             answeredQuestions.put(fieldQuestionPosition, binding.tvDate.getText().toString());
 
+        } else if (fieldList.get(fieldQuestionPosition).getFieldType().equals("geopoint")) {
+
+            Log.i("answered", binding.tvDate.getText().toString() + "");
+            answeredQuestions.put(fieldQuestionPosition, binding.tvDate.getText().toString());
+
+
         } else {
             Log.i("answered", binding.edtAnswer.getText().toString() + "");
             answeredQuestions.put(fieldQuestionPosition, binding.edtAnswer.getText().toString());
@@ -315,6 +340,7 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
         return true;
     }
 
+    @SuppressLint("SetTextI18n")
     private void submitInteraction() {
         binding.loadingView.loader.setVisibility(View.VISIBLE);
         JSONObject jsonObject = new JSONObject();
@@ -324,12 +350,19 @@ public class AddInteractionActivity extends AppCompatActivity implements Interac
             jsonObject.put("customerId", customerID);
             jsonObject.put("interactionCategoryName", selectedInteractionCategory.getName());
             jsonObject.put("interactionTypeName", binding.typeSpinner.getSelectedItem().toString());
+            jsonObject.put("createdBy", sessionManager.getUserDetails().get(SessionManager.UserID));
+            jsonObject.put("staffId", sessionManager.getUserDetails().get(SessionManager.UserID));
             JSONArray jsonArray = new JSONArray();
             for (int i = 0; i < fieldList.size(); i++) {
                 JSONObject object = new JSONObject();
                 object.put("field", fieldList.get(i).getName());
                 String value = answeredQuestions.get(i);
-                object.put("value", value);
+                if (fieldList.get(i).getName().equals("longitude") || fieldList.get(i).getName().equals("latitude")) {
+                    object.put("value", fieldList.get(i).getName().equals("longitude") ? LocationInfo.location.getLongitude() : LocationInfo.location.getLatitude());
+                } else {
+                    object.put("value", value);
+                }
+
                 jsonArray.put(object);
             }
             jsonObject.put("interactionSubmissions", jsonArray);

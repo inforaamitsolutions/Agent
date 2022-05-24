@@ -17,6 +17,7 @@ import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -52,7 +53,6 @@ import com.codeclinic.agent.model.ImageUploadModel;
 import com.codeclinic.agent.model.customer.CustomerOptionsListModel;
 import com.codeclinic.agent.model.customer.CustomerQuestionToFollowModel;
 import com.codeclinic.agent.model.customer.CustomerQuestionsListModel;
-import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
 import com.codeclinic.agent.model.customer.CustomerSurveyDefinitionPageModel;
 import com.codeclinic.agent.model.product.ProductListModel;
 import com.codeclinic.agent.model.product.ProductModel;
@@ -79,8 +79,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
@@ -131,8 +129,10 @@ public class CreateCustomerActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_create_customer);
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
-        StrictMode
-                .setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
+        /*StrictMode
+                .setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());*/
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         binding.headerLayout.imgBack.setVisibility(View.VISIBLE);
         binding.headerLayout.txtHeading.setText("Create Customer");
@@ -204,8 +204,11 @@ public class CreateCustomerActivity extends AppCompatActivity {
                     surveyPage--;
                     questionPage = surveyPagesList.get(surveyPage).getQuestions().size() - 1;
                 }
-
             }
+            if (surveyQuestions.containsKey(surveyPage)) {
+                answeredQuestions = surveyQuestions.get(surveyPage);
+            }
+
             updatePage();
         });
 
@@ -388,6 +391,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
             for (int i = 0; i < surveyActions.size(); i++) {
                 if (surveyActions.get(i).getAction().equals(CreateCustomer)) {
                     surveyName = surveyActions.get(i).getSurveyName();
+                    Log.i("surveyName", surveyName);
                     break;
                 }
             }
@@ -479,7 +483,6 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(form -> {
-
                             surveyPagesList = form.getSurveyDefinitionPages();
                             for (int i = 0; i < surveyPagesList.size(); i++) {
                                 questionList.put(i, surveyPagesList.get(i).getQuestions());
@@ -516,6 +519,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    @SuppressLint("SetTextI18n")
     private void extractCustomerFromLocal() {
         disposable.add(localDatabase.getDAO().getCustomerFormResume()
                 .subscribeOn(Schedulers.io())
@@ -523,6 +527,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 .subscribe(form -> {
                             if (form != null) {
                                 customerFormResumeEntity = form;
+                                surveyName = customerFormResumeEntity.getSurveyName();
                                 surveyQuestions = new Gson().fromJson(form.getSurveyQuestions(), new TypeToken<HashMap<Integer, Map<Integer, String>>>() {
                                 }.getType());
                                 if (!isEmpty(form.getOptionQuestions())) {
@@ -564,6 +569,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
     private void saveCustomerFormToLocal(String request) {
         CustomerFinalFormEntity customerFinalFormEntity = new CustomerFinalFormEntity();
         customerFinalFormEntity.setMainId(0);
+        customerFinalFormEntity.setSurveyName(surveyName);
         customerFinalFormEntity.setRequest(request);
         customerFinalFormEntity.setName(binding.edtFullName.getText().toString());
         customerFinalFormEntity.setNumber(binding.edtMobileNo.getText().toString());
@@ -692,139 +698,136 @@ public class CreateCustomerActivity extends AppCompatActivity {
     }
 
     private void submitForm() {
-        binding.loadingView.loader.setVisibility(View.VISIBLE);
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.put("customerRole", "MYMOBI_INDIVIDUAL_CUSTOMER");
-                    jsonObject.put("customerName", binding.edtFullName.getText().toString());
-                    jsonObject.put("mobileNumber", binding.edtMobileNo.getText().toString());
-                    jsonObject.put("dateOfBirth", binding.tvBirthDate.getText().toString());
-                    jsonObject.put("customerAge", binding.tvAge.getText().toString());
-                    jsonObject.put("idNumber", binding.edtDocumentNo.getText().toString());
-                    jsonObject.put("existingCustomer", binding.rbYes.isChecked() ? "existing" : "new");
-                    jsonObject.put("staffId", sessionManager.getUserDetails().get(SessionManager.UserID));
-                    jsonObject.put("status", "COMPLETED");
-                    jsonObject.put("surveyName", surveyName);
-                    //jsonObject.put("surveyName", "customer_registration_form");
+        //binding.loadingView.loader.setVisibility(View.VISIBLE);
 
-                    JSONArray jsonArrayPages = new JSONArray();
-                    JSONObject jsonObject1 = new JSONObject();
-                    for (int i = 0; i < surveyPagesList.size(); i++) {
-                        JSONArray jsonArray = new JSONArray();
+        new Handler().postDelayed(() -> {
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("customerRole", "MYMOBI_INDIVIDUAL_CUSTOMER");
+                jsonObject.put("customerName", binding.edtFullName.getText().toString());
+                jsonObject.put("mobileNumber", binding.edtMobileNo.getText().toString());
+                jsonObject.put("dateOfBirth", binding.tvBirthDate.getText().toString());
+                jsonObject.put("customerAge", binding.tvAge.getText().toString());
+                jsonObject.put("idNumber", binding.edtDocumentNo.getText().toString());
+                jsonObject.put("existingCustomer", binding.rbYes.isChecked() ? "existing" : "new");
+                jsonObject.put("staffId", sessionManager.getUserDetails().get(SessionManager.UserID));
+                jsonObject.put("status", "COMPLETED");
+                jsonObject.put("surveyName", surveyName);
+                //jsonObject.put("surveyName", "customer_registration_form");
 
-                        Map<Integer, String> mapAnswered = surveyQuestions.get(i);
-                        assert mapAnswered != null;
-                        for (Map.Entry<Integer, String> entry : mapAnswered.entrySet()) {
-                            String value = entry.getValue();
-                            JSONObject object = new JSONObject();
+                JSONArray jsonArrayPages = new JSONArray();
+                JSONObject jsonObject1 = new JSONObject();
+                for (int i = 0; i < surveyPagesList.size(); i++) {
+                    JSONArray jsonArray = new JSONArray();
 
-                            String key = surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldName();
-                            Log.d("answeredValues", "Key : " + key + "  Value : " + value);
+                    Map<Integer, String> mapAnswered = surveyQuestions.get(i);
+                    assert mapAnswered != null;
+                    for (Map.Entry<Integer, String> entry : mapAnswered.entrySet()) {
+                        String value = entry.getValue();
+                        JSONObject object = new JSONObject();
 
-                            object.put("fieldName", surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldName());
+                        String key = surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldName();
+                        Log.d("answeredValues", "Key : " + key + "  Value : " + value);
 
-                            if (surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("image")
-                                    || surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("signature")
-                                    || surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("file")
-                            ) {
-                                object.put("responseText", uploadImage(value));
-                            } else {
-                                object.put("responseText", value);
-                            }
-                            jsonArray.put(object);
+                        object.put("fieldName", surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldName());
 
-                            if ((surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_one")
-                                    || surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_multiple"))) {
+                        if (surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("image")
+                                || surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("signature")
+                                || surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("file")
+                        ) {
+                            object.put("responseText", uploadImage(value));
+                        } else {
+                            object.put("responseText", value);
+                        }
+                        jsonArray.put(object);
 
-                                List<CustomerOptionsListModel> options = surveyPagesList.get(i).getQuestions().get(entry.getKey()).getOptions();
+                        if ((surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_one")
+                                || surveyPagesList.get(i).getQuestions().get(entry.getKey()).getFieldType().equals("select_multiple"))) {
 
-                                for (int j = 0; j < options.size(); j++) {
+                            List<CustomerOptionsListModel> options = surveyPagesList.get(i).getQuestions().get(entry.getKey()).getOptions();
 
-                                    if (options.get(j).getQuestionToFollow() != null && value.equals(options.get(j).getValue())) {
+                            for (int j = 0; j < options.size(); j++) {
+
+                                if (options.get(j).getQuestionToFollow() != null && value.equals(options.get(j).getValue())) {
+
+                                    if (options.get(j).getQuestionToFollow().size() != 0) {
 
                                         if (options.get(j).getQuestionToFollow().size() != 0) {
+                                            Map<Integer, String> questionToFollowAnswered = optionQuestions.get(options.get(j).getId());
 
-                                            if (options.get(j).getQuestionToFollow().size() != 0) {
-                                                Map<Integer, String> questionToFollowAnswered = optionQuestions.get(options.get(j).getId());
+                                            if (questionToFollowAnswered != null) {
+                                                for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
+                                                    JSONObject jObject = new JSONObject();
 
-                                                if (questionToFollowAnswered != null) {
-                                                    for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
-                                                        JSONObject jObject = new JSONObject();
+                                                    String subKey = options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName();
+                                                    Log.d("answeredValues", "SubKey : " + subKey + "  SubValue : " + value);
 
-                                                        String subKey = options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName();
-                                                        Log.d("answeredValues", "SubKey : " + subKey + "  SubValue : " + value);
+                                                    jObject.put("fieldName", options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName());
 
-                                                        jObject.put("fieldName", options.get(j).getQuestionToFollow().get(item.getKey()).getFieldName());
-
-                                                        if (options.get(j).getQuestionToFollow().get(item.getKey()).getFieldType().equals("image")
-                                                                || options.get(j).getQuestionToFollow().get(item.getKey()).getFieldType().equals("signature")
-                                                                || options.get(j).getQuestionToFollow().get(item.getKey()).getFieldType().equals("file")
-                                                        ) {
-                                                            jObject.put("responseText", uploadImage(item.getValue()));
-                                                        } else {
-                                                            jObject.put("responseText", item.getValue());
-                                                        }
-                                                        jsonArray.put(jObject);
+                                                    if (options.get(j).getQuestionToFollow().get(item.getKey()).getFieldType().equals("image")
+                                                            || options.get(j).getQuestionToFollow().get(item.getKey()).getFieldType().equals("signature")
+                                                            || options.get(j).getQuestionToFollow().get(item.getKey()).getFieldType().equals("file")
+                                                    ) {
+                                                        jObject.put("responseText", uploadImage(item.getValue()));
+                                                    } else {
+                                                        jObject.put("responseText", item.getValue());
                                                     }
+                                                    jsonArray.put(jObject);
                                                 }
                                             }
-
                                         }
 
                                     }
 
                                 }
+
                             }
                         }
-                        jsonObject1.put(surveyPagesList.get(i).getPageName(), jsonArray);
                     }
-                    jsonArrayPages.put(jsonObject1);
-                    jsonObject.put("pages", jsonArrayPages);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    jsonObject1.put(surveyPagesList.get(i).getPageName(), jsonArray);
                 }
+                jsonArrayPages.put(jsonObject1);
+                jsonObject.put("pages", jsonArrayPages);
 
-                //Log.i("formReq", jsonObject.toString());
-                //logLargeString(jsonObject.toString());
-
-                if (Connection_Detector.isInternetAvailable(CreateCustomerActivity.this)) {
-                    disposable.add(RestClass.getClient().CUSTOMER_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
-                            , jsonObject.toString())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeWith(new DisposableSingleObserver<CustomerSubmitFormModel>() {
-                                @Override
-                                public void onSuccess(@NonNull CustomerSubmitFormModel response) {
-                                    binding.loadingView.loader.setVisibility(View.GONE);
-                                    if (response.getSuccessStatus().equals("success")) {
-                                        isFormSubmitted = true;
-                                        manageResumeForm();
-                                        finish();
-                                    }
-                                    Toast.makeText(CreateCustomerActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-
-                                @Override
-                                public void onError(@NonNull Throwable e) {
-                                    binding.loadingView.loader.setVisibility(View.GONE);
-                                    if (e.getMessage().contains("401")) {
-                                        Toast.makeText(CreateCustomerActivity.this, "Session Time out you have to login again", Toast.LENGTH_LONG).show();
-                                    } else {
-                                        Toast.makeText(CreateCustomerActivity.this, "Server Error " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                    }
-
-                                }
-                            }));
-                } else {
-                    binding.loadingView.loader.setVisibility(View.GONE);
-                    saveCustomerFormToLocal(jsonObject.toString());
-                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }, 2000);
+            logLargeString(jsonObject.toString());
+            //Log.i("formReq", jsonObject.toString());
+          /*  if (Connection_Detector.isInternetAvailable(CreateCustomerActivity.this)) {
+                disposable.add(RestClass.getClient().CUSTOMER_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
+                        , jsonObject.toString())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableSingleObserver<CustomerSubmitFormModel>() {
+                            @Override
+                            public void onSuccess(@NonNull CustomerSubmitFormModel response) {
+                                binding.loadingView.loader.setVisibility(View.GONE);
+                                if (response.getSuccessStatus().equals("success")) {
+                                    isFormSubmitted = true;
+                                    manageResumeForm();
+                                    finish();
+                                }
+                                Toast.makeText(CreateCustomerActivity.this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onError(@NonNull Throwable e) {
+                                binding.loadingView.loader.setVisibility(View.GONE);
+                                if (e.getMessage().contains("401")) {
+                                    Toast.makeText(CreateCustomerActivity.this, "Session Time out you have to login again", Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(CreateCustomerActivity.this, "Server Error " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+
+                            }
+                        }));
+            } else {
+                binding.loadingView.loader.setVisibility(View.GONE);
+                saveCustomerFormToLocal(jsonObject.toString());
+            }*/
+        }, 800);
+
 
     }
 
@@ -870,8 +873,11 @@ public class CreateCustomerActivity extends AppCompatActivity {
         if (response.getSuccessStatus().equals("success")) {
             Log.i("imagePath", response.getPath());
             return response.getPath();
+        } else {
+            Toast.makeText(this, "" + response.getMessage(), Toast.LENGTH_SHORT).show();
+            return " ";
         }
-        return " ";
+
     }
 
     @SuppressLint("SetTextI18n")
@@ -1703,6 +1709,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
             if (!surveyQuestions.isEmpty()) {
                 CustomerFormResumeEntity entity = new CustomerFormResumeEntity();
                 entity.setMainId(0);
+                entity.setSurveyName(surveyName);
                 entity.setName(binding.edtFullName.getText().toString() + "");
                 entity.setNumber(binding.edtMobileNo.getText().toString() + "");
                 entity.setIdNumber(binding.edtDocumentNo.getText().toString() + "");

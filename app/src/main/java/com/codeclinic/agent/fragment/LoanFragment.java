@@ -1,5 +1,7 @@
 package com.codeclinic.agent.fragment;
 
+import static android.text.TextUtils.isEmpty;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,8 +36,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.text.TextUtils.isEmpty;
 
 
 public class LoanFragment extends Fragment {
@@ -294,7 +294,6 @@ public class LoanFragment extends Fragment {
     }
 
     private void manageSpinners() {
-
         List<String> defaultSearches = new ArrayList<String>();
         defaultSearches.add("--Select--");
         defaultSearches.add("Customer ID");
@@ -305,6 +304,7 @@ public class LoanFragment extends Fragment {
         binding.searchChildView.spDefaultSearch.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                binding.searchChildView.edtSearch.setText("");
                 if (i == 3) {
                     binding.searchChildView.llAdvancedSearch.setVisibility(View.VISIBLE);
                     binding.searchChildView.llDefaultSearchInputs.setVisibility(View.GONE);
