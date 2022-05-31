@@ -22,6 +22,11 @@ public class Constants {
     public static String AllInteraction = "allInteraction";
     public static String DueFollowUp = "dueFollowUp";
     public static String PromiseToPays = "promiseToPays";
+    public static String IMAGE_TYPE = "image_type";
+    public static String ID_FRONT = "Id_front";
+    public static String BUSINESS_IMAGE = "business_image";
+    public static String PROFILE_PHOTO = "profile_photo";
+    public static String ID_BACK = "id_back";
 
     //Survey actions
     public static String CreateCustomer = "createCustomer";

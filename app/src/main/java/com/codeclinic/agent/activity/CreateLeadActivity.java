@@ -6,8 +6,13 @@ import static com.codeclinic.agent.utils.CommonMethods.datePicker;
 import static com.codeclinic.agent.utils.CommonMethods.isPermissionGranted;
 import static com.codeclinic.agent.utils.Constants.ACCESS_CAMERA_GALLERY;
 import static com.codeclinic.agent.utils.Constants.ACCESS_SIGNATURE;
+import static com.codeclinic.agent.utils.Constants.BUSINESS_IMAGE;
 import static com.codeclinic.agent.utils.Constants.CreateLead;
+import static com.codeclinic.agent.utils.Constants.ID_BACK;
+import static com.codeclinic.agent.utils.Constants.ID_FRONT;
+import static com.codeclinic.agent.utils.Constants.IMAGE_TYPE;
 import static com.codeclinic.agent.utils.Constants.PICTURE_PATH;
+import static com.codeclinic.agent.utils.Constants.PROFILE_PHOTO;
 import static com.codeclinic.agent.utils.SessionManager.sessionManager;
 
 import android.annotation.SuppressLint;
@@ -106,7 +111,7 @@ public class CreateLeadActivity extends AppCompatActivity {
 
     boolean isSubmitForm = false, isFormSubmitted = false, isSignatureSelection = false;
 
-    String surveyName = "";
+    String surveyName = "", imageType = "";
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -869,6 +874,7 @@ public class CreateLeadActivity extends AppCompatActivity {
         } else if (question.getFieldType().equals("image")) {
 
             binding.imgUser.setVisibility(View.VISIBLE);
+            imageType = question.getFieldName();
             if (surveyQuestions.containsKey(surveyPage)) {
                 Map<Integer, String> data = surveyQuestions.get(surveyPage);
                 if (data != null) {
@@ -1161,6 +1167,7 @@ public class CreateLeadActivity extends AppCompatActivity {
 
         } else if (question.getFieldType().equals("image")) {
             binding.imgUser.setVisibility(View.VISIBLE);
+            imageType = question.getFieldName();
             if (optionQuestions.containsKey(optionPageKey)) {
                 Map<Integer, String> data = optionQuestions.get(optionPageKey);
                 if (data != null) {
@@ -1396,6 +1403,23 @@ public class CreateLeadActivity extends AppCompatActivity {
                 startActivityForResult(gallery_Intent, ACCESS_SIGNATURE);
             } else {
                 Intent gallery_Intent = new Intent(getApplicationContext(), AccessMediaUtil.class);
+                switch (imageType) {
+                    case "idFront":
+                        gallery_Intent.putExtra(IMAGE_TYPE, ID_FRONT);
+                        break;
+                    case "idBack":
+                        gallery_Intent.putExtra(IMAGE_TYPE, ID_BACK);
+                        break;
+                    case "passportPhoto":
+                        gallery_Intent.putExtra(IMAGE_TYPE, PROFILE_PHOTO);
+                        break;
+                    case "businessPhoto1":
+                    case "businessPhoto4":
+                    case "businessPhoto3":
+                    case "businessPhoto2":
+                        gallery_Intent.putExtra(IMAGE_TYPE, BUSINESS_IMAGE);
+                        break;
+                }
                 startActivityForResult(gallery_Intent, ACCESS_CAMERA_GALLERY);
             }
         }

@@ -446,22 +446,28 @@ public class CommonMethods {
     }
 
     public static File compressImage(Uri photoURI, Compressor compressor) throws Exception {
-        return compressor.setMaxWidth(400)
+        /*return compressor.setMaxWidth(400)
                 .setMaxHeight(400)
-                .setQuality(50)
+                .setQuality(60)
+                .setCompressFormat(Bitmap.CompressFormat.JPEG).
+                        setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath())
+                .compressToFile(new File(photoURI.getPath()));*/
+
+        return compressor
+                .setQuality(60)
                 .setCompressFormat(Bitmap.CompressFormat.JPEG).
                         setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath())
                 .compressToFile(new File(photoURI.getPath()));
     }
 
-    @SuppressLint("SimpleDateFormat")
+  /*  @SuppressLint("SimpleDateFormat")
     public static File compressImage(String photoPath, Compressor compressor) throws Exception {
         return compressor.setMaxWidth(500)
                 .setMaxHeight(400)
                 .setQuality(70)
                 .setCompressFormat(Bitmap.CompressFormat.JPEG)
                 .compressToFile(new File(photoPath));
-    }
+    }*/
 
     public static boolean isPermissionGranted(Context context) {
         if (Build.VERSION.SDK_INT >= 23) {

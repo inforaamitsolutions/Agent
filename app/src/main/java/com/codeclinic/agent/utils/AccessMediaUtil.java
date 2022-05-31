@@ -1,5 +1,12 @@
 package com.codeclinic.agent.utils;
 
+import static android.os.Environment.getExternalStoragePublicDirectory;
+import static com.codeclinic.agent.utils.CommonMethods.compressImage;
+import static com.codeclinic.agent.utils.Constants.IMAGE_TYPE;
+import static com.codeclinic.agent.utils.Constants.PROFILE_PHOTO;
+import static com.codeclinic.agent.utils.Constants.REQUEST_FROM_GALLERY;
+import static com.codeclinic.agent.utils.Constants.REQUEST_TAKE_PHOTO;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -21,23 +28,31 @@ import java.util.Date;
 
 import id.zelory.compressor.Compressor;
 
-import static android.os.Environment.getExternalStoragePublicDirectory;
-import static com.codeclinic.agent.utils.CommonMethods.compressImage;
-import static com.codeclinic.agent.utils.Constants.REQUEST_FROM_GALLERY;
-import static com.codeclinic.agent.utils.Constants.REQUEST_TAKE_PHOTO;
-
 
 public class AccessMediaUtil extends AppCompatActivity {
 
     Compressor compressedImage;
     String currentPhotoPath;
     Uri photoURI;
+    private int aspectRatioX = 16, aspectRatioY = 9;
+    private int width = 600, height = 400;
+    private boolean isFixAspectRatio = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         compressedImage = new Compressor(this);
         selectImage();
+        if (getIntent().hasExtra(IMAGE_TYPE)) {
+            isFixAspectRatio = true;
+            if (getIntent().getStringExtra(IMAGE_TYPE).equals(PROFILE_PHOTO)) {
+                aspectRatioX = 1;
+                aspectRatioY = 1;
+                width = 500;
+                height = 500;
+            }
+        }
+
     }
 
     public void selectImage() {
@@ -115,10 +130,19 @@ public class AccessMediaUtil extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         try {
             if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-                CropImage.activity(photoURI).start(this);
+                CropImage.activity(photoURI)
+                        .setAspectRatio(aspectRatioX, aspectRatioY)
+                        .setMinCropResultSize(width, height)
+                        .setFixAspectRatio(isFixAspectRatio)
+                        .start(this);
             } else if (requestCode == REQUEST_FROM_GALLERY && resultCode == RESULT_OK) {
                 photoURI = data.getData();
-                CropImage.activity(photoURI).start(this);
+                //CropImage.activity(photoURI).start(this);
+                CropImage.activity(photoURI)
+                        .setAspectRatio(aspectRatioX, aspectRatioY)
+                        .setMinCropResultSize(width, height)
+                        .setFixAspectRatio(isFixAspectRatio)
+                        .start(this);
             } else {
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
                 photoURI = result.getUri();
