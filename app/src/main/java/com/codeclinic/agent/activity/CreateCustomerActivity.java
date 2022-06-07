@@ -58,6 +58,7 @@ import com.codeclinic.agent.model.ImageUploadModel;
 import com.codeclinic.agent.model.customer.CustomerOptionsListModel;
 import com.codeclinic.agent.model.customer.CustomerQuestionToFollowModel;
 import com.codeclinic.agent.model.customer.CustomerQuestionsListModel;
+import com.codeclinic.agent.model.customer.CustomerSubmitFormModel;
 import com.codeclinic.agent.model.customer.CustomerSurveyDefinitionPageModel;
 import com.codeclinic.agent.model.product.ProductListModel;
 import com.codeclinic.agent.model.product.ProductModel;
@@ -626,9 +627,10 @@ public class CreateCustomerActivity extends AppCompatActivity {
                 addAnswers();
                 surveyQuestions.put(surveyPage, answeredQuestions);
                 Log.i("surveyQuestions", new Gson().toJson(surveyQuestions));
-                answeredQuestions = new HashMap<>();
+                //answeredQuestions = new HashMap<>();
                 questionPage = 0;
                 isSubmitForm = true;
+
                 renderSummary();
 
                 manageResumeForm();
@@ -639,14 +641,12 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
 
     private void renderSummary() {
-        binding.llSections.setVisibility(View.GONE);
-        binding.llSummary.setVisibility(View.VISIBLE);
+        binding.loadingView.loader.setVisibility(View.VISIBLE);
         //binding.loadingView.loader.setVisibility(View.VISIBLE);
         summaryList.clear();
         for (int i = 0; i < surveyPagesList.size(); i++) {
-
             Map<Integer, String> mapAnswered = surveyQuestions.get(i);
-
+            assert mapAnswered != null;
             FormSummaryModel section = new FormSummaryModel();
             section.setAnswer("");
             section.setQuestion("");
@@ -669,27 +669,30 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
                     for (int j = 0; j < options.size(); j++) {
 
-                        if (options.get(j).getQuestionToFollow() != null && value.equals(options.get(j).getValue())) {
+                        if (value != null) {
+                            if (options.get(j).getQuestionToFollow() != null && value.equals(options.get(j).getValue())) {
 
-                            if (options.get(j).getQuestionToFollow().size() != 0) {
+                                if (options.get(j).getQuestionToFollow().size() != 0) {
 
-                                if (optionQuestions.containsKey(options.get(j).getId())) {
-                                    Map<Integer, String> questionToFollowAnswered = optionQuestions.get(options.get(j).getId());
+                                    if (optionQuestions.containsKey(options.get(j).getId())) {
+                                        Map<Integer, String> questionToFollowAnswered = optionQuestions.get(options.get(j).getId());
 
-                                    if (questionToFollowAnswered != null) {
-                                        for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
-                                            FormSummaryModel subQuestions = new FormSummaryModel();
-                                            subQuestions.setQuestion(options.get(j).getQuestionToFollow().get(item.getKey()).getQuestionText());
-                                            subQuestions.setAnswer(item.getValue());
-                                            subQuestions.setSection("");
-                                            summaryList.add(subQuestions);
+                                        if (questionToFollowAnswered != null) {
+                                            for (Map.Entry<Integer, String> item : questionToFollowAnswered.entrySet()) {
+                                                FormSummaryModel subQuestions = new FormSummaryModel();
+                                                subQuestions.setQuestion(options.get(j).getQuestionToFollow().get(item.getKey()).getQuestionText());
+                                                subQuestions.setAnswer(item.getValue());
+                                                subQuestions.setSection("");
+                                                summaryList.add(subQuestions);
+                                            }
                                         }
                                     }
+
                                 }
 
                             }
-
                         }
+
 
                     }
                 }
@@ -701,10 +704,15 @@ public class CreateCustomerActivity extends AppCompatActivity {
         binding.recyclerViewSummary.setAdapter(new SummaryFormAdapter(summaryList, this));
 
 
+        binding.loadingView.loader.setVisibility(View.GONE);
+        binding.llSections.setVisibility(View.GONE);
+        binding.llSummary.setVisibility(View.VISIBLE);
+
+
     }
 
     private void submitForm() {
-        //binding.loadingView.loader.setVisibility(View.VISIBLE);
+        binding.loadingView.loader.setVisibility(View.VISIBLE);
 
         new Handler().postDelayed(() -> {
             JSONObject jsonObject = new JSONObject();
@@ -789,6 +797,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
 
                             }
                         }
+
                     }
                     jsonObject1.put(surveyPagesList.get(i).getPageName(), jsonArray);
                 }
@@ -800,7 +809,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
             }
             logLargeString(jsonObject.toString());
             //Log.i("formReq", jsonObject.toString());
-          /*  if (Connection_Detector.isInternetAvailable(CreateCustomerActivity.this)) {
+            if (Connection_Detector.isInternetAvailable(CreateCustomerActivity.this)) {
                 disposable.add(RestClass.getClient().CUSTOMER_SUBMIT_FORM_MODEL_SINGLE_CALL(sessionManager.getTokenDetails().get(SessionManager.AccessToken)
                         , jsonObject.toString())
                         .subscribeOn(Schedulers.io())
@@ -831,7 +840,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
             } else {
                 binding.loadingView.loader.setVisibility(View.GONE);
                 saveCustomerFormToLocal(jsonObject.toString());
-            }*/
+            }
         }, 800);
 
 
@@ -1669,6 +1678,7 @@ public class CreateCustomerActivity extends AppCompatActivity {
             Toast.makeText(this, (dirFile.isDirectory() ? "FOLDER: " : "FILE: ") + dir, Toast.LENGTH_SHORT).show();
             /*if (dirFile.isFile()) _iv.setImageBitmap(decodeFile(dirFile));*/
             filePath = dirFile.getPath();
+            binding.tvFileName.setText(filePath);
         });
         chooserDialog.withOnBackPressedListener(dialog -> chooserDialog.goBack());
     }

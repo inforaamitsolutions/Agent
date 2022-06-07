@@ -191,6 +191,7 @@ public class MainViewModel extends AndroidViewModel {
 
     public void callCustomerFormWithProduct(String surveyName) {
         /*"Customer Registration Form"*/
+        Log.i("surveyName", surveyName);
         formFetchingComplete.postValue(new LoadingResult(" ", true));
         disposable.add(RestClass.getClient().FETCH_CUSTOMER_FORM_MODEL_SINGLE(
                 sessionManager.getTokenDetails().get(AccessToken),
